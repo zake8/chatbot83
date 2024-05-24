@@ -13,13 +13,20 @@ import sqlalchemy as sa
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User
+import socket
 
 
 @app.route('/')
 @app.route('/index')
-@login_required
 def index():
-    return render_template('index.html', title='Home')
+    return render_template('index.html', title='ChatBot83', 
+        webserver_hostname=socket.gethostname())
+
+
+@app.route('/something')
+@login_required
+def something():
+    return render_template('something.html', title='something')
 
 
 @app.route('/login', methods=['GET', 'POST'])
