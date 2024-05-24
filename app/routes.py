@@ -41,6 +41,11 @@ def index():
         webserver_hostname=socket.gethostname())
 
 
+@app.route("/gerbotsamples")
+def gerbotsamples():
+    return render_template('gerbotsamples.html')
+
+
 @app.route('/something')
 @login_required
 def something():
@@ -85,3 +90,73 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+
+def setup_and_retrieval_choose_rag(user, query, history):
+    pass
+    return query
+
+
+def prompt_choose_rag(user, query, history):
+    rag = 'nothing.faiss'
+    ### based on query, select a rag
+    return rag
+
+
+def setup_and_retrieval_response(user, query, rag, history):
+    pass
+    return query
+
+
+def prompt_response(user, query, rag, history):
+    response = 'Default response.'
+    ### based on query and rag, craft a response
+    return response
+
+
+def large_lang_model(model, temp, stop_words_list):
+    return Ollama(
+        model = model, 
+        temperature = float(temp), 
+        stop = stop_words_list, 
+        verbose = True )
+
+
+def process_rag(query):
+    pass
+    # load document requested by choose rag prompt, or return some error.
+    return query
+
+
+def render_video(user, reg, vectordb_matches):
+    ### triple parallel too
+    ### search rag index for timecode for vectordb_matches
+    ### render clips with captions burned
+    ### create montage.mp4
+    return None
+
+
+@app.route('/ingestion')
+def ingestion(pfn):
+    pass
+    return """
+        <h1>chat_video_recall</h1><br>
+        <br>
+        ingested {pfn}<br>
+        """
+
+
+@app.route('/chat')
+def chat_video_return():
+    query = 'test'
+    ### chain = ( setup_and_retrieval_choose_rag | prompt_choose_rag | large_lang_model | StrOutputParser() | 
+    ###           process_rag | 
+    ###           setup_and_retrieval_response | render_video | prompt_response | large_lang_model | StrOutputParser() )
+    ### response = chain.invoke(query)
+    return """
+        <h1>chat_video_recall</h1><br>
+        <br>
+        query = '{query}'<br>
+        response = '{response}'<br>
+        <video>./montage.mp4</video><br>
+        """
