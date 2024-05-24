@@ -1,3 +1,11 @@
+#!/usr/bin/env python
+
+import logging
+logging.basicConfig(level=logging.INFO, 
+                    filename='./log.log', 
+                    filemode='a', 
+                    format='%(asctime)s -%(levelname)s - %(message)s')
+
 from urllib.parse import urlsplit
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_user, logout_user, current_user, login_required
