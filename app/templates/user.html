@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <table>
+        <tr valign="top">
+            <td>
+                <h1>
+                    id: {{ user.id }}<br>
+                    username: {{ user.username }}<br>
+                    email: {{ user.email }}<br>
+                    full_name: {{ user.full_name }}<br>
+                    phone_number: {{ user.phone_number }}<br>
+                    {% if user.role %}role: {{ user.role }}<br>{% endif %}
+                </h1>
+                {% if user == current_user %}
+                <p><a href="{{ url_for('edit_profile', username=current_user.username) }}">Edit your profile</a></p> 
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+{% endblock %}
