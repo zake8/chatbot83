@@ -21,7 +21,7 @@ ntfypost = False # Posts ntfy for some chat Q&A
 
 ### TODO:
 ### CAPTCHA
-### Test full_name and phone_number to registration - how to view all users and their data? How to set admin role?
+### How to view all users and their data? How to set admin role?
 ### auto save website URL to pdf? Then can ingest nice record of website in pdf.
 ### agent to check actual website, maybe crawl a few branches?
 ### how to tune (know, increase, decrease, number of vector returns from faiss match?
