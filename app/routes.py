@@ -16,6 +16,8 @@ from app.models import User
 import socket
 
 
+# Some global variable settings
+
 ntfypost = False # Posts ntfy for some chat Q&A
 
 
@@ -33,6 +35,8 @@ ntfypost = False # Posts ntfy for some chat Q&A
 ### Make new top menu page
 ### async stream from llm to screen...
 
+
+# General high level public routes
 
 @app.route('/')
 @app.route('/index')
@@ -52,6 +56,8 @@ def something():
     return render_template('something.html', title='something')
 
 
+# Bot specific routes
+
 @app.route('/ChatBot83')
 @login_required
 def ChatBot83():
@@ -64,7 +70,8 @@ def ChatBot83():
     current_user.chat_history = []
     current_user.chat_history.append({'user':current_user.chatbot, 
         'message':'Salutations! I am ChatBot83. Basically just chat with Mistral LLM...'})
-    return render_template('ChatBot83.html', title='ChatBot83')
+    return redirect(url_for('chat'))
+    ##### return render_template('ChatBot83.html', title='ChatBot83')
 
 
 @app.route('/GerBot')
@@ -82,6 +89,8 @@ def VTSBot():
     # rag_list = ['Auto']
     return render_template('VTSBot.html', title='VTSBot')
 
+
+# Authentication routes
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -148,6 +157,8 @@ def edit_profile():
                            form=form)
 
 
+# Chat and LLM functions
+
 def setup_and_retrieval_choose_rag(user, query, history):
     pass
     return query
@@ -192,18 +203,8 @@ def render_video(user, reg, vectordb_matches):
     return None
 
 
-@app.route('/ingestion')
-def ingestion(pfn):
-    pass
-    return """
-        <h1>chat_video_recall</h1><br>
-        <br>
-        ingested {pfn}<br>
-        """
-
-
 @app.route('/chat')
-def chat_video_return():
+def chat():
     query = 'test'
     ### chain = ( setup_and_retrieval_choose_rag | prompt_choose_rag | large_lang_model | StrOutputParser() | 
     ###           process_rag | 
@@ -215,4 +216,16 @@ def chat_video_return():
         query = '{query}'<br>
         response = '{response}'<br>
         <video>./montage.mp4</video><br>
+        """
+
+
+# RAG document management / administration functions
+
+@app.route('/ingestion')
+def ingestion(pfn):
+    pass
+    return """
+        <h1>chat_video_recall</h1><br>
+        <br>
+        ingested {pfn}<br>
         """
