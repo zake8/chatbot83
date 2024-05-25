@@ -52,6 +52,37 @@ def something():
     return render_template('something.html', title='something')
 
 
+@app.route('/ChatBot83')
+@login_required
+def ChatBot83():
+    logging.info(f'Starting ChatBot83!')
+    current_user.chatbot = 'ChatBot83'
+    current_user.model = 'open-mixtral-8x7b'
+    current_user.llm_temp = 0.25
+    current_user.embed_model = 'mistral-embed'
+    current_user.rag_list = ['None']
+    current_user.chat_history = []
+    current_user.chat_history.append({'user':current_user.chatbot, 
+        'message':'Salutations! I am ChatBot83. Basically just chat with Mistral LLM...'})
+    return render_template('ChatBot83.html', title='ChatBot83')
+
+
+@app.route('/GerBot')
+@login_required
+def GerBot():
+    # init for GerBot
+    # rag_list = ['Auto']
+    return render_template('GerBot.html', title='GerBot')
+
+
+@app.route('/VTSBot')
+@login_required
+def VTSBot():
+    # init for VTSBot
+    # rag_list = ['Auto']
+    return render_template('VTSBot.html', title='VTSBot')
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:

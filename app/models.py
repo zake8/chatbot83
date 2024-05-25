@@ -5,6 +5,7 @@ import sqlalchemy.orm as so
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db, login
+from sqlalchemy.ext.mutable import MutableList
 
 
 class User(UserMixin, db.Model):
@@ -12,9 +13,15 @@ class User(UserMixin, db.Model):
     username:      so.Mapped[str] = so.mapped_column(sa.String(64), index=True, unique=True)
     email:         so.Mapped[str] = so.mapped_column(sa.String(120), index=True, unique=True)
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(sa.String(256))
-    role:          so.Mapped[str] = so.mapped_column(sa.String(64), default='regular')
+    role:          so.Mapped[Optional[str]] = so.mapped_column(sa.String(64), default='regular')
     full_name:     so.Mapped[Optional[str]] = so.mapped_column(sa.String(120), default='')
     phone_number:  so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), nullable=True)
+    chatbot:       so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), nullable=True)
+    model:         so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), nullable=True)
+    embed_model:   so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), nullable=True)
+    llm_temp:      so.Mapped[Optional[float]] = so.mapped_column()
+    rag_list:      so.Mapped[Optional[list]] = so.mapped_column(MutableList.as_mutable(sa.PickleType), default=[])
+    chat_history:  so.Mapped[Optional[list]] = so.mapped_column(MutableList.as_mutable(sa.PickleType), default=[])
 
 
     def __repr__(self):
