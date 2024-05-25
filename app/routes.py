@@ -19,7 +19,8 @@ import socket
 # Some global variable settings
 
 ntfypost = False # Posts ntfy for some chat Q&A
-
+pop_fullragchat_history_over_num = 10 # Each query and answer is appended seperatly, when len history > this #, pops off first _two_ items
+webserver_hostname = socket.gethostname()
 
 ### TODO:
 ### CAPTCHA
@@ -42,7 +43,7 @@ ntfypost = False # Posts ntfy for some chat Q&A
 @app.route('/index')
 def index():
     return render_template('index.html', title='ChatBot83', 
-        webserver_hostname=socket.gethostname())
+        webserver_hostname=webserver_hostname)
 
 
 @app.route("/gerbotsamples")
@@ -71,23 +72,43 @@ def ChatBot83():
     current_user.chat_history.append({'user':current_user.chatbot, 
         'message':'Salutations! I am ChatBot83. Basically just chat with Mistral LLM...'})
     return redirect(url_for('chat'))
-    ##### return render_template('ChatBot83.html', title='ChatBot83')
 
 
+# GerBot project is an LLM RAG chat intended to make http://gerrystahl.net/pub/index.html even more accessible
+# Generative AI "chat" about the gerrystahl.net writings
+# Code by Zake Stahl
+# https://github.com/zake8/GerryStahlWritings
+# March, April 2024
+# Based on public/shared APIs and FOSS samples
+# Built on Linux, Python, Apache, WSGI, Flask, LangChain, Ollama, Mistral, more
 @app.route('/GerBot')
 @login_required
 def GerBot():
-    # init for GerBot
-    # rag_list = ['Auto']
-    return render_template('GerBot.html', title='GerBot')
+    logging.info(f'Starting GerBot!')
+    current_user.chatbot = 'GerBot'
+    current_user.model = 'open-mixtral-8x7b'
+    current_user.llm_temp = 0.25
+    current_user.embed_model = 'mistral-embed'
+    current_user.rag_list = ['Auto']
+    current_user.chat_history = []
+    current_user.chat_history.append({'user':current_user.chatbot, 
+        'message':"Let's chat about Gerry Stahl's writing."})
+    return redirect(url_for('chat'))
 
 
 @app.route('/VTSBot')
 @login_required
 def VTSBot():
-    # init for VTSBot
-    # rag_list = ['Auto']
-    return render_template('VTSBot.html', title='VTSBot')
+    logging.info(f'Starting VTSBot!')
+    current_user.chatbot = 'VTSBot'
+    current_user.model = 'open-mixtral-8x7b'
+    current_user.llm_temp = 0.25
+    current_user.embed_model = 'mistral-embed'
+    current_user.rag_list = ['Auto']
+    current_user.chat_history = []
+    current_user.chat_history.append({'user':current_user.chatbot, 
+        'message':"VTSBot at your service; referencing knowledge from a corpus of Ving Tsun Kung Fu video transcriptions."})
+    return redirect(url_for('chat'))
 
 
 # Authentication routes
@@ -104,6 +125,7 @@ def login():
             flash('Invalid username or password')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
+        logging.info(f'User "{current_user.username}" logged in.')
         next_page = request.args.get('next')
         if not next_page or urlsplit(next_page).netloc != '':
             next_page = url_for('index')
@@ -113,6 +135,7 @@ def login():
 
 @app.route('/logout')
 def logout():
+    logging.info(f'User "{current_user.username}" logging out.')
     logout_user()
     return redirect(url_for('index'))
 
@@ -128,6 +151,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
+        logging.info(f'User "{current_user.username}" registered.')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
@@ -150,6 +174,7 @@ def edit_profile():
         current_user.phone_number = form.phone_number.data
         db.session.commit()
         flash('Your changes have been saved.')
+        logging.info(f'User "{current_user.username}" edited profile.')
         return redirect(url_for('edit_profile'))
     elif request.method == 'GET':
         form.username.data = current_user.username
@@ -204,24 +229,60 @@ def render_video(user, reg, vectordb_matches):
 
 
 @app.route('/chat')
+@login_required
 def chat():
-    query = 'test'
+    # Bot initializations redirect here
+    logging.info(f'Entering chat loop') ### add username and bot name; also model, temp, embedding model
+    return render_template('chat.html', title='Chat')
+
+
+@app.route('/pending', methods=['POST'])
+@login_required
+def pending():
+    # chat.html posts here
+    query = request.form['query']
+    current_user.chat_history.append({'user':current_user.username, 'message':query})
+    logging.info(f'Query: {query}') ### add username and bot name
+    # set pending message while waiting
+    current_user.chat_history.append({'user':'System', 
+        'message':'pending - please wait for model inferences - small moving graphic on browser tab should indicate working'}) 
+    return render_template('pending.html', title='Pending')
+
+
+@app.route('/reply')
+@login_required
+def reply():
+    # pending.html refreshes here
+    # clear pending message
+    if current_user.chat_history: current_user.chat_history.pop()
+    response = 'Placeholder response.'
     ### chain = ( setup_and_retrieval_choose_rag | prompt_choose_rag | large_lang_model | StrOutputParser() | 
     ###           process_rag | 
     ###           setup_and_retrieval_response | render_video | prompt_response | large_lang_model | StrOutputParser() )
     ### response = chain.invoke(query)
-    return """
-        <h1>chat_video_recall</h1><br>
-        <br>
-        query = '{query}'<br>
-        response = '{response}'<br>
-        <video>./montage.mp4</video><br>
-        """
+    current_user.chat_history.append({'user':current_user.chatbot, 'message':response})
+    logging.info(f'Response: {response}') ### add username and bot name
+
+    if ntfypost:
+        title = f'{current_user.chatbot} on {webserver_hostname}:'
+        mess = f'Query: {query}\nResponse: {response}'
+        if current_user.chatbot == f'GerBot':
+            requests.post('https://ntfy.sh/GerBotAction', headers={'Title' : title}, data=(mess))
+        if current_user.chatbot == f'VTSBot':
+            requests.post('https://ntfy.sh/VTSBotAction', headers={'Title' : title}, data=(mess))
+
+    # cleanup chat history memory if getting too long
+    if len(current_user.chat_history) > pop_fullragchat_history_over_num:
+        current_user.chat_history.pop(0) # pops off oldest message:answer
+        current_user.chat_history.pop(0) # pops off oldest message:query
+
+    return render_template('chat.html', title='Chat')
 
 
 # RAG document management / administration functions
 
 @app.route('/ingestion')
+@login_required
 def ingestion(pfn):
     pass
     return """

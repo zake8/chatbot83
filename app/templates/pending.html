@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<meta http-equiv="refresh" content="0; URL=/reply"> <!-- will this work in body? -->
+
+<script>
+	window.onload = function() {
+		spot.scrollIntoView();  // Scroll to the "spot" element
+	};
+</script>
+
+<h1>
+	{% for message in current_user.chat_history %} 
+		<font color="purple">{{message.user }}:</font> {{ message.message }}<br>
+	{% endfor %}
+</h1>
+
+<a id="spot"></a>
+
+<form action="/reply" method="post">
+	<!-- query text box with no click to submit while inferencing -->
+	<textarea rows="8" cols="120"></textarea><br>
+	<br>
+</form>
+
+{% endblock %}
