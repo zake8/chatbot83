@@ -271,13 +271,19 @@ def reply():
     # triple-parallel (context, question, history) in ==> prompt for llm out
     prompt_choose_rag = ChatPromptTemplate.from_template(FILENAME_INC_LIST_TEMPLATE)
     logging.info(f'prompt_choose_rag = "{prompt_choose_rag}"; type "{type(prompt_choose_rag)}"')
-    # reserved w/ formating as temp removed
-    # {bot_specific_examples()}
-    # {actual_dir_list()} 
 
     # prompt for LLM in ==> LLM response out
     large_lang_model = get_large_lang_model_func()
     logging.info(f'large_lang_model type is "{type(large_lang_model)}"')
+
+    if current_user.role == 'administrator':
+        if query == f'admin stuff':
+            pass ### do admin stuff
+            response = 'Did admin stuff.'
+            current_user.chat_history.append({'user':current_user.chatbot, 'message':response})
+            logging.info(f'===> Response "{response}" from "{current_user.chatbot}" for "{current_user.username}"')
+            db.session.commit()
+            return render_template('chat.html', title='Admin Mode')
 
     chain = ( setup_and_retrieval_choose_rag
             | prompt_choose_rag 

@@ -25,3 +25,6 @@ list N/A
 
 Single "filename.faiss" value:
 """)
+# reserved w/ formating as temp removed
+# {bot_specific_examples()}
+# {actual_dir_list()} 
