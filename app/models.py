@@ -20,9 +20,13 @@ class User(UserMixin, db.Model):
     model:         so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), nullable=True)
     embed_model:   so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), nullable=True)
     llm_temp:      so.Mapped[Optional[float]] = so.mapped_column()
+    llm_api_key:   so.Mapped[Optional[str]] = so.mapped_column(sa.String(46), nullable=True)
     rag_list:      so.Mapped[Optional[list]] = so.mapped_column(MutableList.as_mutable(sa.PickleType), default=[])
     chat_history:  so.Mapped[Optional[list]] = so.mapped_column(MutableList.as_mutable(sa.PickleType), default=[])
 
+# pipenv shell
+# flask db migrate -m "some change"
+# flask db upgrade
 
     def __repr__(self):
         return '<User {}>'.format(self.username)

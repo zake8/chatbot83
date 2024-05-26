@@ -9,21 +9,26 @@ logging.basicConfig(level=logging.INFO,
 from urllib.parse import urlsplit
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_user, logout_user, current_user, login_required
-# Session management to store user-specific data. Each user gets a unique session object, 
-# and their data is isolated from other users' sessions. Store user-specific data in the session object 
-# and access it throughout the user's session.
-# Each request is handled by a separate thread, and data stored in the request context is isolated between requests.
+# Flask session management stores user-specific data; each user gets a unique session object, 
+# and their data is isolated from other users' sessions. Each request is handled by a separate thread, 
+# and data stored in the request context is isolated between requests.
 import sqlalchemy as sa
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm
 from app.models import User
 import socket
+import os
 
 
 # Some global variable settings
 
-ntfypost = False # Posts ntfy for some chat Q&A
-pop_fullragchat_history_over_num = 10 # Each query and answer is appended seperatly, when len history > this #, pops off first _two_ items
+# Posts ntfy for some chat Q&A
+ntfypost = False 
+
+# Each query and answer is appended seperately,
+# when len history > this #, pops off first (oldest) _two_ items
+pop_fullragchat_history_over_num = 10 # should be like 26, if two lines (or zero) given in bot init, or odd (25) if only one given
+                                      
 webserver_hostname = socket.gethostname()
 
 
@@ -36,8 +41,7 @@ webserver_hostname = socket.gethostname()
 ### how to tune (know, increase, decrease, number of vector returns from faiss match?
 ### tweak so some chattyness of choose rag llm pass gets into answer, not just filename...
 ### Ability to load a (small) text file as a rag doc and hit LLM w/ whole thing, no vector query 
-### find extra or wrong css reference path and clean up folder - were two css files... Not sure how or when used
-### Make new top menu page
+### CSS beautification
 ### async stream from llm to screen...
 
 
@@ -69,8 +73,9 @@ def ChatBot83():
     logging.info(f'===> Starting ChatBot83!')
     current_user.chatbot = 'ChatBot83'
     current_user.model = 'open-mixtral-8x7b'
-    current_user.llm_temp = 0.25
     current_user.embed_model = 'mistral-embed'
+    current_user.llm_temp = 0.25
+    current_user.llm_api_key = 'test'
     current_user.rag_list = ['None']
     current_user.chat_history = []
     current_user.chat_history.append({'user':current_user.chatbot, 
@@ -94,8 +99,9 @@ def GerBot():
     logging.info(f'===> Starting GerBot!')
     current_user.chatbot = 'GerBot'
     current_user.model = 'open-mixtral-8x7b'
-    current_user.llm_temp = 0.25
     current_user.embed_model = 'mistral-embed'
+    current_user.llm_temp = 0.25
+    current_user.llm_api_key = 'test'
     current_user.rag_list = ['Auto']
     current_user.chat_history = []
     current_user.chat_history.append({'user':current_user.chatbot, 
@@ -110,8 +116,9 @@ def VTSBot():
     logging.info(f'===> Starting VTSBot!')
     current_user.chatbot = 'VTSBot'
     current_user.model = 'open-mixtral-8x7b'
-    current_user.llm_temp = 0.25
     current_user.embed_model = 'mistral-embed'
+    current_user.llm_temp = 0.25
+    current_user.llm_api_key = 'test'
     current_user.rag_list = ['Auto']
     current_user.chat_history = []
     current_user.chat_history.append({'user':current_user.chatbot, 
@@ -193,48 +200,203 @@ def edit_profile():
 
 # Chat and LLM functions
 
-def setup_and_retrieval_choose_rag(user, query, history):
+# pipenv install langchain_community.document_loaders
+# pipenv install langchain-core
+# pipenv install langchain-community
+# pipenv install langchain_community.llms
+# pipenv install langchain_mistralai.chat_models
+# pipenv install langchain-mistralai
+
+
+from langchain_community.document_loaders import JSONLoader
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.llms import Ollama
+from langchain_community.vectorstores import FAISS
+from langchain_core.output_parsers import StrOutputParser # LLM output to human readable
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableLambda
+from langchain_core.runnables import RunnableParallel
+from langchain_core.runnables import RunnablePassthrough
+from langchain_mistralai.chat_models import ChatMistralAI
+from langchain_mistralai.embeddings import MistralAIEmbeddings
+from langchain_text_splitters import CharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter # tweaked module name
+
+
+@app.route('/reply')
+@login_required
+def reply():
+    # pending.html refreshes here
+    if current_user.chat_history:
+        current_user.chat_history.pop() # clear "system: pending" message
+
+    straight = RunnablePassthrough()
+
+    chain = ( RunnablePassthrough() 
+            | setup_and_retrieval_choose_rag
+            | StrOutputParser() 
+            )
+
+# works with chain.invoke(query): RunnablePassthrough(), StrOutputParser(), straight, 
+
+#   readable = StrOutputParser()
+#   chain = ( setup_and_retrieval_choose_rag | prompt_choose_rag | large_lang_model | readable )
+#   chain = ( setup_and_retrieval_choose_rag | prompt_choose_rag | large_lang_model | readable | process_rag | setup_and_retrieval_response | render_video | prompt_response | large_lang_model | readable )
+
+    query = str(current_user.chat_history[-1])
+    response = chain.invoke(query)
+    current_user.chat_history.append({'user':current_user.chatbot, 'message':response})
+    logging.info(f'===> Response: {response}') ### add username and bot name
+    if ntfypost:
+        title = f'{current_user.chatbot} on {webserver_hostname}:'
+        mess = f'Query: {query}\nResponse: {response}'
+        if current_user.chatbot == f'GerBot':
+            requests.post('https://ntfy.sh/GerBotAction', headers={'Title' : title}, data=(mess))
+        if current_user.chatbot == f'VTSBot':
+            requests.post('https://ntfy.sh/VTSBotAction', headers={'Title' : title}, data=(mess))
+    # cleanup chat history memory if getting too long
+    if len(current_user.chat_history) > pop_fullragchat_history_over_num:
+        current_user.chat_history.pop(0) # pops off oldest message:answer
+        current_user.chat_history.pop(0) # pops off oldest message:query
+    db.session.commit()
+    return render_template('chat.html', title='Chat')
+
+
+def straight_func():
     pass
-    return query
+    return RunnablePassthrough()
 
 
-def prompt_choose_rag(user, query, history):
-    rag = 'nothing.faiss'
-    ### based on query, select a rag
-    return rag
+def large_lang_model():
+    if ( (current_user.model == "open-mixtral-8x7b") or 
+        (current_user.model == "mistral-large-latest") or 
+        (current_user.model == "open-mistral-7b") ):
+            large_lang_model = ChatMistralAI(
+                model_name = current_user.model, 
+                mistral_api_key = current_user.llm_api_key, 
+                temperature = current_user.llm_temp, 
+                verbose = True )
+            # https://api.python.langchain.com/en/latest/chat_models/langchain_mistralai.chat_models.ChatMistralAI.html
+    elif ( (current_user.model == "orca-mini") or 
+        (current_user.model == "phi3") or 
+        (current_user.model == "tinyllama") or
+        (current_user.model == "llama2") or 
+        (current_user.model == "llama2-uncensored") or 
+        (current_user.model == "mistral") or 
+        (current_user.model == "mixtral") or 
+        (current_user.model == "command-r") or 
+        (current_user.model == "phi") ):
+            large_lang_model = Ollama(
+                model = current_user.model, 
+                temperature = current_user.llm_temp, 
+                verbose = True )
+            # https://api.python.langchain.com/en/latest/llms/langchain_community.llms.ollama.Ollama.html
+    elif current_user.model == "fake_llm":
+        large_lang_model = RunnableLambda(fake_llm) ### # was answer = fake_llm(query); re-implemented as a runnable to pass to chains
+        logging.info(f'===> Using fake_llm...')
+    else:
+        large_lang_model = None
+        logging.error(f'===> No LLM named "{current_user.model}" to use on Ollama or via Mistral API call. ') # dev issue only so no alert to user
+    return large_lang_model
 
 
-def setup_and_retrieval_response(user, query, rag, history):
-    pass
-    return query
+def rag_text_function(query):
+    rag_source_clues = f'{current_user.chatbot}/rag_source_clues.txt'
+    loader = TextLoader(rag_source_clues, encoding="utf8")
+    return loader.load()
 
 
-def prompt_response(user, query, rag, history):
-    response = 'Default response.'
-    ### based on query and rag, craft a response
-    return response
+def convo_mem_function():
+    for line in current_user.chat_history:
+        history += f'{line}\n'
+    return history
 
 
-def large_lang_model(model, temp, stop_words_list):
-    return Ollama(
-        model = model, 
-        temperature = float(temp), 
-        stop = stop_words_list, 
-        verbose = True )
+def setup_and_retrieval_choose_rag(query): # triple-parallel (context, question, history)
+    ### UI rag field is None, Auto, list of docsneed some code here; may need more code for new feature
+    return RunnableParallel({
+        "context":  RunnableLambda(rag_text_function), 
+        "question": RunnablePassthrough(),
+        "history":  RunnableLambda(convo_mem_function) })
 
 
-def process_rag(query):
-    pass
-    # load document requested by choose rag prompt, or return some error.
-    return query
+def actual_dir_list():
+    fn_list = ''
+    extensions = (".faiss")
+    for file in os.listdir(f'{current_user.chatbot}'):
+        if file.endswith(extensions):
+            fn_list += '"' + file  + '", '
+    if len(fn_list) > 2:
+        fn_list = fn_list[:-2] + '. ' # Change last trailing comma to a period
+    return fn_list
 
 
-def render_video(user, reg, vectordb_matches):
-    ### triple parallel too
+def bot_specific_examples():
+    ### need bot_specific_examples
+    return examples
+
+
+def prompt_choose_rag(): # triple-parallel to template
+    filename_inc_list_template = (f"""
+    Your task is to return a "filename.faiss" from the provided list. 
+    Each item in the provided list has a "filename.faiss". 
+    {bot_specific_examples()}
+    
+    Question from user is: 
+    {{question}}
+    
+    Lightly reference this chat history help understand what information area user is looking to explore: 
+    {{history}}
+    
+    Here is provided list containing filenames for various content/information areas: 
+    {{context}}
+    
+    As a sanity check, current valid "filename.faiss" values specifically are: 
+    {actual_dir_list()} 
+    
+    Single "filename.faiss" value:
+    """)
+    return ChatPromptTemplate.from_template(filename_inc_list_template)
+
+
+def setup_and_retrieval_response():
+    # load existing faiss, and use as retriever
+    # Potentially dangerous - load only local known safe files
+    ### need to implement this safety check!
+    ### if f'{current_user.chatbot}/' contains http or double wack "//" then set answer = 'illegal faiss source' and break/return
+    embeddings = get_embedding_func(fullragchat_embed_model=current_user.embed_model, mkey=current_user.llm_api_key)
+    loaded_vector_db = FAISS.load_local(current_user.rag_list, embeddings, allow_dangerous_deserialization=True)
+    return RunnableParallel({
+        "context" : loaded_vector_db.as_retriever(),
+        "question": RunnablePassthrough(),
+        "history" : RunnableLambda(convo_mem_function)
+        })
+    # Default 'k' (amount of documents to return) is 4 per https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html
+
+def prompt_response():
+    if  current_user.chatbot  == 'GerBot': prompt = ChatPromptTemplate.from_template(gerbot_template)
+    elif current_user.chatbot == 'VTSBot': prompt = ChatPromptTemplate.from_template(vtsbot_template)
+    elif current_user.chatbot == 'ChatBot8': prompt = ChatPromptTemplate.from_template(chatbot8_template)
+    elif  current_user.chatbot == 'Default': prompt = ChatPromptTemplate.from_template(chatbot8_template) ### need/using default? safety from class?
+    else: prompt = ChatPromptTemplate.from_template(chatbot8_template)
+    return prompt
+
+
+def process_rag():
+    ### load document requested by choose rag prompt, or return some error.
+    logging.info(f'===> selected_rag: "something?"')
+    return RunnablePassthrough()
+
+
+def render_video():
+    ### triple parallel too? This step in chain needs to feed off of rag FAISS DB embeded lookup k returns!
     ### search rag index for timecode for vectordb_matches
     ### render clips with captions burned
     ### create montage.mp4
-    return None
+    return RunnablePassthrough()
 
 
 @app.route('/chat')
@@ -254,41 +416,9 @@ def pending():
     logging.info(f'===> Query: {query}') ### add username and bot name
     # set pending message while waiting
     current_user.chat_history.append({'user':'System', 
-        'message':'pending - please wait for model inferences - small moving graphic on browser tab should indicate working'}) 
+        'message':'Pending - please wait for model inferences - small moving graphic on browser tab should indicate working.'}) 
     db.session.commit()
     return render_template('pending.html', title='Pending')
-
-
-@app.route('/reply')
-@login_required
-def reply():
-    # pending.html refreshes here
-    # clear pending message
-    if current_user.chat_history:
-        current_user.chat_history.pop()
-    response = 'Placeholder response.'
-    ### chain = ( setup_and_retrieval_choose_rag | prompt_choose_rag | large_lang_model | StrOutputParser() | 
-    ###           process_rag | 
-    ###           setup_and_retrieval_response | render_video | prompt_response | large_lang_model | StrOutputParser() )
-    ### response = chain.invoke(query)
-    current_user.chat_history.append({'user':current_user.chatbot, 'message':response})
-    logging.info(f'===> Response: {response}') ### add username and bot name
-
-    if ntfypost:
-        title = f'{current_user.chatbot} on {webserver_hostname}:'
-        mess = f'Query: {query}\nResponse: {response}'
-        if current_user.chatbot == f'GerBot':
-            requests.post('https://ntfy.sh/GerBotAction', headers={'Title' : title}, data=(mess))
-        if current_user.chatbot == f'VTSBot':
-            requests.post('https://ntfy.sh/VTSBotAction', headers={'Title' : title}, data=(mess))
-
-    # cleanup chat history memory if getting too long
-    if len(current_user.chat_history) > pop_fullragchat_history_over_num:
-        current_user.chat_history.pop(0) # pops off oldest message:answer
-        current_user.chat_history.pop(0) # pops off oldest message:query
-
-    db.session.commit()
-    return render_template('chat.html', title='Chat')
 
 
 # RAG document management / administration functions

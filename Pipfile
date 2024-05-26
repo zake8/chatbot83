@@ -10,6 +10,9 @@ flask-migrate = "*"
 flask-login = "*"
 flask-wtf = "*"
 email-validator = "*"
+langchain-core = "*"
+langchain-community = "*"
+langchain-mistralai = "*"
 
 [dev-packages]
 
