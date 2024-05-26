@@ -211,6 +211,7 @@ def edit_profile():
 # pipenv install langchain-mistralai
 
 
+from app.prompts import *
 from langchain_community.document_loaders import JSONLoader
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.document_loaders import TextLoader
