@@ -79,7 +79,7 @@ def ChatBot83():
     current_user.embed_model = 'mistral-embed'
     current_user.llm_temp = 0.25
     current_user.llm_api_key = os.getenv('Mistral_API_key')
-    current_user.rag_list = ['None']
+    current_user.rag_list = ['None', 'Auto']
     current_user.rag_selected = 'None'
     current_user.chat_history = []
     current_user.chat_history.append({'user':current_user.chatbot, 

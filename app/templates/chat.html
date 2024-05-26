@@ -10,18 +10,33 @@
 
 <h1>
 	{% for message in current_user.chat_history %} 
-		<font color="purple">{{message.user }}:</font> {{ message.message }}<br>
+		<font color="purple">{{ message.user }}:</font> {{ message.message }}<br>
 	{% endfor %}
 </h1>
 
 <a id="spot"></a>
 
 <form action="/pending" method="post">
-	<lable for="query"></lable>
-	<textarea rows="8" cols="120" name="query"></textarea>
-	<br>
-	<input value="query" type="submit"><br>
-	<br>
+	<div>
+		<lable for="query"></lable>
+		<textarea rows="8" cols="120" name="query"></textarea>
+		<br>
+		<input value="query" type="submit"><br>
+		<br>
+	</div>
+	<div>
+		Controls:<br>
+		<lable for="rag">RAG selection:</lable>
+		<select name="rag" id="rag">
+			{% for option in current_user.rag_list %} 
+				{% if option == current_user.rag_selected %}
+					<option value="{{ option }}" selected>{{ option }}</option>
+				{% else %}
+					<option value="{{ option }}">{{ option }}</option>
+				{% endif %}
+			{% endfor %}
+		</select>
+	</div>
 </form>
 
 {% endblock %}
