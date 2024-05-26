@@ -80,9 +80,10 @@ def ChatBot83():
     current_user.llm_temp = 0.25
     current_user.llm_api_key = os.getenv('Mistral_API_key')
     current_user.rag_list = ['None']
+    current_user.rag_selected = 'None'
     current_user.chat_history = []
     current_user.chat_history.append({'user':current_user.chatbot, 
-        'message':'Salutations! I am ChatBot83. Basically just chat with Mistral LLM...'})
+        'message':'Salutations! I am ChatBot83. Basically just chat with {current_user.model} LLM...'})
     current_user.chat_history.append({'user':current_user.chatbot, 
         'message':'Enter question/statment and hit query button below.'})
     db.session.commit()
@@ -106,6 +107,7 @@ def GerBot():
     current_user.llm_temp = 0.25
     current_user.llm_api_key = 'test'
     current_user.rag_list = ['Auto']
+    current_user.rag_selected = 'Auto'
     current_user.chat_history = []
     current_user.chat_history.append({'user':current_user.chatbot, 
         'message':"Let's chat about Gerry Stahl's writing."})
@@ -123,6 +125,7 @@ def VTSBot():
     current_user.llm_temp = 0.25
     current_user.llm_api_key = 'test'
     current_user.rag_list = ['Auto']
+    current_user.rag_selected = 'Auto'
     current_user.chat_history = []
     current_user.chat_history.append({'user':current_user.chatbot, 
         'message':"VTSBot at your service; referencing knowledge from a corpus of Ving Tsun Kung Fu video transcriptions."})
@@ -267,32 +270,56 @@ def reply():
         "question": RunnablePassthrough(), 
         "history":  history_runnable
         })
-
+    
+    # string in ==> double-parallel (question, history) out
+    retrieval_simple_chat = RunnableParallel({
+        "question": RunnablePassthrough(), 
+        "history":  history_runnable
+        })
+    
     # triple-parallel (context, question, history) in ==> prompt for llm out
     prompt_choose_rag = ChatPromptTemplate.from_template(FILENAME_INC_LIST_TEMPLATE)
-    logging.info(f'prompt_choose_rag = "{prompt_choose_rag}"; type "{type(prompt_choose_rag)}"')
-
+    logging.info(f'prompt_choose_rag = "{prompt_choose_rag}"; type "{type(prompt_choose_rag)}"') ###
+    
     # prompt for LLM in ==> LLM response out
     large_lang_model = get_large_lang_model_func()
-    logging.info(f'large_lang_model type is "{type(large_lang_model)}"')
-
+    logging.info(f'large_lang_model type is "{type(large_lang_model)}"') ###
+    
     if current_user.role == 'administrator':
         if query == f'admin stuff':
-            pass ### do admin stuff
+            pass ### do admin stuff! section is roughed out only for testing
             response = 'Did admin stuff.'
             current_user.chat_history.append({'user':current_user.chatbot, 'message':response})
             logging.info(f'===> Response "{response}" from "{current_user.chatbot}" for "{current_user.username}"')
             db.session.commit()
             return render_template('chat.html', title='Admin Mode')
-
-    chain = ( setup_and_retrieval_choose_rag
-            | prompt_choose_rag 
-            | large_lang_model
-            | StrOutputParser() 
-            )
-#   works with chain.invoke(query): RunnablePassthrough(); straight = RunnablePassthrough(); def straight_func():, pass, return RunnablePassthrough(); 
-#   chain = ( setup_and_retrieval_choose_rag | prompt_choose_rag | large_lang_model | readable | process_rag | setup_and_retrieval_response | render_video | prompt_response | large_lang_model | readable )
-
+    
+    if (current_user.rag_selected == 'None') or (current_user.rag_selected == '') or (current_user.rag_selected == None):
+        # double-parallel (question, history) in ==> prompt for llm out
+        prompt_simple_chat = ChatPromptTemplate.from_template(SIMPLE_CHAT_TEMPLATE)
+        chain = ( retrieval_simple_chat
+                | prompt_simple_chat 
+                | large_lang_model 
+                | StrOutputParser() 
+                )
+    
+    elif current_user.rag_selected == 'Auto':
+        chain = ( setup_and_retrieval_choose_rag
+                | prompt_choose_rag 
+                | large_lang_model
+                | StrOutputParser() 
+                )
+###     works with chain.invoke(query): RunnablePassthrough(); straight = RunnablePassthrough(); def straight_func():, pass, return RunnablePassthrough(); 
+###     chain = ( setup_and_retrieval_choose_rag | prompt_choose_rag | large_lang_model | readable | process_rag | setup_and_retrieval_response | render_video | prompt_response | large_lang_model | readable )
+    
+### else: # assumes specific rag doc selected by user from dropdown
+###     chain = ( setup_and_retrieval_response 
+###             | render_video 
+###             | prompt_response 
+###             | large_lang_model 
+###             | StrOutputParser() 
+###             )
+    
     response = chain.invoke(query)
     # httpx.LocalProtocolError: Illegal header value b'Bearer ' means missing API key
     current_user.chat_history.append({'user':current_user.chatbot, 'message':response})

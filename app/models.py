@@ -17,6 +17,7 @@ class User(UserMixin, db.Model):
     full_name:     so.Mapped[Optional[str]] = so.mapped_column(sa.String(120), default='')
     phone_number:  so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), nullable=True)
     chatbot:       so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), nullable=True)
+    rag_selected:  so.Mapped[Optional[str]] = so.mapped_column(sa.String(35), nullable=True)
     model:         so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), nullable=True)
     embed_model:   so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), nullable=True)
     llm_temp:      so.Mapped[Optional[float]] = so.mapped_column()
