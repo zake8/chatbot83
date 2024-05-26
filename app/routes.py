@@ -6,21 +6,24 @@ logging.basicConfig(level=logging.INFO,
                     filemode='a', 
                     format='%(asctime)s -%(levelname)s - %(message)s')
 
-from urllib.parse import urlsplit
+from app import app, db
+from app.forms import LoginForm, RegistrationForm, EditProfileForm
+from app.models import User
+from dotenv import load_dotenv
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_user, logout_user, current_user, login_required
 # Flask session management stores user-specific data; each user gets a unique session object, 
 # and their data is isolated from other users' sessions. Each request is handled by a separate thread, 
 # and data stored in the request context is isolated between requests.
-import sqlalchemy as sa
-from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
-from app.models import User
-import socket
+from urllib.parse import urlsplit
 import os
+import socket
+import sqlalchemy as sa
 
 
 # Some global variable settings
+
+load_dotenv('.env')
 
 # Posts ntfy for some chat Q&A
 ntfypost = False 
@@ -28,7 +31,7 @@ ntfypost = False
 # Each query and answer is appended seperately,
 # when len history > this #, pops off first (oldest) _two_ items
 pop_fullragchat_history_over_num = 10 # should be like 26, if two lines (or zero) given in bot init, or odd (25) if only one given
-                                      
+
 webserver_hostname = socket.gethostname()
 
 
@@ -75,7 +78,7 @@ def ChatBot83():
     current_user.model = 'open-mixtral-8x7b'
     current_user.embed_model = 'mistral-embed'
     current_user.llm_temp = 0.25
-    current_user.llm_api_key = 'test'
+    current_user.llm_api_key = os.getenv('Mistral_API_key')
     current_user.rag_list = ['None']
     current_user.chat_history = []
     current_user.chat_history.append({'user':current_user.chatbot, 
@@ -226,28 +229,86 @@ from langchain_text_splitters import CharacterTextSplitter
 from langchain_text_splitters import RecursiveCharacterTextSplitter # tweaked module name
 
 
+@app.route('/chat')
+@login_required
+def chat():
+    # Bot initializations redirect here
+    logging.info(f'===> Entering chat loop') ### add username and bot name; also model, temp, embedding model
+    return render_template('chat.html', title='Chat')
+
+
+@app.route('/pending', methods=['POST'])
+@login_required
+def pending():
+    # chat.html posts here
+    query = request.form['query']
+    current_user.chat_history.append({'user':current_user.username, 'message':query})
+    logging.info(f'===> Query: {query}') ### add username and bot name
+    # set pending message while waiting
+    current_user.chat_history.append({'user':'System', 
+        'message':'Pending - please wait for model inferences - small moving graphic on browser tab should indicate working.'}) 
+    db.session.commit()
+    return render_template('pending.html', title='Pending')
+
+
 @app.route('/reply')
 @login_required
 def reply():
     # pending.html refreshes here
     if current_user.chat_history:
         current_user.chat_history.pop() # clear "system: pending" message
+    query = current_user.chat_history[-1]["message"] # pull just the message string from the last dictionary in a list 
 
-    straight = RunnablePassthrough()
+    # string in ==> triple-parallel (context, question, history) out
+    ### UI rag field is None, Auto, list of docsneed some code here; may need more code for new feature
+    rag_text_runnable = RunnableLambda(rag_text_function)
+    history_runnable =  RunnableLambda(convo_mem_function)
+    setup_and_retrieval_choose_rag = RunnableParallel({
+        "context":  rag_text_runnable, 
+        "question": RunnablePassthrough(), 
+        "history":  history_runnable
+        })
 
-    chain = ( RunnablePassthrough() 
-            | setup_and_retrieval_choose_rag
+    # triple-parallel (context, question, history) in ==> prompt for llm out
+    filename_inc_list_template = (f"""
+    Your task is to return a "filename.faiss" from the provided list. 
+    Each item in the provided list has a "filename.faiss". 
+    Examples N/A
+    
+    Question from user is: 
+    {{question}}
+    
+    Lightly reference this chat history help understand what information area user is looking to explore: 
+    {{history}}
+    
+    Here is provided list containing filenames for various content/information areas: 
+    {{context}}
+    
+    As a sanity check, current valid "filename.faiss" values specifically are: 
+    list N/A
+    
+    Single "filename.faiss" value:
+    """)
+    prompt_choose_rag = ChatPromptTemplate.from_template(filename_inc_list_template)
+    logging.info(f'prompt_choose_rag = "{prompt_choose_rag}"; type "{type(prompt_choose_rag)}"')
+    # reserved w/ formating as temp removed
+    # {bot_specific_examples()}
+    # {actual_dir_list()} 
+
+    # prompt for LLM in ==> LLM response out
+    large_lang_model = get_large_lang_model_func()
+    logging.info(f'large_lang_model type is "{type(large_lang_model)}"')
+
+    chain = ( setup_and_retrieval_choose_rag
+            | prompt_choose_rag 
+            | large_lang_model
             | StrOutputParser() 
             )
-
-# works with chain.invoke(query): RunnablePassthrough(), StrOutputParser(), straight, 
-
-#   readable = StrOutputParser()
-#   chain = ( setup_and_retrieval_choose_rag | prompt_choose_rag | large_lang_model | readable )
+#   works with chain.invoke(query): RunnablePassthrough(); straight = RunnablePassthrough(); def straight_func():, pass, return RunnablePassthrough(); 
 #   chain = ( setup_and_retrieval_choose_rag | prompt_choose_rag | large_lang_model | readable | process_rag | setup_and_retrieval_response | render_video | prompt_response | large_lang_model | readable )
 
-    query = str(current_user.chat_history[-1])
     response = chain.invoke(query)
+    # httpx.LocalProtocolError: Illegal header value b'Bearer ' means missing API key
     current_user.chat_history.append({'user':current_user.chatbot, 'message':response})
     logging.info(f'===> Response: {response}') ### add username and bot name
     if ntfypost:
@@ -262,15 +323,11 @@ def reply():
         current_user.chat_history.pop(0) # pops off oldest message:answer
         current_user.chat_history.pop(0) # pops off oldest message:query
     db.session.commit()
-    return render_template('chat.html', title='Chat')
+    return render_template('chat.html', title='Chat') # loops back in html
 
 
-def straight_func():
-    pass
-    return RunnablePassthrough()
-
-
-def large_lang_model():
+def get_large_lang_model_func():
+    logging.info(f'get_large_lang_model_func tracks current_user.model as "{current_user.model}"')
     if ( (current_user.model == "open-mixtral-8x7b") or 
         (current_user.model == "mistral-large-latest") or 
         (current_user.model == "open-mistral-7b") ):
@@ -304,23 +361,37 @@ def large_lang_model():
 
 
 def rag_text_function(query):
+    context = ''
     rag_source_clues = f'{current_user.chatbot}/rag_source_clues.txt'
     loader = TextLoader(rag_source_clues, encoding="utf8")
-    return loader.load()
+    # logging.info(f'rag_text_function query = "{query}"') ###
+    context_list = loader.load()
+    # logging.info(f'context_list returning: "{context_list}"') ###
+    for item in context_list:
+        context += item.page_content # langchain document, not a list
+    logging.info(f'rag_text_function returning: "{context}"') ###
+    return context
 
 
-def convo_mem_function():
+def convo_mem_function(query):
+    history = ''
     for line in current_user.chat_history:
-        history += f'{line}\n'
+        history += f'{line["user"]}: {line["message"]}\n'
+    # logging.info(f'convo_mem_function query = "{query}"') ###
+    logging.info(f'convo_mem_function returning: "{history}"') ###
     return history
 
 
-def setup_and_retrieval_choose_rag(query): # triple-parallel (context, question, history)
-    ### UI rag field is None, Auto, list of docsneed some code here; may need more code for new feature
-    return RunnableParallel({
-        "context":  RunnableLambda(rag_text_function), 
-        "question": RunnablePassthrough(),
-        "history":  RunnableLambda(convo_mem_function) })
+##### def setup_and_retrieval_choose_rag(query): # triple-parallel (context, question, history)
+#####     ### UI rag field is None, Auto, list of docsneed some code here; may need more code for new feature
+#####     logging.info(f'setup_and_retrieval_choose_rag query = "{query}"')
+#####     rag_text_runnable = RunnableLambda(rag_text_function)
+#####     history_runnable =  RunnableLambda(convo_mem_function)
+#####     return RunnableParallel({
+#####         "context":  rag_text_runnable, 
+#####         "question": RunnablePassthrough(), 
+#####         "history":  history_runnable
+#####        })
 
 
 def actual_dir_list():
@@ -339,28 +410,31 @@ def bot_specific_examples():
     return examples
 
 
-def prompt_choose_rag(): # triple-parallel to template
-    filename_inc_list_template = (f"""
-    Your task is to return a "filename.faiss" from the provided list. 
-    Each item in the provided list has a "filename.faiss". 
-    {bot_specific_examples()}
-    
-    Question from user is: 
-    {{question}}
-    
-    Lightly reference this chat history help understand what information area user is looking to explore: 
-    {{history}}
-    
-    Here is provided list containing filenames for various content/information areas: 
-    {{context}}
-    
-    As a sanity check, current valid "filename.faiss" values specifically are: 
-    {actual_dir_list()} 
-    
-    Single "filename.faiss" value:
-    """)
-    return ChatPromptTemplate.from_template(filename_inc_list_template)
-
+##### def prompt_choose_rag(some_input): # triple-parallel to template ### takes one, or three, variables?
+#####     filename_inc_list_template = (f"""
+#####     Your task is to return a "filename.faiss" from the provided list. 
+#####     Each item in the provided list has a "filename.faiss". 
+#####     Examples N/A
+#####     
+#####     Question from user is: 
+#####     {{question}}
+#####     
+#####     Lightly reference this chat history help understand what information area user is looking to explore: 
+#####     {{history}}
+#####     
+#####     Here is provided list containing filenames for various content/information areas: 
+#####     {{context}}
+#####     
+#####     As a sanity check, current valid "filename.faiss" values specifically are: 
+#####     list N/A
+#####     
+#####     Single "filename.faiss" value:
+#####     """)
+#####     template = ChatPromptTemplate.from_template(filename_inc_list_template)
+#####     return template
+#####     # reserved w/ formating as temp removed
+#####     # {bot_specific_examples()}
+#####     # {actual_dir_list()} 
 
 def setup_and_retrieval_response():
     # load existing faiss, and use as retriever
@@ -397,28 +471,6 @@ def render_video():
     ### render clips with captions burned
     ### create montage.mp4
     return RunnablePassthrough()
-
-
-@app.route('/chat')
-@login_required
-def chat():
-    # Bot initializations redirect here
-    logging.info(f'===> Entering chat loop') ### add username and bot name; also model, temp, embedding model
-    return render_template('chat.html', title='Chat')
-
-
-@app.route('/pending', methods=['POST'])
-@login_required
-def pending():
-    # chat.html posts here
-    query = request.form['query']
-    current_user.chat_history.append({'user':current_user.username, 'message':query})
-    logging.info(f'===> Query: {query}') ### add username and bot name
-    # set pending message while waiting
-    current_user.chat_history.append({'user':'System', 
-        'message':'Pending - please wait for model inferences - small moving graphic on browser tab should indicate working.'}) 
-    db.session.commit()
-    return render_template('pending.html', title='Pending')
 
 
 # RAG document management / administration functions
