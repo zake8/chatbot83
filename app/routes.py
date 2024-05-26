@@ -82,9 +82,11 @@ def ChatBot83():
     current_user.rag_list = ['None', 'Auto']
     current_user.rag_selected = 'None'
     current_user.chat_history = []
-    current_user.chat_history.append({'user':current_user.chatbot, 
-        'message':'Salutations! I am ChatBot83. Basically just chat with {current_user.model} LLM...'})
-    current_user.chat_history.append({'user':current_user.chatbot, 
+    current_user.chat_history.append({
+        'user':current_user.chatbot, 
+        'message':f'Salutations! I am ChatBot83. Basically just chat with "{current_user.model}" LLM...'})
+    current_user.chat_history.append({
+        'user':current_user.chatbot, 
         'message':'Enter question/statment and hit query button below.'})
     db.session.commit()
     return redirect(url_for('chat'))
@@ -109,7 +111,8 @@ def GerBot():
     current_user.rag_list = ['Auto']
     current_user.rag_selected = 'Auto'
     current_user.chat_history = []
-    current_user.chat_history.append({'user':current_user.chatbot, 
+    current_user.chat_history.append({
+        'user':current_user.chatbot, 
         'message':"Let's chat about Gerry Stahl's writing."})
     db.session.commit()
     return redirect(url_for('chat'))
@@ -127,7 +130,8 @@ def VTSBot():
     current_user.rag_list = ['Auto']
     current_user.rag_selected = 'Auto'
     current_user.chat_history = []
-    current_user.chat_history.append({'user':current_user.chatbot, 
+    current_user.chat_history.append({
+        'user':current_user.chatbot, 
         'message':"VTSBot at your service; referencing knowledge from a corpus of Ving Tsun Kung Fu video transcriptions."})
     db.session.commit()
     return redirect(url_for('chat'))
@@ -243,11 +247,15 @@ def chat():
 @login_required
 def pending():
     # chat.html posts here
+    current_user.rag_selected = request.form['rag']
     query = request.form['query']
-    current_user.chat_history.append({'user':current_user.username, 'message':query})
+    current_user.chat_history.append({
+        'user':current_user.username, 
+        'message':query})
     logging.info(f'===> Query "{query}" from "{current_user.username}" for "{current_user.chatbot}"')
     # set pending message while waiting
-    current_user.chat_history.append({'user':'System', 
+    current_user.chat_history.append({
+        'user':'System', 
         'message':'Pending - please wait for model inferences - small moving graphic on browser tab should indicate working.'}) 
     db.session.commit()
     return render_template('pending.html', title='Pending')
@@ -262,7 +270,6 @@ def reply():
     query = current_user.chat_history[-1]["message"] # pull just the message string from the last dictionary in a list 
 
     # string in ==> triple-parallel (context, question, history) out
-    ### UI rag field is None, Auto, list of docsneed some code here; may need more code for new feature
     rag_text_runnable = RunnableLambda(rag_text_function)
     history_runnable =  RunnableLambda(convo_mem_function)
     setup_and_retrieval_choose_rag = RunnableParallel({
@@ -289,7 +296,9 @@ def reply():
         if query == f'admin stuff':
             pass ### do admin stuff! section is roughed out only for testing
             response = 'Did admin stuff.'
-            current_user.chat_history.append({'user':current_user.chatbot, 'message':response})
+            current_user.chat_history.append({
+                'user':current_user.chatbot, 
+                'message':response})
             logging.info(f'===> Response "{response}" from "{current_user.chatbot}" for "{current_user.username}"')
             db.session.commit()
             return render_template('chat.html', title='Admin Mode')
@@ -322,7 +331,9 @@ def reply():
     
     response = chain.invoke(query)
     # httpx.LocalProtocolError: Illegal header value b'Bearer ' means missing API key
-    current_user.chat_history.append({'user':current_user.chatbot, 'message':response})
+    current_user.chat_history.append({
+        'user':current_user.chatbot, 
+        'message':response})
     logging.info(f'===> Response "{response}" from "{current_user.chatbot}" for "{current_user.username}"')
     if ntfypost:
         title = f'{current_user.chatbot} on {webserver_hostname}:'
@@ -388,6 +399,9 @@ def rag_text_function(query):
 
 def convo_mem_function(query):
     history = ''
+    # pop off query from end of history, but don't commit; avoids LLM seeing query and same query in chat history
+    if current_user.chat_history:
+        current_user.chat_history.pop()
     for line in current_user.chat_history:
         history += f'{line["user"]}: {line["message"]}\n'
     # logging.info(f'convo_mem_function query = "{query}"') ###
