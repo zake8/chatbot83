@@ -89,16 +89,16 @@ def ChatBot83():
     return redirect(url_for('chat'))
 
 
-# GerBot project is an LLM RAG chat intended to make http://gerrystahl.net/pub/index.html even more accessible
-# Generative AI "chat" about the gerrystahl.net writings
-# Code by Zake Stahl
-# https://github.com/zake8/GerryStahlWritings
-# March, April 2024
-# Based on public/shared APIs and FOSS samples
-# Built on Linux, Python, Apache, WSGI, Flask, LangChain, Ollama, Mistral, more
 @app.route('/GerBot')
 @login_required
 def GerBot():
+    # GerBot project is an LLM RAG chat intended to make http://gerrystahl.net/pub/index.html even more accessible
+    # Generative AI "chat" about the gerrystahl.net writings
+    # Code by Zake Stahl
+    # https://github.com/zake8/GerryStahlWritings
+    # March, April 2024
+    # Based on public/shared APIs and FOSS samples
+    # Built on Linux, Python, Apache, WSGI, Flask, LangChain, Ollama, Mistral, more
     logging.info(f'===> Starting GerBot!')
     current_user.chatbot = 'GerBot'
     current_user.model = 'open-mixtral-8x7b'
@@ -209,8 +209,6 @@ def edit_profile():
 # pipenv install langchain_community.llms
 # pipenv install langchain_mistralai.chat_models
 # pipenv install langchain-mistralai
-
-
 from app.prompts import *
 from langchain_community.document_loaders import JSONLoader
 from langchain_community.document_loaders import PyPDFLoader
@@ -234,7 +232,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter # tweaked mo
 @login_required
 def chat():
     # Bot initializations redirect here
-    logging.info(f'===> Entering chat loop') ### add username and bot name; also model, temp, embedding model
+    logging.info(f'===> Entering chat loop for "{current_user.username}" with chatbot "{current_user.chatbot}" running models "{current_user.model}" and "{current_user.embed_model}" at "{current_user.llm_temp}"')
     return render_template('chat.html', title='Chat')
 
 
@@ -244,7 +242,7 @@ def pending():
     # chat.html posts here
     query = request.form['query']
     current_user.chat_history.append({'user':current_user.username, 'message':query})
-    logging.info(f'===> Query: {query}') ### add username and bot name
+    logging.info(f'===> Query "{query}" from "{current_user.username}" for "{current_user.chatbot}"')
     # set pending message while waiting
     current_user.chat_history.append({'user':'System', 
         'message':'Pending - please wait for model inferences - small moving graphic on browser tab should indicate working.'}) 
@@ -271,26 +269,7 @@ def reply():
         })
 
     # triple-parallel (context, question, history) in ==> prompt for llm out
-    filename_inc_list_template = (f"""
-    Your task is to return a "filename.faiss" from the provided list. 
-    Each item in the provided list has a "filename.faiss". 
-    Examples N/A
-    
-    Question from user is: 
-    {{question}}
-    
-    Lightly reference this chat history help understand what information area user is looking to explore: 
-    {{history}}
-    
-    Here is provided list containing filenames for various content/information areas: 
-    {{context}}
-    
-    As a sanity check, current valid "filename.faiss" values specifically are: 
-    list N/A
-    
-    Single "filename.faiss" value:
-    """)
-    prompt_choose_rag = ChatPromptTemplate.from_template(filename_inc_list_template)
+    prompt_choose_rag = ChatPromptTemplate.from_template(FILENAME_INC_LIST_TEMPLATE)
     logging.info(f'prompt_choose_rag = "{prompt_choose_rag}"; type "{type(prompt_choose_rag)}"')
     # reserved w/ formating as temp removed
     # {bot_specific_examples()}
@@ -311,7 +290,7 @@ def reply():
     response = chain.invoke(query)
     # httpx.LocalProtocolError: Illegal header value b'Bearer ' means missing API key
     current_user.chat_history.append({'user':current_user.chatbot, 'message':response})
-    logging.info(f'===> Response: {response}') ### add username and bot name
+    logging.info(f'===> Response "{response}" from "{current_user.chatbot}" for "{current_user.username}"')
     if ntfypost:
         title = f'{current_user.chatbot} on {webserver_hostname}:'
         mess = f'Query: {query}\nResponse: {response}'
@@ -383,18 +362,6 @@ def convo_mem_function(query):
     return history
 
 
-##### def setup_and_retrieval_choose_rag(query): # triple-parallel (context, question, history)
-#####     ### UI rag field is None, Auto, list of docsneed some code here; may need more code for new feature
-#####     logging.info(f'setup_and_retrieval_choose_rag query = "{query}"')
-#####     rag_text_runnable = RunnableLambda(rag_text_function)
-#####     history_runnable =  RunnableLambda(convo_mem_function)
-#####     return RunnableParallel({
-#####         "context":  rag_text_runnable, 
-#####         "question": RunnablePassthrough(), 
-#####         "history":  history_runnable
-#####        })
-
-
 def actual_dir_list():
     fn_list = ''
     extensions = (".faiss")
@@ -410,32 +377,6 @@ def bot_specific_examples():
     ### need bot_specific_examples
     return examples
 
-
-##### def prompt_choose_rag(some_input): # triple-parallel to template ### takes one, or three, variables?
-#####     filename_inc_list_template = (f"""
-#####     Your task is to return a "filename.faiss" from the provided list. 
-#####     Each item in the provided list has a "filename.faiss". 
-#####     Examples N/A
-#####     
-#####     Question from user is: 
-#####     {{question}}
-#####     
-#####     Lightly reference this chat history help understand what information area user is looking to explore: 
-#####     {{history}}
-#####     
-#####     Here is provided list containing filenames for various content/information areas: 
-#####     {{context}}
-#####     
-#####     As a sanity check, current valid "filename.faiss" values specifically are: 
-#####     list N/A
-#####     
-#####     Single "filename.faiss" value:
-#####     """)
-#####     template = ChatPromptTemplate.from_template(filename_inc_list_template)
-#####     return template
-#####     # reserved w/ formating as temp removed
-#####     # {bot_specific_examples()}
-#####     # {actual_dir_list()} 
 
 def setup_and_retrieval_response():
     # load existing faiss, and use as retriever
