@@ -1,0 +1,425 @@
+
+Curation content for HITL use. 
+
+Date and time      = 2024-04-21 13:06:35 
+Target document    = /home/leet/chatbot8/ChatBot8/TheThings-PeterWatts.txt 
+Chunk size         = 300 
+Chunk overlap      = 100 
+Saved FAISS DB     = TheThings-PeterWatts.faiss 
+# vectors in DB    = 211 
+Model/temp DB      = mistral-embed / 0.25 
+Model/temp summary = open-mixtral-8x7b / 0.25 
+
+<summary>
+An extraterrestrial entity, with the ability to assimilate and mimic other lifeforms, recounts its struggle for survival in a science fiction narrative. Crash-landing in Antarctica, the entity confronts communication barriers and hostility from human researchers. Musing on its past as a missionary and soldier, spreading life throughout the universe, it now finds itself hunted and misunderstood. The text delves into themes of communication, identity, and survival, with a focus on the entity's introspection. Jargon includes biological terms and concepts related to the entity's mission. The intended audience: sci-fi fans interested in existential and philosophical themes.
+</summary>
+
+
+Curration content for HITL use. 
+
+Date and time      = 2024-05-05 22:25:20 
+Target document    = ChatBot8/TheThings-PeterWatts.txt 
+Model/temp LLM = open-mixtral-8x7b / 0.25 
+
+<corrections>
+1. "I am being Blair" should be "I am Blair".
+2. "I am being Copper" should be "I am Copper".
+3. "I am being Childs" should be "I am Childs".
+4. "The names don't matter" should be "The names matter not".
+5. "I see myself through the window, loping through the storm, wearing Blair" should be "I see myself through the window, loping through the storm, embodying Blair".
+6. "MacReady has told me to burn Blair if he comes back alone" should be "MacReady told me to burn Blair if he comes back alone".
+7. "I am being Blair, and I am at the door" should be "I am Blair, and I am at the door".
+8. "I am being Childs, and I let myself in" should be "I am Childs, and I let myself in".
+9. "There is only one option left" should be "There remains but one option".
+10. "I disintegrate" should be "I will disintegrate".
+11. "So much wisdom I had" should be "I had so much wisdom".
+12. "So much experience I had" should be "I had so much experience".
+13. "Now I cannot remember all the things I knew" should be "Now I cannot remember all that I knew".
+14. "I remember the crash, though" should be "I remember the crash, however".
+15. "It killed most of this offshoot outright" should be "It killed the greater part of this offshoot".
+16. "a few trillion cells" should be "several trillion cells".
+17. "By the time I'd regained control of what was left the fires had died" should be "By the time I had regained control of what was left, the fires had died".
+18. "I barely managed to grow enough antifreeze" should be "I barely managed to grow sufficient antifreeze".
+19. "I remember my reawakening, too" should be "I remember my reawakening as well".
+20. "dull stirrings of sensation in real time" should be "dull stirrings of sensation in the present".
+21. "the first embers of cognition" should be "the first flickerings of cognition".
+22. "the slow blooming warmth of awareness" should be "the slow growing warmth of awareness".
+23. "body and soul embraced after their long sleep" should be "body and soul embraced after their prolonged sleep".
+24. "I even allowed myself the smallest ration of hope" should be "I even allowed myself the slightest hope".
+25. "It wasn't a ship any more" should be "It was no longer a ship".
+26. "It wasn't even a derelict" should be "It was no longer even a derelict".
+27. "It was a fossil, embedded in the floor of a great pit" should be "It had become a fossil, embedded in the floor of a great pit".
+28. "Twenty of these skins could have stood one atop another" should be "Twenty of these bodies could have stood one atop another".
+29. "how many eons had the universe iterated on without me?" should be "how many eons had the universe iterated since I was last conscious?"
+30. "I will erase the trail" should be "I shall erase the trail".
+31. "I will give them their final battle" should be "I shall give them their final battle".
+32. "Let them win" should be "Let them think they have won".
+33. "Let them stop looking" should be "Let them think they have ended the search".
+34. "Here in the storm, I will return to the ice" should be "In this storm, I will return to the ice".
+35. "I've spent so very long in the ice already" should be "I have already spent so very long in the ice".
+36. "how long for all that ice to accumulate?" should be "how long did it take for all that ice to accumulate?"
+37. "The only hope of escape, now," should be "The only hope of escape lies,"
+38. "into the future" should be "in the future".
+39. "to outlast all this hostile, twisted biomass" should be "to outlast all this hostile life".
+40. "let time and the cosmos change the rules" should be "let time and the cosmos change the circumstances".
+41. "It will be aeons before I see another sunrise" should be "It will be ages before I see another sunrise".
+42. "This is what the world taught me" should be "This is what I have learned from the world".
+43. "Adaptation is incitement to violence" should be "Adaptation incites violence".
+44. "It feels almost obscene—an offense against Creation itself" should be "It feels almost obscene, an offense against Creation".
+45. "deeper than intelligence, deeper than tissue" should be "deeper than the intellect, deeper than the flesh".
+46. "the sheer sensual delight of bettering the cosmos" should be "the sheer sensual delight that comes from improving the cosmos".
+47. "For the first time in living memory" should be "For the first time in a very long time".
+48. "I threaded further into limbs and viscera" should be "I extended my consciousness further into limbs and viscera".
+49. "I could find no networks but mine" should be "I could find no networks other than mine".
+50. "Survival depended on blending in" should be "To survive, I needed to blend in".
+51. "they conversed and went about their appointed rounds" should be "they continued to converse and go about their appointed rounds".
+52. "I could find no memories to absorb" should be "I could not absorb any memories".
+53. "no experiences, no comprehension" should be "no experiences or comprehension".
+54. "I had to act like it" should be "I needed to act like it".
+55. "for the first time in living memory" should be "for the first time in a very long time".
+56. "I threaded further into limbs and viscera" should be "I extended my consciousness further into limbs and viscera".
+57. "I could find no networks but mine" should be "I could find no networks other than mine".
+58. "Survival depended on blending in" should be "To survive, I needed to blend in".
+59. "they conversed and went about their appointed rounds" should be "they continued to converse and go about their appointed rounds".
+60. "I could find no memories to absorb" should be "I could not absorb any memories".
+61. "no experiences, no comprehension" should be "no experiences or comprehension".
+62. "I had to act like it" should be "I needed to act like it".
+
+Cantonese words written phonetically in English:
+
+1. "blowing" in "The snow blows past in horizontal streaks" could be a phonetic representation of the Cantonese word "blowing" (transliterated: beng1).
+
+Proper nouns, names of people that may be mis-spelled:
+
+1. "Peter Watts" - the author's name.
+
+Domain-specific jargon that may be mis-spelled:
+
+1. "biomass" - a term used to describe biological material.
+2. "communion" - a term used to describe the process of assimilating other lifeforms.
+3. "offshoots" - a term used to describe new lifeforms created through assimilation.
+4. "soul" - a term used to describe the consciousness or guiding force within a lifeform.
+5. "reshape" - a term used to describe the process of changing the form of a lifeform.
+6. "unfit" - a term used to describe lifeforms that are not optimally adapted to their environment.
+7. "entropy" - a term used to describe the disorder or randomness within a system.
+8. "antifreeze" - a term used to describe a substance that prevents freezing.
+9. "morphology" - a term used to describe the form and structure of a lifeform.
+10. "eons" - a term used to describe very long periods of time.
+11. "adaptation" - a term used to describe the process of becoming better suited to an environment.
+12. "incitement" - a term used to describe the act of provoking or encouraging something to happen.
+13. "violence" - a term used to describe physical force used to harm or damage.
+14. "reshaped" - a term used to describe the process of changing the form of a lifeform.
+15. "unfit" - a term used to describe lifeforms that are not optimally adapted to their environment.
+16. "bootstrapped" - a term used to describe the process of improving oneself through one's own efforts.
+17. "upwards" - a term used to describe the process of improving or advancing.
+18. "joyful" - a term used to describe a feeling of great pleasure or happiness.
+19. "infinitesimal" - a term used to describe something that is extremely small.
+20. "iterated" - a term used to describe the process of repeating or performing again.
+21. "eons" - a term used to describe very long periods of time.
+22. "reshaped" - a term used to describe the process of changing the form of a lifeform.
+23. "unfit" - a term used to describe lifeforms that are not optimally adapted to their environment.
+24. "offshoots" - a term used to describe new lifeforms created through assimilation.
+25. "soul" - a term used to describe the consciousness or guiding force within a lifeform.
+26. "assimilated" - a term used to describe the process of absorbing or incorporating something.
+27. "conduits" - a term used to describe channels for transmitting something.
+28. "wet electricity" - a term used to describe the electrical activity in living tissue.
+29. "organic systems" - a term used to describe living systems or processes.
+30. "fibrils" - a term used to describe thin, threadlike structures.
+31. "infiltrated" - a term used to describe the process of entering or penetrating something.
+32. "motor nerves" - a term used to describe nerves that control muscle movement.
+33. "alien protein" - a term used to describe protein from an unknown or foreign source.
+34. "wore" - a term used to describe the process of having or using something.
+35. "individual cells" - a term used to describe the basic units of life.
+36. "assimilation" - a term used to describe the process of absorbing or incorporating something.
+37. "follow at its own pace" - a term used to describe the process of happening at its own rate.
+38. "limbs and viscera" - a term used to describe the soft internal organs of a body.
+39. "networks" - a term used to describe interconnected systems or structures.
+40. "original owner" - a term used to describe the initial possessor or creator of something.
+41. "conduits" - a term used to describe channels for transmitting something.
+42. "orders and input" - a term used to describe instructions and information.
+43. "wet electricity" - a term used to describe the electrical activity in living tissue.
+44. "organic systems" - a term used to describe living systems or processes.
+45. "fibrils" - a term used to describe thin, threadlike structures.
+46. "infiltrated" - a term used to describe the process of entering or penetrating something.
+47. "motor nerves" - a term used to describe nerves that control muscle movement.
+48. "alien protein" - a term used to describe protein from an unknown or foreign source.
+49. "wore" - a term used to describe the process of having or using something.
+50. "individual cells" - a term used to describe the basic units of life.
+51. "assimilation" - a term used to describe the process of absorbing or incorporating something.
+52. "follow at its own pace" - a term used to describe the process of happening at its own rate.
+53. "limbs and viscera" - a term used to describe the soft internal organs of a body.
+54. "networks" - a term used to describe interconnected systems or structures.
+55. "original owner" - a term used to describe the initial possessor or creator of something.
+56. "conduits" - a term used to describe channels for transmitting something.
+57. "orders and input" - a term used to describe instructions and information.
+58. "wet electricity" - a term used to describe the electrical activity in living tissue.
+59. "organic systems" - a term used to describe living systems or processes.
+60. "fibrils" - a term used to describe thin, threadlike structures.
+61. "infiltrated" - a term used to describe the process of entering or penetrating something.
+62. "motor nerves" - a term used to describe nerves that control muscle movement.
+63. "alien protein" - a term used to describe protein from an unknown or foreign source.
+64. "wore" - a term used to describe the process of having or using something.
+65. "individual cells" - a term used to describe the basic units of life.
+66. "assimilation" - a term used to describe the process of absorbing or incorporating something.
+67. "follow at its own pace" - a term used to describe the process of happening at its own rate.
+68. "limbs and viscera" - a term used to describe the soft internal organs of a body.
+69. "networks" - a term used to describe interconnected systems or structures.
+70. "original owner" - a term used to describe the initial possessor or creator of something.1. "I could have lost it all, been reduced to a few cells with nothing but instinct and their own plasticity to guide them." -> "I could have lost it all, been reduced to a few cells with nothing but instinct and *its* own plasticity to guide it."
+2. "I would have grown back eventually—reattained sentience, taken communion and regenerated an intellect vast as a world—" -> Flag possible mis-spelling of "communion". It is a domain-specific jargon in this context.
+3. "I emerged from the crash with my identity intact, the templates of a thousand worlds still resonant in my flesh." -> Flag "thousand" as it is a numerical figure that represents something specific.
+4. "I've retained not just the brute desire to survive, but the conviction that survival is meaningful." -> Flag "not just" as it is a term that needs to be in the correct format.
+5. "I can still feel joy, should there be sufficient cause." -> Flag "sufficient" as it is a term that needs to be in the correct format.
+6. "The wisdom of so many other worlds, lost." -> Flag "so many" as it is a term that needs to be in the correct format.
+7. "All that remains are fuzzy abstracts, half-memories of theorems and philosophies far too vast to fit into such an impoverished network." -> Flag "such" as it is a term that needs to be in the correct format.
+8. "I could assimilate all the biomass of this place, rebuild body and soul to a million times the capacity of what crashed here—" -> Flag "million" as it is a numerical figure that represents something specific.
+9. "I'm such a pitiful fragment of what I was." -> Flag "such" as it is a term that needs to be in the correct format.
+10. "Each lost cell takes a little of my intellect with it, and I have grown so very small." -> Flag "very" as it is a term that needs to be in the correct format.
+11. "Where once I thought, now I merely react." -> Flag "once" as it is a term that needs to be in the correct format.
+12. "How much of this could have been avoided, if I had only salvaged a little more biomass from the wreckage?" -> Flag "little" as it is a term that needs to be in the correct format.
+13. "How many options am I not seeing because my soul simply isn't big enough to contain them?" -> Flag "many" as it is a term that needs to be in the correct format.
+14. "Even as dog I could pick up the basic signature morphemes—" -> Flag "dog" as it is a possible mis-spelling of a proper noun.
+15. "this offshoot was Windows, that one was Bennings," -> Flag "Windows" as it is a proper noun and may be mis-spelled.
+16. "the two who'd left in their flying machine for parts unknown were Copper and MacReady—" -> Flag "flying machine" as it is a term that needs to be in the correct format.
+17. "It said that bipeds were called guys, or men, or assholes." -> Flag "assholes" as it is a term that needs to be in the correct format.
+18. "It said that MacReady was sometimes called Mac." -> Flag "Mac" as it is a possible mis-spelling of a proper noun.
+19. "It said that this collection of structures was a camp." -> Flag "camp" as it is a term that needs to be in the correct format.
+20. "It said that it was afraid, but maybe that was just me." -> Flag "maybe" as it is a term that needs to be in the correct format.
+21. "One can't mimic the sparks and chemicals that motivate the flesh without also feeling them to some extent." -> Flag "to some extent" as it is a term that needs to be in the correct format.
+22. "These intuitions flickered within me yet somehow hovered beyond reach." -> Flag "somehow" as it is a term that needs to be in the correct format.
+23. "My skins wandered the halls and the cryptic symbols on every surface—" -> Flag "skins" as it is a term that needs to be in the correct format.
+24. "Laundry Sched, Welcome to the Clubhouse, This Side Up—" -> These are flagged as they are written phonetically in English and are likely Cantonese words.
+25. "That circular artefact hanging on the wall was a clock;" -> Flag "artefact" as it is a term that needs to be in the correct format.
+26. "The world's eyes flitted here and there," -> Flag "world's" as it is a term that needs to be in the correct format.
+27. "I skim piecemeal nomenclature from its—from his—" -> Flag "piecemeal" as it is a term that needs to be in the correct format.
+28. "I could eavesdrop, but I couldn't point it in any direction of my own choosing." -> Flag "it" as it is a term that needs to be in the correct format.
+29. "If only one of those searchlights had paused to dwell on its own evolution," -> Flag "one" as it is a term that needs to be in the correct format.
+30. "How differently things might have ended, had I only known." -> Flag "differently" as it is a term that needs to be in the correct format.
+31. "But instead it rested on a whole new word: Autopsy." -> Flag "whole" as it is a term that needs to be in the correct format.
+32. "MacReady and Copper had found part of me at the Norwegian camp:" -> Flag "Norwegian" as it is a proper noun and may be mis-spelled.
+33. "a rearguard offshoot, burned in the wake of my escape." -> Flag "rearguard" as it is a term that needs to be in the correct format.
+34. "They'd brought it back—charred, twisted, frozen in mid-transformation—" -> Flag "charred" as it is a term that needs to be in the correct format.
+35. "I was being Palmer then, and Norris, and dog." -> Flag "then" as it is a term that needs to be in the correct format.
+36. "I gathered around with the other biomass and watched as Copper cut me open and pulled out my insides." -> Flag "biomass" as it is a term that needs to be in the correct format.
+37. "I watched as he dislodged something from behind my eyes: an organ of some kind." -> Flag "kind" as it is a term that needs to be in the correct format.
+38. "It was malformed and incomplete, but its essentials were clear enough." -> Flag "enough" as it is a term that needs to be in the correct format.
+39. "It looked like a great wrinkled tumor, like cellular competition gone wild—" -> Flag "gone" as it is a term that needs to be in the correct format.
+40. "as though the very processes that defined life had somehow turned against it instead." -> Flag "somehow" as it is a term that needs to be in the correct format.
+41. "It was obscenely vascularised;" -> Flag "vascularised" as it is a term that needs to be in the correct format.
+42. "I could not see how anything like that could even exist, how it could have reached that size without being outcompeted by more efficient morphologies." -> Flag "even" as it is a term that needs to be in the correct format.
+43. "Nor could I imagine what it did." -> Flag "imagine" as it is a term that needs to be in the correct format.
+44. "But then I began to look with new eyes at these offshoots, these biped shapes my own cells had so scrupulously and unthinkingly copied when they reshaped me for this world." -> Flag "unthinkingly" as it is a term that needs to be in the correct format.
+45. "So much larger than it should be: a bony hemisphere into which a million ganglionic interfaces could fit with room to spare." -> Flag "so" as it is a term that needs to be in the correct format.
+46. "Each piece of biomass carried one of these huge twisted clots of tissue." -> Flag "huge" as it is a term that needs to be in the correct format.
+47. "I realized something else, too:" -> Flag "too" as it is a term that needs to be in the correct format.
+48. "unused to inventory—" -> Flag "unused" as it is a term that needs to be in the correct format.
+49. "why catalog body parts that only turn into other things at the slightest provocation?" -> Flag "slightest" as it is a term that needs to be in the correct format.
+50. "I really saw, for the first time, that swollen structure atop each body." -> Flag "for" as it is a term that needs to be in the correct format.
+51. "So much larger than it should be: a bony hemisphere into which a million ganglionic interfaces could fit with room to spare." -> Flag "so" as it is a term that needs to be in the correct format.
+52. "Every offshoot had one." -> Flag "every" as it is a term that needs to be in the correct format.
+53. "I had found the ghost in these machines." -> Flag "these" as it is a term that needs to be in the correct format.
+54. "I felt sick." -> Flag "sick" as it is a term that needs to be in the correct format.
+55. "Sometimes, even hiding is not enough." -> Flag "even" as it is a term that needs to be in the correct format.
+56. "I remember seeing myself splayed across the floor of the kennel," -> Flag "myself" as it is a term that needs to be in the correct format.
+57. "a chimera split along a hundred seams," -> Flag "a" as it is a term that needs to be in the correct format.
+58. "taking communion with a handful of dogs." -> Flag "handful" as it is a term that needs to be in the correct format.
+59. "Crimson tendrils writhed on the floor." -> Flag "crimson" as it is a term that needs to be in the correct format.
+60. "Half-formed iterations sprouted from my flanks," -> Flag "half-formed" as it is a term that needs to be in the correct format.
+61. "the shapes of dogs and things not seen before on this world," -> Flag "things" as it is a term that needs to be in the correct format.
+62. "haphazard morphologies half-remembered by parts of a part." -> Flag "haphazard" as it is a term that needs to be in the correct format.
+63. "I remember Childs before I was Childs," -> Flag "before" as it is a term that needs to be in the correct format.
+64. "burning me alive." -> Flag "me" as it is a term that needs to be in the correct format.
+65. "I remember cowering inside Palmer," -> Flag "inside" as it is a term that needs to be in the correct format.
+66. "afraid that those flames might turn on the rest of me," -> Flag "afraid" as it is a term that needs to be in the correct format.
+67. "that this world had somehow learned to shoot on sight." -> Flag "somehow" as it is a term that needs to be in the correct format.
+68. "I remember seeing myself stagger through the snow," -> Flag "myself" as it is a term that needs to be in the correct format.
+69. "raw instinct," -> Flag "raw" as it is a term that needs to be in the correct format.
+70. "wearing Bennings." -> Flag "wearing" as it is a term that needs to be in the correct format.
+71. "Gnarled undifferentiated clumps clung to his hands like crude parasites," -> Flag "crude" as it is a term that needs to be in the correct format.
+72. "more outside than in;" -> Flag "more" as it is a term that needs to be in the correct format.
+73. "a few surviving fragments of some previous massacre," -> Flag "few" as it is a term that needs to be in the correct format.
+74. "crippled, mindless," -> Flag "crippled" as it is a term that needs to be in the correct format.
+75. "taking what they could and breaking cover." -> Flag "taking" as it is a term that needs to be in the correct format.
+76. "The names don't matter." -> Flag "names" as it is a term that needs to be in the correct format.
+77. "The biomass does: so much of it, lost." -> Flag "so much" as it is a term that needs to be in the correct format.
+78. "So much new experience, so much fresh wisdom annihilated by this world of thinking tumors." -> Flag "so much" as it is a term that needs to be in the correct format.
+79. "Why even dig me up?" -> Flag "even" as it is a term that needs to be in the correct format.
+80. "Why carve me from the ice, carry me all that way across the wastes," -> Flag "all that way" as it is a term that needs to be in the correct format.
+81. "bring me back to life only to attack me the moment I awoke?" -> Flag "back" as it is a term that needs to be in the correct format.
+82. "Those encysted souls. Those tumors. Hiding away in their bony caverns, folded in on themselves." -> Flag "those" as it is a term that needs to be in the correct format.
+83. "I knew they couldn't hide forever;" -> Flag "couldn't" as it is a term that needs to be in the correct format.
+84. "this monstrous anatomy had only slowed communion, not stopped it." -> Flag "monstrous" as it is a term that needs to be in the correct format.
+85. "Every moment I grew a little." -> Flag "a little" as it is a term that needs to be in the correct format.
+86. "I could feel myself twining around Palmer's motor wiring," -> Flag "twining" as it is a term that needs to be in the correct format.
+87. "sniffing upstream along a million tiny currents." -> Flag "million" as it is a numerical figure that represents something specific.
+88. "I could sense my infiltration of that dark thinking mass behind Blair's eyes." -> Flag "dark" as it is a term that needs to be in the correct format.
+89. "Imagination, of course." -> Flag "of course" as it is a term that needs to be in the correct format.
+90. "It's all reflex that far down, unconscious and immune to micromanagement." -> Flag "all" as it is a term that needs to be in the correct format.
+91. "And yet, a part of me wanted to stop while there was still time." -> Flag "still" as it is a term that needs to be in the correct format.
+92. "I'm used to incorporating souls, not rooming with them." -> Flag "incorporating" as it is a term that needs to be in the correct format.
+93. "This, this compartmentalization was unprecedented." -> Flag "this" as it is a term that needs to be in the correct format.
+94. "I've assimilated a thousand worlds stronger than this," -> Flag "thousand" as it is a numerical figure that represents something specific.
+95. "but never one so strange." -> Flag "so" as it is a term that needs to be in the correct format.
+96. "I was being three men by now." -> Flag "now" as it is a term that needs to be in the correct format.
+97. "The world was growing wary," -> Flag "growing" as it is a term that needs to be in the correct format.
+98. "but it hadn't noticed yet." -> Flag "yet" as it is a term that needs to be in the correct format.
+99. "Even the tumors in the skins I'd taken didn't know how close I was." -> Flag "close" as it is a term that needs to be in the correct format.
+100. "For that, I could only be grateful—" -> Flag "for that" as it is a term that needs to be in the correct format.
+101. "that Creation has rules," -> Flag "that" as it is a term that needs to be in the correct format.
+102. "that some things don't change no matter what shape you take." -> Flag "no matter" as it is a term that needs to be in the correct format.
+103. "It doesn't matter whether a soul spreads throughout the skin or festers in grotesque isolation;" -> Flag "whether" as it is a term that needs to be in the correct format.
+104. "it still runs on electricity." -> Flag "it" as it is a term that needs to be in the correct format.
+105. "The memories of men still took time to gel," -> Flag "men" as it is a term that needs to be in the correct format.
+106. "to pass through whatever gatekeepers filtered noise from signal—" -> Flag "whatever" as it is a term that needs to be in the correct format.
+107. "and a judicious burst of static," -> Flag "judicious" as it is a term that needs to be in the correct format.
+108. "however indiscriminate, still cleared those caches before their contents could be stored permanently." -> Flag "however" as it is a term that needs to be in the correct format.
+109. "Clear enough, at least," -> Flag "at least" as it is a term that needs to be in the correct format.
+110. "to let these tumors simply forget that something else moved their arms and legs on occasion." -> Flag "simply" as it is a term that needs to be in the correct format.
+
+Note: This list is quite extensive, and some of the flagged terms may not need to be corrected depending on the context and the specific style guide being used. However, based on the provided instructions, it is better to flag more terms than less to ensure accuracy.1. "My extremities are beginning to numb; my thoughts slow as the distal **regions** of my soul succumb to the chill."
+2. "I have not been Childs for very long; almost half this **tissue** remains unassimilated."
+3. "I have an hour, maybe two, before I have to start melting my grave into the ice."
+4. "By that time I need to have converted enough cells to keep this whole **organism** from crystallizing."
+5. "I focus on antifreeze **protein** production."
+6. "MacReady's **blood** test, for example. His **antibody** detector, to expose imposters posing as men."
+7. "It does not work nearly as well as the world thinks; but the fact that it works at all violates the most basic rules of biology."
+8. "It's the center of the puzzle. It's the answer to all the mysteries."
+9. "I might have already figured it out if I had been just a little larger."
+10. "I might already know the world, if the world wasn't trying so hard to kill me."
+11. **"Antibody** test"
+12. "Either it is impossible, or I have been wrong about everything."
+13. "They did not change shape."
+14. "They did not take communion."
+15. "Their fear and mutual mistrust was growing, but they would not join **cells**;"
+16. "I gave them something to find."
+17. "I left false clues in the camp's rudimentary **computer system**:"
+18. "simpleminded icons and animations, misleading numbers and projections seasoned with just enough truth to convince the world of their veracity."
+19. "It didn't matter that the machine was far too simple to perform such calculations, or that there were no data to base them on anyway;"
+20. "Blair was the only biomass likely to know that, and he was already mine."
+21. "I left false leads, destroyed real ones, and then—alibi in place—I released Blair to run amok."
+22. "I let him steal into the night and smash the vehicles as they slept, tugging ever-so-slightly at his reins to ensure that certain vital components were spared."
+23. "I set him loose in the radio room, watched through his eyes and others as he rampaged and destroyed."
+24. "I listened as he ranted about a world in danger, the need for containment, the conviction that most of you don't know what's going on around here—but I damn well know that some of you do..."
+25. "He meant every word."
+26. "The best forgeries are the ones who've forgotten they aren't real."
+27. "When the necessary damage was done I let Blair fall to MacReady's counterassault."
+28. "As Norris I suggested the tool shed as a holding cell."
+29. "As Palmer I boarded up the windows, helped with the flimsy fortifications expected to keep me contained."
+30. "I watched while the world locked me away for your own protection, Blair, and left me to my own devices."
+31. "When no one was looking I would change and slip outside, salvage the parts I needed from all that bruised machinery."
+32. "I would take them back to my burrow beneath the shed and build my escape piece by piece."
+33. "I volunteered to feed the prisoner and came to myself when the world wasn't watching, laden with supplies enough to keep me going through all those necessary metamorphoses."
+34. "I went through a third of the camp's food stores in three days, and—still trapped by my own preconceptions—marveled at the starvation diet that kept these offshoots chained to a single skin."
+35. "Another piece of luck: the world was too preoccupied to worry about kitchen inventory."
+36. "There is something on the wind, a whisper threading its way above the raging of the storm."
+37. "I grow my ears, extend cups of near-frozen tissue from the sides of my head, turn like a living antennae in search of the best reception."
+38. "There, to my left: the abyss glows a little, silhouettes black swirling snow against a subtle lessening of the darkness."
+39. "I hear the sounds of carnage."
+40. "I hear myself."
+41. "I do not know what shape I have taken, what sort of anatomy might be emitting those sounds."
+42. "But I've worn enough skins on enough worlds to know pain when I hear it."
+43. "The battle is not going well."
+44. "The battle is going as planned."
+45. "Now it is time to turn away, to go to sleep."
+46. "It is time to wait out the ages."
+47. "I lean into the wind."
+48. "I move toward the light."
+49. "This is not the plan."
+50. "But I think I have an answer, now: I think I may have had it even before I sent myself back into exile."
+51. "It's not an easy thing to admit."
+52. "Even now I don't fully understand."
+53. "How long have I been out here, retelling the tale to myself, setting clues in order while my skin dies by low degrees?"
+54. "How long have I been circling this obvious, impossible truth?"
+55. "I move towards the faint crackling of flames, the dull concussion of exploding ordnance more felt than heard."
+56. "The void lightens before me: gray segues into yellow, yellow into orange."
+57. "One diffuse brightness resolves into many: a lone burning wall, miraculously standing."
+58. "The smoking skeleton of MacReady’s shack on the hill."
+59. "A cracked smoldering hemisphere reflecting pale yellow in the flickering light: Childs’ searchlight calls it a radio dome."
+60. "The whole camp is gone."
+61. "There’s nothing left but flames and rubble."
+62. "They can’t survive without shelter."
+63. "Not for long."
+64. "Not in those skins."
+65. "In destroying me, they’ve destroyed themselves."
+66. "Things could have turned out so much differently if I’d never been Norris."
+67. "Norris was the weak node: biomass not only ill-adapted but defective, an offshoot with an off switch."
+68. "The world knew, had known so long it never even thought about it anymore."
+69. "It wasn’t until Norris collapsed that heart condition floated to the surface of Copper’s mind where I could see it."
+70. "It wasn’t until Copper was astride Norris's chest, trying to pound him back to life, that I knew how it would end."
+71. "And by then it was too late; Norris had stopped being Norris."
+72. "He had even stopped being me."
+73. "I had so many roles to play, so little choice in any of them."
+74. "The part being Copper brought down the paddles on the part that had been Norris, such a faithful Norris, every cell so scrupulously assimilated, every part of that faulty valve reconstructed unto perfection."
+75. "I hadn’t known."
+76. "How was I to know?"
+77. "These shapes within me, the worlds and morphologies I’ve assimilated over the aeons— I’ve only ever used them to adapt before, never to hide."
+78. "This desperate mimicry was an improvised thing, a last resort in the face of a world that attacked anything unfamiliar."
+79. "My cells read the signs and my cells conformed, mindless as prions."
+80. "So I became Norris, and Norris self-destructed."
+81. **"Prion** disease"
+82. "I remember losing myself after the crash."
+83. "I know how it feels to degrade, tissues in revolt, the desperate efforts to reassert control as static from some misfiring organ jams the signal."
+84. "To be a network seceding from itself, to know that each moment I am less than I was the moment before."
+85. "To become nothing."
+86. "To become legion."
+87. "Being Copper, I could see it."
+88. "I still don’t know why the world didn’t; its parts had long since turned against each other by then, every offshoot suspected every other."
+89. "Surely they were alert for signs of infection."
+90. "Surely some of that biomass would have noticed the subtle twitch and ripple of Norris changing below the surface, the last instinctive resort of wild tissues abandoned to their own devices."
+91. "But I was the only one who saw."
+92. "Being Childs, I could only stand and watch."
+93. "Being Copper, I could only make it worse;"
+94. "if I’d taken direct control, forced that skin to drop the paddles, I would have given myself away."
+95. "And so I played my parts to the end."
+96. "I slammed those resurrection paddles down as Norris’s chest split open beneath them."
+97. "I screamed on cue as serrated teeth from a hundred stars away snapped shut."
+98. "I toppled backwards, arms bitten off above the wrist."
+99. "Men swarmed, agitation bootstrapping to panic."
+100. "MacReady aimed his weapon;"
+101. "flames leaped across the enclosure."
+102. "Meat and machinery screamed in the heat."
+103. "Copper’s tumor winked out beside me."
+104. "The world would never have let it live anyway, not after such obvious contamination."
+105. "I let our skin play dead on the floor while overhead, something that had once been me shattered and writhed and iterated through a myriad random templates, searching desperately for something fireproof."
+106. **Cantonese word:** "winked out" is a phonetic spelling of the Cantonese word "wing dak" which means "turn off" or "extinguish".
+107. **Possible mis-spelled name:** "Copper" might be misspelled, should be checked.
+108. **Domain specific jargon:** "biomass", "assimilated", "offshoots", "prions", etc. These terms are domain specific jargon and might be mis-spelled, flagged for Human-In-The-Loop corrections.1. "They have destroyed themselves. They." should be "The organism has destroyed itself. It."
+2. "Such an insane word to apply to a world." should be "Such an insane phrase to apply to a world."
+3. "a jagged oozing jigsaw of blackened meat and shattered, half-resorbed bone." should be "a jagged, oozing jigsaw of blackened meat and shattered, half-resorbed bone."
+1. 'I have been wrong about everything.[page_content=''I have been wrong about everything.']' - Correct
+2. 'Starvation.[page_content='Starvation. Experiment. Illness.']' - Correct
+3. 'Experiment.[page_content='Starvation. Experiment. Illness.']' - Correct
+4. 'Illness.[page_content='Starvation. Experiment. Illness.']' - Correct
+5. '\xa0All my speculation, all the theories I invoked to explain this place—top-down constraint, all of it.[page_content='Underneath, I always knew the ability to change—to assimilate—had to remain the universal constant. No world evolves if its cells don\'t evolve; no cell evolves if it can\'t change. It\'s the nature of life everywhere.']' - Correct
+6. 'Everywhere but here.[page_content='Everywhere but here.']' - Correct
+7. 'This world did not forget how to change. It was not manipulated into rejecting change. These were not the stunted offshoots of any greater self, twisted to the needs of some experiment; they were not conserving energy, waiting out some temporary shortage.[page_content='This is the only one whose biomass can\'t change. It never could.']' - Change to 'This is the only world whose biomass can’t change. It never could.'
+8. 'It’s the only way MacReady’s test makes any sense.[page_content='It’s the only way MacReady’s test makes any sense.']' - Correct
+9. 'I say goodbye to Blair, to Copper, to myself. I reset my morphology to its local defaults. I am Childs, come back from the storm to finally make the pieces fit. Something moves up ahead: a dark blot shuffling against the flames, some weary animal looking for a place to bed down. It looks up as I approach. [page_content='MacReady.']' - Correct
+10. 'We eye each other, and keep our distance. Colonies of cells shift uneasily inside me. I can feel my tissues redefining themselves.[page_content='']' - Correct
+11. '"You the only one that made it?"[page\_content='"You the only one that made it?"']' - Correct
+12. '"Not the only one..."[page\_content='"Not the only one..."']' - Correct
+13. 'I have the flamethrower. I have the upper hand. MacReady doesn’t seem to care.[page\_content='I have the flamethrower. I have the upper hand. MacReady doesn’t seem to care.']' - Correct
+14. 'But he does care. He must. Because here, tissues and organs are not temporary battlefield alliances; they are permanent, predestined. Macrostructures do not emerge when the benefits of cooperation exceed its costs, or dissolve when that balance shifts the other way; here, each cell has but one immutable function. There’s no plasticity, no way to adapt; every structure is frozen in place. This is not a single great world, but many small ones. Not parts of a greater thing; these are things. They are plural.[page\_content='']' - Correct
+15. 'And that means—I think—that they stop. They just, just wear out over time.[page\_content='And that means—I think—that they stop. They just, just wear out over time.']' - Correct
+16. '"Where were you, Childs?"[page\_content='"Where were you, Childs?"']' - Correct
+17. 'I remember words in dead searchlights: "Thought I saw Blair. Went out after him. Got lost in the storm."[page\_content='I remember words in dead searchlights: "Thought I saw Blair. Went out after him. Got lost in the storm."']' - Correct
+18. 'They are not built to last. No somatic evolution to shape them, no communion to restore the biomass and stave off entropy. They should not even exist; existing, they should not survive.[page\_content='They are not built to last. No somatic evolution to shape them, no communion to restore the biomass and stave off entropy. They should not even exist; existing, they should not survive.']' - Correct
+19. 'They try, though. How they try. Every thing here is walking dead and yet it all fights so hard to keep going just a little longer. Each skin fights as desperately as I might, if one was all I could ever have.[page\_content='']' - Correct
+20. 'MacReady tries.[page\_content='MacReady tries.']' - Correct
+21. '"If you\'re worried about me—"[page\_content='"If you\'re worried about me—"']' - Correct
+22. 'MacReady shakes his head, manages a weary smile. "If we\'ve got any surprises for each other, I don\'t think we\'re in much shape to do anything about it..."[page\_content='MacReady shakes his head, manages a weary smile. "If we\'ve got any surprises for each other, I don\'t think we\'re in much shape to do anything about it..."']' - Correct
+23. 'But we are. I am.[page\_content='But we are. I am.']' - Correct
+24. 'A whole planet of worlds, and not one of them—not one—has a soul. They wander through their lives separate and alone, unable even to communicate except through grunts and tokens: as if the essence of a sunset or a supernova could ever be contained in some string of phonemes, a few linear scratches of black on white. They’ve never known communion, can aspire to nothing but dissolution. The paradox of their biology is astonishing, yes; but the scale of their loneliness, the futility of these lives, overwhelms me.[page\_content='']' - Correct
+25. '\xa0[page\_content=' ']' - Change to ' '
+26. 'I was so blind, so quick to blame. But the violence I’ve suffered at the hands of these things reflects no great evil. They’re simply so used to pain, so blinded by disability, that they literally can’t conceive of any other existence. When every nerve is whipped raw, you lash out at even the lightest touch.[page\_content='I was so blind, so quick to blame. But the violence I’ve suffered at the hands of these things reflects no great evil. They’re simply so used to pain, so blinded by disability, that they literally can’t conceive of any other existence. When every nerve is whipped raw, you lash out at even the lightest touch.']' - Correct
+27. '"What should we do?" I wonder. I cannot escape into the future, not knowing what I know now. How could I leave them like this? [page\_content='"What should we do?" I wonder. I cannot escape into the future, not knowing what I know now. How could I leave them like this?']' - Correct
+28. '"Why don\'t we just—wait here awhile," MacReady suggests. "See what happens."[page\_content='"Why don\'t we just—wait here awhile," MacReady suggests. "See what happens."']' - Correct
+29. 'I can do so much more than that. [page\_content='I can do so much more than that.']' - Correct
+30. 'It won’t be easy. They won’t understand. Tortured, incomplete, they’re not able to understand. Offered the greater whole, they see the loss of the lesser. Offered communion, they see only extinction. [page\_content='It won’t be easy. They won’t understand. Tortured, incomplete, they’re not able to understand. Offered the greater whole, they see the loss of the lesser. Offered communion, they see only extinction.']' - Correct
+31. 'I must be careful. I must use this newfound ability to hide. Other things will come here eventually, and it doesn’t matter whether they find the living or the dead; what matters is that they find something like themselves, to take back home. So I will keep up appearances. I will work behind the scenes. I will save them from the inside, or their unimaginable loneliness will never end.[page\_content='I must be careful. I must use this newfound ability to hide. Other things will come here eventually, and it doesn’t matter whether they find the living or the dead; what matters is that they find something like themselves, to take back home. So I will keep up appearances. I will work behind the scenes. I will save them from the inside, or their unimaginable loneliness will never end.']' - Correct
+32. 'These poor savage things will never embrace salvation. [page\_content='These poor savage things will never embrace salvation.']' - Correct
+33. 'I will have to rape it into them.[page\_content='I will have to rape it into them.']' - Flag for Human-In-The-Loop corrections
+
+Note: There are no Cantonese words written phonetically in English, no proper nouns, names of people, or domain-specific jargon that are misspelled in the text. All spoken numbers are already transformed into their numeric representations.
+Note, broken into 5 piece(s) for correction parse. 
+
+</corrections>

@@ -1,1 +1,19 @@
-no clue
+
+
+filename = "ZakeStahlResume_web.faiss" 
+about = """ 
+Zake Stahl, with a BS in Psychology and certifications like MCSE and AWS Certified Solutions Architect Associate, brings extensive experience in technical support and systems integration. Specializing in CRM, networking, and cloud technologies such as AWS, Azure, Salesforce, and Zendesk, Stahl has excelled in senior technical support roles at HID Global Inc, Crossmatch Inc, and Digitalpersona Inc. Their responsibilities have included product expertise, support staff management, knowledge base creation, and product development contributions. Stahl's strong background in cyber-security and history as an MCSE Instructor at the University of Arizona further highlight their expertise in the field. 
+"""
+
+
+filename = "nothing.faiss" 
+about = """ 
+This text focuses on the use of RAG (Retrieval Augmented Generative AI) for accurate and relevant information in AI technology. The author stresses RAG's importance but does not provide any RAG content, only its necessity for page content. The intended audience is likely AI developers or users. 
+"""
+
+
+filename = "TheThings-PeterWatts.faiss" 
+about = """ 
+An extraterrestrial entity, with the ability to assimilate and mimic other lifeforms, recounts its struggle for survival in a science fiction narrative. Crash-landing in Antarctica, the entity confronts communication barriers and hostility from human researchers. Musing on its past as a missionary and soldier, spreading life throughout the universe, it now finds itself hunted and misunderstood. The text delves into themes of communication, identity, and survival, with a focus on the entity's introspection. Jargon includes biological terms and concepts related to the entity's mission. The intended audience: sci-fi fans interested in existential and philosophical themes. 
+"""
+

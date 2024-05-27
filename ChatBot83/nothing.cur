@@ -1,0 +1,37 @@
+
+Curation content for HITL use. 
+
+Date and time      = 2024-04-21 13:06:02 
+Target document    = /home/leet/chatbot8/ChatBot8/nothing.txt 
+Chunk size         = 300 
+Chunk overlap      = 100 
+Saved FAISS DB     = nothing.faiss 
+# vectors in DB    = 1 
+Model/temp DB      = mistral-embed / 0.25 
+Model/temp summary = open-mixtral-8x7b / 0.25 
+
+<summary>
+This text focuses on the use of RAG (Retrieval Augmented Generative AI) for accurate and relevant information in AI technology. The author stresses RAG's importance but does not provide any RAG content, only its necessity for page content. The intended audience is likely AI developers or users.
+</summary>
+
+Curation content for HITL use. 
+
+Date and time      = 2024-05-05 21:40:11 
+Target document    = ChatBot8/nothing.txt 
+Model/temp LLM = open-mixtral-8x7b / 0.25 
+
+<corrections>
+Based on the provided text and the correction guidelines, here are the corrections I would suggest:
+
+1. "Retreival" should be spelled as "Retrieval"
+	* Original: No RAG text provided. Retreival Augmented GenerativeAI text needs to be provided.
+	* Correction: No RAG text provided. Retrieval Augmented GenerativeAI text needs to be provided.
+2. The acronym "RAG" should be spelled out as "Retrieval Augmented GenerativeAI" at the first occurrence, followed by the acronym in parentheses.
+	* Original: No RAG text provided. Retreival Augmented GenerativeAI text needs to be provided.
+	* Correction: No Retrieval Augmented GenerativeAI (RAG) text provided. Retrieval Augmented GenerativeAI text needs to be provided.
+3. The spoken number "8" in "ChatBot8" should be transformed into its numeric representation.
+	* Original: metadata={'source': 'ChatBot8/nothing.txt'}
+	* Correction: metadata={'source': 'ChatBot08/nothing.txt'}
+
+No other corrections are necessary based on the provided guidelines. There are no Cantonese words written phonetically in English, no mis-spelled proper nouns or domain-specific jargon, and no numerical figures or metrics spelled out.
+</corrections>

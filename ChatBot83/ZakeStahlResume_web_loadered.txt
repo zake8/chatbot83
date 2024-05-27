@@ -1,0 +1,40 @@
+Zake Stahl
+Hayward, California 94544 <phone> <email>
+Enterprise Customer Technical Support Manager
+Maximize customer satisfaction through proficient identification and resolution of technical issue s
+Value as your employee:
+•Creative problem solver with effective interpersonal and written / verbal communication skills; enjoys 
+troubleshooting.
+•Adept at synthesizing complex technical information into wide audience-accessible documentation; 
+technical writer; provides technical training; mentors and coaches co-workers.
+•Information technology and systems integration professional with strong cyber-security background.
+•Performs technical customer support and security implementation.
+•Drives cross-functional collaboration.
+Technical Skills:
+Cloud: AWS; Azure; O365; VMWare
+CRM: Salesforce; Zendesk; Oracle CRM
+Systems Integration: AD; IAM; Exchange; Citrix; HTML; Python; Firewalls; Windows; Linux; DNS
+Networking: IPv4; Splunk; IPv6; NAT; VPN
+Education/Certification:  BS Psychology, Penn State University; Microsoft Certified Systems Engineer 
+(MCSE); AWS Certified Solutions Architect Associate 
+Professional Experience:
+2019 to 2023 - Senior Technical Support Enginee r - HID Global Inc, IAMS , Fremont, CA
+•Delivered top-tier break / fix technical support for enterprise biometrics software and hardware. Served as product 
+subject matter expert (SME) for Identity and Access Management for global corporate and government customers.
+•Built, documented, and managed virtual machines modeling various products and environments, proving critical 
+for real-time support, reproducing and tracing bugs, and product documentation and training.
+•Coordinated support across time zones, providing customers smooth transitions, localized support, and 24 / 7 
+availability.
+•Contributed to product planning and development prioritization, leveraging technical customer experience.
+•Partnered with QA and Engineering to resolve customer issues, orchestrating faster issue resolution times by 
+prioritizing software engineering team.
+2015 to 2018 - Senior Technical Support Engineer  - Crossmatch Inc, Palm Beach Garden, FL
+•Managed / mentored support staff, software developers, and interns; delivered customized training; functioned as 
+SME.
+2007 to 2014 - Technical Support Engineer  - Digitalpersona Inc , Redwood City, CA
+•Maintained and created knowledge bases, product documentation, quick start guides, and upgrade procedures, 
+driving positive unboxing and implementation customer experiences and enabling high-level technical self-help.
+•Developed internal SOPs, training, and FAQs; promulgated corporate culture. 
+2006 to 2007 - MCSE Instructor  - University Of Arizona, Continuing Education , Sierra Vista, AZ
+2004 to 2007 - AD Tools Lead - METI Inc / STG Inc, Sierra Vista, AZ
+1996 to 2004 - Contract IT Manager - various organizations  - greater Philadelphia, PA area
