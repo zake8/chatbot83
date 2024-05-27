@@ -38,8 +38,19 @@ webserver_hostname = socket.gethostname()
 
 ### TODO:
 
+### re-implement bot_specific_examples()
+### re-implement actual_dir_list()
+### ensure bot_specific_examples() and actual_dir_list() fed into FILENAME_INC_LIST_TEMPLATE
+### use actual_dir_list() to populate current_user.rag_list in bot init funcs
+### re-implement admin tools, but in seperate .py (not in reply(), and not at end of routes.py)
+### re-implement ingest docs!, but in seperate .py (not in reply(), and not at end of routes.py)
 ### CAPTCHA
 ### How to view all users and their data? How to set admin role?
+### functionality to watch videos with corrected subtitles
+### functionality to view corrected subtitles vtt files (download, edit, return)
+### write whole render_video()
+### test fake_llm re-implemented as a runnable to pass to chains
+### need more bot_specific_examples
 ### auto save website URL to pdf? Then can ingest nice record of website in pdf.
 ### agent to check actual website, maybe crawl a few branches?
 ### how to tune (know, increase, decrease, number of vector returns from faiss match?
@@ -288,11 +299,6 @@ def reply():
     
     # triple-parallel (context, question, history) in ==> prompt for llm out
     prompt_choose_rag = ChatPromptTemplate.from_template(FILENAME_INC_LIST_TEMPLATE)
-    ##### logging.info(f'prompt_choose_rag = "{prompt_choose_rag}"; type "{type(prompt_choose_rag)}"')
-    
-#####    # prompt for LLM in ==> LLM response out
-#####    large_lang_model = get_large_lang_model_func()
-#####    ##### logging.info(f'large_lang_model type is "{type(large_lang_model)}"')
     
     # triple-parallel (context, question, history) in ==> prompt for llm out
     if  current_user.chatbot  == 'GerBot':
@@ -310,7 +316,6 @@ def reply():
     rag_pfn = f'{current_user.chatbot}/nothing.faiss'
     if current_user.role == 'administrator':
         if query == f'admin stuff':
-            pass ### do admin stuff! section is roughed out only for testing
             response = 'Did admin stuff.'
             current_user.chat_history.append({
                 'user':current_user.chatbot, 
@@ -346,7 +351,7 @@ def reply():
                         )
         selected_rag = get_rag_chain.invoke(query)
         # string manipulations to go from selected_rag to rag_pfn
-        logging.info(f'===> selected_rag: "{selected_rag}"') ###
+        logging.info(f'===> selected_rag: "{selected_rag}"')
         # Should be "return_filename.faiss" or the like; sometimes LLM is chatty tho
         # Comments from LLM show in log, and in chat if unable to parse
         # Potentially dangerous - load only local known safe files
@@ -379,7 +384,7 @@ def reply():
     else: # assumes specific rag doc selected by user from dropdown
         rag_pfn = current_user.rag_selected
     
-    logging.info(f'===> rag_pfn: "{rag_pfn}"') ###
+    logging.info(f'===> rag_pfn: "{rag_pfn}"')
     
     # string in ==> triple-parallel (context, question, history) out
     # load existing faiss, and use as retriever
@@ -399,8 +404,6 @@ def reply():
             | large_lang_model 
             | StrOutputParser() 
             ) 
-### works with chain.invoke(query): RunnablePassthrough(); straight = RunnablePassthrough(); def straight_func():, pass, return RunnablePassthrough(); 
-### chain = ( setup_and_retrieval_choose_rag | prompt_choose_rag | large_lang_model | readable | process_rag | setup_and_retrieval_response | render_video | prompt_response | large_lang_model | readable )
     
     response = answer + chain.invoke(query)
     # httpx.LocalProtocolError: Illegal header value b'Bearer ' means missing API key
@@ -424,8 +427,6 @@ def reply():
 
 # prompt for LLM in ==> LLM response out
 def large_lang_model(query):
-##### def get_large_lang_model_func():
-    ##### logging.info(f'get_large_lang_model_func tracks current_user.model as "{current_user.model}"')
     if ( (current_user.model == "open-mixtral-8x7b") or 
         (current_user.model == "mistral-large-latest") or 
         (current_user.model == "open-mistral-7b") ):
@@ -450,7 +451,7 @@ def large_lang_model(query):
                 verbose = True )
             # https://api.python.langchain.com/en/latest/llms/langchain_community.llms.ollama.Ollama.html
     elif current_user.model == "fake_llm":
-        large_lang_model = RunnableLambda(fake_llm) ### # was answer = fake_llm(query); re-implemented as a runnable to pass to chains
+        large_lang_model = RunnableLambda(fake_llm)
         logging.info(f'===> Using fake_llm...')
     else:
         large_lang_model = None
@@ -478,7 +479,7 @@ def rag_text_function(query):
     ##### logging.info(f'context_list returning: "{context_list}"')
     for item in context_list:
         context += item.page_content # langchain document, not a list
-    ##### logging.info(f'rag_text_function returning: "{context}"') ###
+    ##### logging.info(f'rag_text_function returning: "{context}"')
     return context
 
 
@@ -504,7 +505,25 @@ def actual_dir_list():
 
 
 def bot_specific_examples():
-    ### need bot_specific_examples
+    if   chatbot == 'GerBot': examples = """
+        Mentioning a book or title should be enough to return its filename.
+        Example: If question is about overview of Gerry Stahl's work and life, return "overview.faiss".
+        Example: Returning "form.faiss" would be correct for some questions about Gerry's sculpture.
+        Example: For the philosophy area, "marx.faiss" should be correct.
+        Example: If the is absolutely nothing in the summaries that remotely clicks, then you can return "nothing.faiss" to represent this. 
+        Example: For broad overview of all works with summaries of each item, return "rag_source_clues.faiss".
+        """
+    elif chatbot == 'VTSBot': examples = """
+        Example: Return "www_vingtsunsito.org.faiss" for current hours or locations.
+        Example: Return "essentials.faiss" for ving tsun essentials and basic quesions about hands and stances.
+        """
+    elif chatbot == 'ChatBot8': examples = """
+        Example: Return "chatbot8_steelrabbit_com.faiss" for overview detail and nature of the site.
+        """
+    elif chatbot == 'Default': examples = """
+        """
+    else: examples = """
+        """
     return examples
 
 
