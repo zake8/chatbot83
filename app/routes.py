@@ -269,29 +269,40 @@ def reply():
         current_user.chat_history.pop() # clear "system: pending" message
     query = current_user.chat_history[-1]["message"] # pull just the message string from the last dictionary in a list 
 
+    # string in ==> double-parallel (question, history) out
+    retrieval_simple_chat = RunnableParallel({
+        "question": RunnablePassthrough(), 
+        "history":  history_runnable})
+    
     # string in ==> triple-parallel (context, question, history) out
     rag_text_runnable = RunnableLambda(rag_text_function)
     history_runnable =  RunnableLambda(convo_mem_function)
     setup_and_retrieval_choose_rag = RunnableParallel({
         "context":  rag_text_runnable, 
         "question": RunnablePassthrough(), 
-        "history":  history_runnable
-        })
-    
-    # string in ==> double-parallel (question, history) out
-    retrieval_simple_chat = RunnableParallel({
-        "question": RunnablePassthrough(), 
-        "history":  history_runnable
-        })
+        "history":  history_runnable})
     
     # triple-parallel (context, question, history) in ==> prompt for llm out
     prompt_choose_rag = ChatPromptTemplate.from_template(FILENAME_INC_LIST_TEMPLATE)
-    logging.info(f'prompt_choose_rag = "{prompt_choose_rag}"; type "{type(prompt_choose_rag)}"') ###
+    ##### logging.info(f'prompt_choose_rag = "{prompt_choose_rag}"; type "{type(prompt_choose_rag)}"')
     
     # prompt for LLM in ==> LLM response out
     large_lang_model = get_large_lang_model_func()
-    logging.info(f'large_lang_model type is "{type(large_lang_model)}"') ###
+    ##### logging.info(f'large_lang_model type is "{type(large_lang_model)}"')
     
+    # triple-parallel (context, question, history) in ==> prompt for llm out
+    if  current_user.chatbot  == 'GerBot':
+        prompt = ChatPromptTemplate.from_template(GERBOT_TEMPLATE)
+    elif current_user.chatbot == 'VTSBot':
+        prompt = ChatPromptTemplate.from_template(VTSBOT_TEMPLATE)
+    elif current_user.chatbot == 'ChatBot8':
+        prompt = ChatPromptTemplate.from_template(CHATBOT8_TEMPLATE)
+    else:
+        logging.info(f'ERROR =*=*=> No prompt template for "{current_user.chatbot}" (has retrieved context)')
+        prompt = ChatPromptTemplate.from_template(CHATBOT8_TEMPLATE)
+    prompt_response = prompt
+
+    answer = ''
     if current_user.role == 'administrator':
         if query == f'admin stuff':
             pass ### do admin stuff! section is roughed out only for testing
@@ -313,23 +324,70 @@ def reply():
                 )
     
     elif current_user.rag_selected == 'Auto':
-        chain = ( setup_and_retrieval_choose_rag
-                | prompt_choose_rag 
-                | large_lang_model
-                | StrOutputParser() 
-                )
-###     works with chain.invoke(query): RunnablePassthrough(); straight = RunnablePassthrough(); def straight_func():, pass, return RunnablePassthrough(); 
-###     chain = ( setup_and_retrieval_choose_rag | prompt_choose_rag | large_lang_model | readable | process_rag | setup_and_retrieval_response | render_video | prompt_response | large_lang_model | readable )
+        get_rag_chain = ( setup_and_retrieval_choose_rag
+                        | prompt_choose_rag 
+                        | large_lang_model
+                        | StrOutputParser() 
+                        )
+        selected_rag = get_rag_chain.invoke(query)
+        # string manipulations to go from selected_rag to rag_pfn
+        logging.info(f'===> selected_rag: "{selected_rag}"') ###
+        # Should be "return_filename.faiss" or the like; sometimes LLM is chatty tho
+        # Comments from LLM show in log, and in chat if unable to parse
+        # Potentially dangerous - load only local known safe files
+        ### need to implement this safety check!
+        ### if contains http or double wack "//" then set answer = 'illegal faiss source' and break/return
+        # sanity check that filename is in filesystem and ends in .faiss follows
+        pattern = r'\b[A-Za-z0-9_-]+\.[A-Za-z0-9]{3,5}\b'
+        filenames = re.findall(pattern, selected_rag)
+        if filenames:
+            clean_selected_rag = filenames[( len(filenames) - 1 )] # pulls last filename from multiple hits as LLM might ramble and then present final answer.
+            answer += f'Selected document "{clean_selected_rag}"! '
+            rag_pfn = f'{current_user.chatbot}/{clean_selected_rag}'
+            if not os.path.exists(rag_pfn):
+                answer += f'Error; the file does not exist... '
+                rag_pfn = f'{current_user.chatbot}/nothing.faiss'
+            pattern = r'\.([a-zA-Z]{3,5})$'
+            match = re.search(pattern, clean_selected_rag)
+            if match:
+                rag_ext = match.group(1)
+                if rag_ext != 'faiss':
+                    answer += f'Error; .FAISS file is required at this point... '
+                    rag_pfn = f'{current_user.chatbot}/nothing.faiss'
+            else:
+                answer += f'Error; no extension found. '
+                rag_pfn = f'{current_user.chatbot}/nothing.faiss'
+        else:
+            answer += f'Error; unable to parse out a filename from "{selected_rag}". '
+            rag_pfn = f'{current_user.chatbot}/nothing.faiss'
+        
+    else: # assumes specific rag doc selected by user from dropdown
+        rag_pfn = current_user.rag_selected
     
-### else: # assumes specific rag doc selected by user from dropdown
-###     chain = ( setup_and_retrieval_response 
-###             | render_video 
-###             | prompt_response 
-###             | large_lang_model 
-###             | StrOutputParser() 
-###             )
+    logging.info(f'===> rag_pfn: "{rag_pfn}"') ###
     
-    response = chain.invoke(query)
+    # string in ==> triple-parallel (context, question, history) out
+    # load existing faiss, and use as retriever
+    embeddings = get_embedding_func(
+        fullragchat_embed_model=current_user.embed_model, 
+        mkey=current_user.llm_api_key)
+    loaded_vector_db = FAISS.load_local(rag_pfn, embeddings, allow_dangerous_deserialization=True)
+    setup_and_retrieval_response = RunnableParallel({
+        "context" : loaded_vector_db.as_retriever(),
+        "question": RunnablePassthrough(),
+        "history" : RunnableLambda(convo_mem_function)})
+    # Default 'k' (amount of documents to return) is 4 per https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html
+    
+    chain = ( setup_and_retrieval_response 
+            | render_video 
+            | prompt_response 
+            | large_lang_model 
+            | StrOutputParser() 
+            ) 
+### works with chain.invoke(query): RunnablePassthrough(); straight = RunnablePassthrough(); def straight_func():, pass, return RunnablePassthrough(); 
+### chain = ( setup_and_retrieval_choose_rag | prompt_choose_rag | large_lang_model | readable | process_rag | setup_and_retrieval_response | render_video | prompt_response | large_lang_model | readable )
+    
+    response = answer + chain.invoke(query)
     # httpx.LocalProtocolError: Illegal header value b'Bearer ' means missing API key
     current_user.chat_history.append({
         'user':current_user.chatbot, 
@@ -384,13 +442,24 @@ def get_large_lang_model_func():
     return large_lang_model
 
 
+def get_embedding_func(fullragchat_embed_model, mkey):
+    if fullragchat_embed_model == 'mistral-embed':
+        embeddings = MistralAIEmbeddings(
+                model = fullragchat_embed_model, 
+                mistral_api_key = mkey )
+    elif fullragchat_embed_model == 'nomic-embed-text':
+        embeddings = OllamaEmbeddings(
+                model = fullragchat_embed_model )
+    return embeddings
+
+
 def rag_text_function(query):
     context = ''
     rag_source_clues = f'{current_user.chatbot}/rag_source_clues.txt'
     loader = TextLoader(rag_source_clues, encoding="utf8")
-    # logging.info(f'rag_text_function query = "{query}"') ###
+    ##### logging.info(f'rag_text_function query = "{query}"')
     context_list = loader.load()
-    # logging.info(f'context_list returning: "{context_list}"') ###
+    ##### logging.info(f'context_list returning: "{context_list}"')
     for item in context_list:
         context += item.page_content # langchain document, not a list
     logging.info(f'rag_text_function returning: "{context}"') ###
@@ -404,8 +473,8 @@ def convo_mem_function(query):
         current_user.chat_history.pop()
     for line in current_user.chat_history:
         history += f'{line["user"]}: {line["message"]}\n'
-    # logging.info(f'convo_mem_function query = "{query}"') ###
-    logging.info(f'convo_mem_function returning: "{history}"') ###
+    ##### logging.info(f'convo_mem_function query = "{query}"')
+    ##### logging.info(f'convo_mem_function returning: "{history}"')
     return history
 
 
@@ -425,41 +494,15 @@ def bot_specific_examples():
     return examples
 
 
-def setup_and_retrieval_response():
-    # load existing faiss, and use as retriever
-    # Potentially dangerous - load only local known safe files
-    ### need to implement this safety check!
-    ### if f'{current_user.chatbot}/' contains http or double wack "//" then set answer = 'illegal faiss source' and break/return
-    embeddings = get_embedding_func(fullragchat_embed_model=current_user.embed_model, mkey=current_user.llm_api_key)
-    loaded_vector_db = FAISS.load_local(current_user.rag_list, embeddings, allow_dangerous_deserialization=True)
-    return RunnableParallel({
-        "context" : loaded_vector_db.as_retriever(),
-        "question": RunnablePassthrough(),
-        "history" : RunnableLambda(convo_mem_function)
-        })
-    # Default 'k' (amount of documents to return) is 4 per https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html
-
-def prompt_response():
-    if  current_user.chatbot  == 'GerBot': prompt = ChatPromptTemplate.from_template(gerbot_template)
-    elif current_user.chatbot == 'VTSBot': prompt = ChatPromptTemplate.from_template(vtsbot_template)
-    elif current_user.chatbot == 'ChatBot8': prompt = ChatPromptTemplate.from_template(chatbot8_template)
-    elif  current_user.chatbot == 'Default': prompt = ChatPromptTemplate.from_template(chatbot8_template) ### need/using default? safety from class?
-    else: prompt = ChatPromptTemplate.from_template(chatbot8_template)
-    return prompt
-
-
-def process_rag():
-    ### load document requested by choose rag prompt, or return some error.
-    logging.info(f'===> selected_rag: "something?"')
-    return RunnablePassthrough()
-
-
 def render_video():
     ### triple parallel too? This step in chain needs to feed off of rag FAISS DB embeded lookup k returns!
     ### search rag index for timecode for vectordb_matches
     ### render clips with captions burned
     ### create montage.mp4
-    return RunnablePassthrough()
+    return RunnableParallel({
+        "context": RunnablePassthrough()
+        "question": RunnablePassthrough()
+        "history": RunnablePassthrough()})
 
 
 # RAG document management / administration functions
