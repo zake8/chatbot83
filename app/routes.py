@@ -38,9 +38,6 @@ webserver_hostname = socket.gethostname()
 
 ### TODO:
 
-### re-implement bot_specific_examples()
-### re-implement actual_dir_list()
-### ensure bot_specific_examples() and actual_dir_list() fed into FILENAME_INC_LIST_TEMPLATE
 ### use actual_dir_list() to populate current_user.rag_list in bot init funcs
 ### re-implement admin tools, but in seperate .py (not in reply(), and not at end of routes.py)
 ### re-implement ingest docs!, but in seperate .py (not in reply(), and not at end of routes.py)
@@ -147,6 +144,29 @@ def VTSBot():
         'message':"VTSBot at your service; referencing knowledge from a corpus of Ving Tsun Kung Fu video transcriptions."})
     db.session.commit()
     return redirect(url_for('chat'))
+
+
+def bot_specific_examples():
+    if current_user.chatbot == 'GerBot': examples = """
+        Mentioning a book or title should be enough to return its filename.
+        Example: If question is about overview of Gerry Stahl's work and life, return "overview.faiss".
+        Example: Returning "form.faiss" would be correct for some questions about Gerry's sculpture.
+        Example: For the philosophy area, "marx.faiss" should be correct.
+        Example: If the is absolutely nothing in the summaries that remotely clicks, then you can return "nothing.faiss" to represent this. 
+        Example: For broad overview of all works with summaries of each item, return "rag_source_clues.faiss".
+        """
+    elif current_user.chatbot == 'VTSBot': examples = """
+        Example: Return "www_vingtsunsito.org.faiss" for current hours or locations.
+
+        Example: Return "essentials.faiss" for ving tsun essentials and basic quesions about hands and stances.
+        """
+    elif current_user.chatbot == 'ChatBot83': examples = """
+        Example: Return "chatbot8_steelrabbit_com.faiss" for overview detail and nature of the site.
+        """
+    else: examples = """
+        Example: N/A
+        """
+    return examples
 
 
 # Authentication routes
@@ -496,29 +516,6 @@ def actual_dir_list():
     if len(fn_list) > 2:
         fn_list = fn_list[:-2] + '. ' # Change last trailing comma to a period
     return fn_list
-
-
-def bot_specific_examples():
-    if   chatbot == 'GerBot': examples = """
-        Mentioning a book or title should be enough to return its filename.
-        Example: If question is about overview of Gerry Stahl's work and life, return "overview.faiss".
-        Example: Returning "form.faiss" would be correct for some questions about Gerry's sculpture.
-        Example: For the philosophy area, "marx.faiss" should be correct.
-        Example: If the is absolutely nothing in the summaries that remotely clicks, then you can return "nothing.faiss" to represent this. 
-        Example: For broad overview of all works with summaries of each item, return "rag_source_clues.faiss".
-        """
-    elif chatbot == 'VTSBot': examples = """
-        Example: Return "www_vingtsunsito.org.faiss" for current hours or locations.
-        Example: Return "essentials.faiss" for ving tsun essentials and basic quesions about hands and stances.
-        """
-    elif chatbot == 'ChatBot8': examples = """
-        Example: Return "chatbot8_steelrabbit_com.faiss" for overview detail and nature of the site.
-        """
-    elif chatbot == 'Default': examples = """
-        """
-    else: examples = """
-        """
-    return examples
 
 
 def render_video(query):
