@@ -31,14 +31,13 @@ ntfypost = False
 
 # Each query and answer is appended seperately,
 # when len history > this #, pops off first (oldest) _two_ items
-pop_fullragchat_history_over_num = 10 # should be like 26, if two lines (or zero) given in bot init, or odd (25) if only one given
+pop_fullragchat_history_over_num = 10 # should be like 26
 
 webserver_hostname = socket.gethostname()
 
 
 ### TODO:
 
-### deletes an extra two lines when in auto mode!
 ### CAPTCHA
 ### How to view all users and their data? How to set admin role?
 ### auto save website URL to pdf? Then can ingest nice record of website in pdf.
@@ -303,7 +302,7 @@ def reply():
     elif current_user.chatbot == 'ChatBot83':
         prompt = ChatPromptTemplate.from_template(CHATBOT83_TEMPLATE)
     else:
-        logging.info(f'ERROR =*=*=> No prompt template for "{current_user.chatbot}" (has retrieved context)')
+        logging.error(f'ERROR =*=*=> No prompt template for "{current_user.chatbot}" (has retrieved context)')
         prompt = ChatPromptTemplate.from_template(CHATBOT83_TEMPLATE)
     prompt_response = prompt
 
@@ -332,7 +331,7 @@ def reply():
         current_user.chat_history.append({
             'user':current_user.chatbot, 
             'message':response})
-        logging.info(f'===> Response "{response}" from "{current_user.chatbot}" for "{current_user.username}"')
+        logging.info(f'===> Simple Chat Response "{response}" from "{current_user.chatbot}" for "{current_user.username}"')
         if len(current_user.chat_history) > pop_fullragchat_history_over_num:
             current_user.chat_history.pop(0) # pops off oldest message:answer
             current_user.chat_history.pop(0) # pops off oldest message:query
@@ -478,7 +477,7 @@ def rag_text_function(query):
     ##### logging.info(f'context_list returning: "{context_list}"')
     for item in context_list:
         context += item.page_content # langchain document, not a list
-    logging.info(f'rag_text_function returning: "{context}"') ###
+    ##### logging.info(f'rag_text_function returning: "{context}"') ###
     return context
 
 
