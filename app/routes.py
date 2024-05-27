@@ -231,10 +231,6 @@ def edit_profile():
 # langchain-mistralai
 # faiss-cpu
 from app.prompts import *
-from langchain_community.document_loaders import JSONLoader
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.document_loaders import TextLoader
-from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.llms import Ollama
 from langchain_community.vectorstores import FAISS
@@ -245,8 +241,6 @@ from langchain_core.runnables import RunnableParallel
 from langchain_core.runnables import RunnablePassthrough
 from langchain_mistralai.chat_models import ChatMistralAI
 from langchain_mistralai.embeddings import MistralAIEmbeddings
-from langchain_text_splitters import CharacterTextSplitter
-from langchain_text_splitters import RecursiveCharacterTextSplitter # tweaked module name
 
 
 @app.route('/chat')
