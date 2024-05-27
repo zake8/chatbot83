@@ -1,6 +1,6 @@
 
 
-filename = "ZakeStahlResume_web.faiss" 
+filename = "ZakeStahlResume.faiss" 
 about = """ 
 Zake Stahl, with a BS in Psychology and certifications like MCSE and AWS Certified Solutions Architect Associate, brings extensive experience in technical support and systems integration. Specializing in CRM, networking, and cloud technologies such as AWS, Azure, Salesforce, and Zendesk, Stahl has excelled in senior technical support roles at HID Global Inc, Crossmatch Inc, and Digitalpersona Inc. Their responsibilities have included product expertise, support staff management, knowledge base creation, and product development contributions. Stahl's strong background in cyber-security and history as an MCSE Instructor at the University of Arizona further highlight their expertise in the field. 
 """

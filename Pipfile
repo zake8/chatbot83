@@ -13,6 +13,7 @@ email-validator = "*"
 langchain-core = "*"
 langchain-community = "*"
 langchain-mistralai = "*"
+faiss-cpu = "*"
 
 [dev-packages]
 

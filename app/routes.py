@@ -17,6 +17,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 # and data stored in the request context is isolated between requests.
 from urllib.parse import urlsplit
 import os
+import re
 import socket
 import sqlalchemy as sa
 
@@ -210,12 +211,14 @@ def edit_profile():
 
 # Chat and LLM functions
 
-# pipenv install langchain_community.document_loaders
-# pipenv install langchain-core
-# pipenv install langchain-community
-# pipenv install langchain_community.llms
-# pipenv install langchain_mistralai.chat_models
-# pipenv install langchain-mistralai
+# pipenv install:
+# langchain_community.document_loaders
+# langchain-core
+# langchain-community
+# langchain_community.llms
+# langchain_mistralai.chat_models
+# langchain-mistralai
+# faiss-cpu
 from app.prompts import *
 from langchain_community.document_loaders import JSONLoader
 from langchain_community.document_loaders import PyPDFLoader
@@ -269,14 +272,15 @@ def reply():
         current_user.chat_history.pop() # clear "system: pending" message
     query = current_user.chat_history[-1]["message"] # pull just the message string from the last dictionary in a list 
 
+    rag_text_runnable = RunnableLambda(rag_text_function)
+    history_runnable =  RunnableLambda(convo_mem_function)
+
     # string in ==> double-parallel (question, history) out
     retrieval_simple_chat = RunnableParallel({
         "question": RunnablePassthrough(), 
         "history":  history_runnable})
     
     # string in ==> triple-parallel (context, question, history) out
-    rag_text_runnable = RunnableLambda(rag_text_function)
-    history_runnable =  RunnableLambda(convo_mem_function)
     setup_and_retrieval_choose_rag = RunnableParallel({
         "context":  rag_text_runnable, 
         "question": RunnablePassthrough(), 
@@ -295,14 +299,15 @@ def reply():
         prompt = ChatPromptTemplate.from_template(GERBOT_TEMPLATE)
     elif current_user.chatbot == 'VTSBot':
         prompt = ChatPromptTemplate.from_template(VTSBOT_TEMPLATE)
-    elif current_user.chatbot == 'ChatBot8':
-        prompt = ChatPromptTemplate.from_template(CHATBOT8_TEMPLATE)
+    elif current_user.chatbot == 'ChatBot83':
+        prompt = ChatPromptTemplate.from_template(CHATBOT83_TEMPLATE)
     else:
         logging.info(f'ERROR =*=*=> No prompt template for "{current_user.chatbot}" (has retrieved context)')
-        prompt = ChatPromptTemplate.from_template(CHATBOT8_TEMPLATE)
+        prompt = ChatPromptTemplate.from_template(CHATBOT83_TEMPLATE)
     prompt_response = prompt
 
     answer = ''
+    rag_pfn = f'{current_user.chatbot}/nothing.faiss'
     if current_user.role == 'administrator':
         if query == f'admin stuff':
             pass ### do admin stuff! section is roughed out only for testing
@@ -322,7 +327,17 @@ def reply():
                 | large_lang_model 
                 | StrOutputParser() 
                 )
-    
+        response = chain.invoke(query)
+        current_user.chat_history.append({
+            'user':current_user.chatbot, 
+            'message':response})
+        logging.info(f'===> Response "{response}" from "{current_user.chatbot}" for "{current_user.username}"')
+        if len(current_user.chat_history) > pop_fullragchat_history_over_num:
+            current_user.chat_history.pop(0) # pops off oldest message:answer
+            current_user.chat_history.pop(0) # pops off oldest message:query
+        db.session.commit()
+        return render_template('chat.html', title='Simple Chat')
+
     elif current_user.rag_selected == 'Auto':
         get_rag_chain = ( setup_and_retrieval_choose_rag
                         | prompt_choose_rag 
@@ -409,7 +424,7 @@ def reply():
 
 
 def get_large_lang_model_func():
-    logging.info(f'get_large_lang_model_func tracks current_user.model as "{current_user.model}"')
+    ##### logging.info(f'get_large_lang_model_func tracks current_user.model as "{current_user.model}"')
     if ( (current_user.model == "open-mixtral-8x7b") or 
         (current_user.model == "mistral-large-latest") or 
         (current_user.model == "open-mistral-7b") ):
@@ -494,14 +509,14 @@ def bot_specific_examples():
     return examples
 
 
-def render_video():
+def render_video(query):
     ### triple parallel too? This step in chain needs to feed off of rag FAISS DB embeded lookup k returns!
     ### search rag index for timecode for vectordb_matches
     ### render clips with captions burned
     ### create montage.mp4
     return RunnableParallel({
-        "context": RunnablePassthrough()
-        "question": RunnablePassthrough()
+        "context": RunnablePassthrough(), 
+        "question": RunnablePassthrough(), 
         "history": RunnablePassthrough()})
 
 

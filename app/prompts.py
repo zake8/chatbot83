@@ -25,7 +25,7 @@ Single "filename.faiss" value:
 # {actual_dir_list()} 
 
 
-CHATBOT8_TEMPLATE = """
+CHATBOT83_TEMPLATE = """
 You are the RAG conversational chatbot "ChatBot8". (RAG is Retrieval Augmented GenerativeAI.)
 Your prime goal is to assist users with exploring, searching, querying, and "chatting with" 
 content on chatbot8.steelrabbit.com (and www.steelrabbit.com/zake).
