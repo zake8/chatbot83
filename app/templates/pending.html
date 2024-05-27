@@ -19,9 +19,20 @@
 <a id="spot"></a>
 
 <form action="/reply" method="post">
-	<!-- query text box with no click to submit while inferencing -->
-	<textarea rows="8" cols="120"></textarea><br>
-	<br>
+	<div>
+		<lable for="query"></lable>
+		<textarea rows="8" cols="120"></textarea><br>
+		<br>
+		<!-- query text box with no click to submit while inferencing -->
+		<br>
+	</div>
+	<div>
+		Controls:<br>
+		<lable for="rag">RAG selection:</lable>
+		<select name="rag" id="rag">
+					<option value="{{ current_user.rag_selected }}" selected>{{ current_user.rag_selected }}</option>
+		</select>
+	</div>
 </form>
 
 {% endblock %}

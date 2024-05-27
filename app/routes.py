@@ -38,6 +38,7 @@ webserver_hostname = socket.gethostname()
 
 ### TODO:
 
+### deletes an extra two lines when in auto mode!
 ### CAPTCHA
 ### How to view all users and their data? How to set admin role?
 ### auto save website URL to pdf? Then can ingest nice record of website in pdf.
@@ -483,11 +484,9 @@ def rag_text_function(query):
 
 def convo_mem_function(query):
     history = ''
-    # pop off query from end of history, but don't commit; avoids LLM seeing query and same query in chat history
-    if current_user.chat_history:
-        current_user.chat_history.pop()
-    for line in current_user.chat_history:
-        history += f'{line["user"]}: {line["message"]}\n'
+    # all history except last entry of user:query; avoids LLM seeing query and same query in chat history
+    for i in range(len(current_user.chat_history) - 1):
+        history += f'{current_user.chat_history[i]["user"]}: {current_user.chat_history[i]["message"]}\n'
     ##### logging.info(f'convo_mem_function query = "{query}"')
     ##### logging.info(f'convo_mem_function returning: "{history}"')
     return history
