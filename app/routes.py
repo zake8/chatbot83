@@ -38,7 +38,6 @@ webserver_hostname = socket.gethostname()
 
 ### TODO:
 
-### use actual_dir_list() to populate current_user.rag_list in bot init funcs
 ### re-implement admin tools, but in seperate .py (not in reply(), and not at end of routes.py)
 ### re-implement ingest docs!, but in seperate .py (not in reply(), and not at end of routes.py)
 ### CAPTCHA
@@ -88,7 +87,7 @@ def ChatBot83():
     current_user.embed_model = 'mistral-embed'
     current_user.llm_temp = 0.25
     current_user.llm_api_key = os.getenv('Mistral_API_key')
-    current_user.rag_list = ['None', 'Auto']
+    current_user.rag_list = ['None', 'Auto'] + gen_rag_list() ### can you add/merge lists?
     current_user.rag_selected = 'None'
     current_user.chat_history = []
     current_user.chat_history.append({
@@ -117,7 +116,7 @@ def GerBot():
     current_user.embed_model = 'mistral-embed'
     current_user.llm_temp = 0.25
     current_user.llm_api_key = 'test'
-    current_user.rag_list = ['Auto']
+    current_user.rag_list = ['Auto'] + gen_rag_list()
     current_user.rag_selected = 'Auto'
     current_user.chat_history = []
     current_user.chat_history.append({
@@ -136,7 +135,7 @@ def VTSBot():
     current_user.embed_model = 'mistral-embed'
     current_user.llm_temp = 0.25
     current_user.llm_api_key = 'test'
-    current_user.rag_list = ['Auto']
+    current_user.rag_list = ['Auto'] + gen_rag_list()
     current_user.rag_selected = 'Auto'
     current_user.chat_history = []
     current_user.chat_history.append({
@@ -169,7 +168,16 @@ def bot_specific_examples():
     return examples
 
 
-# Authentication routes
+def gen_rag_list(): # returns list
+    fn_list = []
+    extensions = (".faiss")
+    for file in os.listdir(f'{current_user.chatbot}'):
+        if file.endswith(extensions):
+            fn_list.append(file)
+    return fn_list
+
+
+rag_list# Authentication routes
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -507,7 +515,7 @@ def convo_mem_function(query):
     return history
 
 
-def actual_dir_list():
+def actual_dir_list(): # returns string with quotes and commas
     fn_list = ''
     extensions = (".faiss")
     for file in os.listdir(f'{current_user.chatbot}'):
