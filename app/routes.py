@@ -290,9 +290,9 @@ def reply():
     prompt_choose_rag = ChatPromptTemplate.from_template(FILENAME_INC_LIST_TEMPLATE)
     ##### logging.info(f'prompt_choose_rag = "{prompt_choose_rag}"; type "{type(prompt_choose_rag)}"')
     
-    # prompt for LLM in ==> LLM response out
-    large_lang_model = get_large_lang_model_func()
-    ##### logging.info(f'large_lang_model type is "{type(large_lang_model)}"')
+#####    # prompt for LLM in ==> LLM response out
+#####    large_lang_model = get_large_lang_model_func()
+#####    ##### logging.info(f'large_lang_model type is "{type(large_lang_model)}"')
     
     # triple-parallel (context, question, history) in ==> prompt for llm out
     if  current_user.chatbot  == 'GerBot':
@@ -422,8 +422,9 @@ def reply():
     db.session.commit()
     return render_template('chat.html', title='Chat') # loops back in html
 
-
-def get_large_lang_model_func():
+# prompt for LLM in ==> LLM response out
+def large_lang_model(query):
+##### def get_large_lang_model_func():
     ##### logging.info(f'get_large_lang_model_func tracks current_user.model as "{current_user.model}"')
     if ( (current_user.model == "open-mixtral-8x7b") or 
         (current_user.model == "mistral-large-latest") or 
