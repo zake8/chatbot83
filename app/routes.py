@@ -39,7 +39,11 @@ webserver_hostname = socket.gethostname()
 
 ### Implement {bot_specific_examples()}
 ### Implement {actual_dir_list()} 
+### debug tools
+### debug ingestion
 ### CAPTCHA
+### email a link to click to confirm email and proceed w/ registration
+### change pw functionality
 ### How to view all users and their data? How to set admin role?
 ### functionality to watch videos with corrected subtitles
 ### functionality to view corrected subtitles vtt files (download, edit, return)
@@ -228,7 +232,7 @@ def edit_profile():
 # langchain_mistralai.chat_models
 # langchain-mistralai
 # faiss-cpu
-from app.prompts import CHATBOT83_TEMPLATE, VTSBOT_TEMPLATE, GERBOT_TEMPLATE, SIMPLE_CHAT_TEMPLATE
+from app.prompts import CHATBOT83_TEMPLATE, VTSBOT_TEMPLATE, GERBOT_TEMPLATE, get_filename_inc_list_template, SIMPLE_CHAT_TEMPLATE
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.llms import Ollama
 from langchain_community.vectorstores import FAISS
@@ -267,64 +271,6 @@ def pending():
     return render_template('pending.html', title='Pending')
 
 
-### def bot_specific_examples():
-###     if current_user.chatbot == 'GerBot':
-###         examples = """
-###         Mentioning a book or title should be enough to return its filename.
-###         Example: If question is about overview of Gerry Stahl's work and life, return "overview.faiss".
-###         Example: Returning "form.faiss" would be correct for some questions about Gerry's sculpture.
-###         Example: For the philosophy area, "marx.faiss" should be correct.
-###         Example: If the is absolutely nothing in the summaries that remotely clicks, then you can return "nothing.faiss" to represent this. 
-###         Example: For broad overview of all works with summaries of each item, return "rag_source_clues.faiss".
-###         """
-###     elif current_user.chatbot == 'VTSBot':
-###         examples = """
-###         Example: Return "www_vingtsunsito.org.faiss" for current hours or locations.
-###         Example: Return "essentials.faiss" for ving tsun essentials and basic quesions about hands and stances.
-###         """
-###     elif current_user.chatbot == 'ChatBot83':
-###         examples = """
-###         Example: Return "chatbot8_steelrabbit_com.faiss" for overview detail and nature of the site.
-###         """
-###     else:
-###         examples = """
-###         Example: N/A
-###         """
-###     return examples
-
-
-def actual_dir_list(): # returns string with quotes and commas
-    fn_list = ''
-    extensions = (".faiss")
-    for file in os.listdir(f'{current_user.chatbot}'):
-        if file.endswith(extensions):
-            fn_list += '"' + file  + '", '
-    if len(fn_list) > 2:
-        fn_list = fn_list[:-2] + '. ' # Change last trailing comma to a period
-    return fn_list
-
-
-FILENAME_INC_LIST_TEMPLATE = (f"""
-Your task is to return a "filename.faiss" from the provided list. 
-Each item in the provided list has a "filename.faiss". 
-
-Question from user is: 
-{{question}}
-
-Lightly reference this chat history help understand what information area user is looking to explore: 
-{{history}}
-
-Here is provided list containing filenames for various content/information areas: 
-{{context}}
-
-As a sanity check, current valid "filename.faiss" values specifically are: 
-
-Single "filename.faiss" value:
-""")
-### {bot_specific_examples()}
-### {actual_dir_list()} 
-
-
 @app.route('/reply')
 @login_required
 def reply():
@@ -348,7 +294,7 @@ def reply():
         "history":  history_runnable})
     
     # triple-parallel (context, question, history) in ==> prompt for llm out
-    prompt_choose_rag = ChatPromptTemplate.from_template(FILENAME_INC_LIST_TEMPLATE)
+    prompt_choose_rag = ChatPromptTemplate.from_template(get_filename_inc_list_template(dir_name=current_user.chatbot))
     
     # triple-parallel (context, question, history) in ==> prompt for llm out
     if  current_user.chatbot  == 'GerBot':
