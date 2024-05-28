@@ -232,6 +232,7 @@ def edit_profile():
 # faiss-cpu
 from app.prompts import CHATBOT83_TEMPLATE, VTSBOT_TEMPLATE, GERBOT_TEMPLATE, get_filename_inc_list_template, SIMPLE_CHAT_TEMPLATE
 from app.tools import chatbot_command
+from langchain_community.document_loaders import TextLoader
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.llms import Ollama
 from langchain_community.vectorstores import FAISS
@@ -384,7 +385,7 @@ def reply():
             rag_pfn = f'{current_user.chatbot}/nothing.faiss'
         
     else: # assumes specific rag doc selected by user from dropdown
-        rag_pfn = current_user.rag_selected
+        rag_pfn = f'{current_user.chatbot}/{current_user.rag_selected}'
     
     logging.info(f'===> rag_pfn: "{rag_pfn}"')
     

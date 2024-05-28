@@ -1,0 +1,12 @@
+
+Curation content for HITL use. 
+
+Date and time      = 2024-05-28 00:47:14 
+Target document    = ChatBot83/Shodan_76.133.182.10.pdf 
+Chunk size         = 300 
+Chunk overlap      = 100 
+Saved FAISS DB     = Shodan_76.133.182.10.faiss 
+# vectors in DB    = 87 
+Model/temp DB      = mistral-embed / 0.25 
+Model/temp LLM = open-mixtral-8x7b / 0.25 
+Saved new .vtt file, "Shodan_76.133.182.10_corrected.vtt" 

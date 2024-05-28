@@ -1,0 +1,22 @@
+# per line is: pathfilename
+# per line is: pathfilename, start pdf page, end pdf page (integers only)
+# hash and space only as first two charators for a comment line, blank line okay
+# "./docs/" used in this example - should match your "docs_dir" value
+
+docs/four_page_test.pdf, 1, 2
+docs/four_page_test.pdf
+
+# chatbot_command.batchinjest(docs/pdf_batch_injest_sample.txt)
+# should return:
+# 
+# Read "docs/four_page_test.pdf". 
+# Wrote "four_page_test-1-2_loadered.txt". 
+# Wrote "four_page_test-1-2.faiss". 
+# Wrote "four_page_test-1-2.cur". 
+# Updated "docs/rag_source_clues.txt". 
+# 
+# Read "docs/four_page_test.pdf". 
+# Wrote "four_page_test_loadered.txt". 
+# Wrote "four_page_test.faiss". 
+# Wrote "four_page_test.cur". 
+# Updated "docs/rag_source_clues.txt". 

@@ -190,7 +190,8 @@ VTT_TRANSCRIPTION_CORRECTIONS_TEMPLATE = """
 You are an "errors introduced in transcription corrector". 
 A segment of transcribed text from a recorded multi-party meeting will be presented. 
 Leave timecode untouched exactly as is; this is critical. 
-(Leave "WEBVTT" line at head of file as is too.) 
+Avoid adding explanitory or supporting text, as it will become subtitle/caption text! 
+(If present, leave "WEBVTT" line at head of file as is too.) 
 Correct blatant transcription errors present in the text; 
 that is, correct only errors likely introduced in the automated transcription process, 
 NOT speaker's grammatical errors or unclear sentence structure actually transcribed as spoken.

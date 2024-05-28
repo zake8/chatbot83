@@ -18,6 +18,8 @@ An extraterrestrial entity, with the ability to assimilate and mimic other lifef
 """
 
 
-test
+filename = "Shodan.faiss" 
+about = """ 
+This text offers detailed analysis of the IP address 76.133.182.10, gathered from Shodan, a search engine for internet-connected devices. Cybersecurity professionals, researchers, or system administrators compose the intended audience. The analysis highlights three vulnerabilities: Rapid Reset Exploit, Out-of-bounds Read vulnerability in mod\_macro of Apache HTTP Server, and HTTP Response Smuggling vulnerability in Apache HTTP Server via mod\_proxy\_uwsgi. A thorough SSL certificate examination is also provided. No new jargon is introduced, as the text employs standard terminology from cybersecurity and network administration fields. 
+"""
 
-test

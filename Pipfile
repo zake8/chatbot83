@@ -15,6 +15,7 @@ langchain-community = "*"
 langchain-mistralai = "*"
 faiss-cpu = "*"
 beautifulsoup4 = "*"
+pypdf = "*"
 
 [dev-packages]
 

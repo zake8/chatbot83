@@ -1,0 +1,8 @@
+
+
+Curation  content for HITL use. 
+
+Date and time      = 2024-05-28 00:16:36 
+Target document    = ChatBot83/test.vtt 
+Model/temp LLM = open-mixtral-8x7b / 0.25 
+Wrote corrected .vtt file, "test_corrected.vtt" 

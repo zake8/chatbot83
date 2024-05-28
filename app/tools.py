@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 
-
 import logging
 logging.basicConfig(level=logging.INFO, 
                     filename='./log.log', 
                     filemode='a', 
                     format='%(asctime)s -%(levelname)s - %(message)s')
 
-# pipenv installs needed: beautifulsoup4
+# pipenv installs needed: beautifulsoup4, pypdf
 from app.prompts import SUMMARY_TEMPLATE, VTT_TRANSCRIPTION_CORRECTIONS_TEMPLATE
 from datetime import datetime
 from langchain_community.document_loaders import JSONLoader
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders import WebBaseLoader
+from langchain_community.vectorstores import FAISS
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_text_splitters import CharacterTextSplitter
@@ -23,23 +23,18 @@ import re
 import requests
 import subprocess
 
-### # already imported and used in routes.py - need to import here too?
-### from langchain_community.vectorstores import FAISS
-
-### # function is in routes.py - not sure if can will just use that, can import, or should just duplicate
-### from routes import get_embedding_func
-
 
 # Ingestion control; chunk for encoding faiss vector DB, map reduce chunk for larger document summary
 my_chunk_size = 300 # chunk_size= and chunk_overlap, what should they be, how do they relate to file size, word/token/letter count?
 my_chunk_overlap = 100 # what should overlap % be to retain meaning and search-ability? # https://chunkviz.up.railway.app/
 create_summary_on_ingest = True
-create_corrections_on_ingest = True
+create_corrections_on_ingest = False
 my_map_red_chunk_size = 50000 # This is for map reduce summary, the largest text by character length to try to send # Mixtral-8x7b is a max context size of 32k tokens
 my_correction_chunk_size = 6000 # This is for chunking to correction parse; seems to timeout on same size it can summerize... (Going with 1/5.)
 
 
-def ingest_document(fullragchat_rag_source, rag_source_clue_value, model, fullragchat_embed_model, mkey, query, fullragchat_temp, start_page, end_page):
+def ingest_document(fullragchat_rag_source, rag_source_clue_value, docs_dir, model, fullragchat_embed_model, mkey, query, fullragchat_temp, start_page, end_page):
+    from app.routes import get_embedding_func # here to avoid circular load
     logging.info(f'===> Attempting ingestion on "{fullragchat_rag_source}", with page range "{start_page}" to "{end_page}". (All pages if Nones.)')
     answer = ''
     if not os.path.exists(fullragchat_rag_source):
@@ -62,10 +57,10 @@ def ingest_document(fullragchat_rag_source, rag_source_clue_value, model, fullra
         return answer
     # Get text
     rag_text = get_rag_text(
-        fullragchat_rag_source=fullragchat_rag_source, 
-        query=query, 
-        start_page=start_page, 
-        end_page=end_page )
+        fullragchat_rag_source = fullragchat_rag_source, 
+        query = query, 
+        start_page = start_page, 
+        end_page = end_page )
     answer += f'Read "{fullragchat_rag_source}". '
     # Prep summary
     if create_summary_on_ingest:
@@ -103,7 +98,9 @@ def ingest_document(fullragchat_rag_source, rag_source_clue_value, model, fullra
     # Split text into chunks
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=my_chunk_size, chunk_overlap=my_chunk_overlap)
     documents = text_splitter.split_documents(rag_text)
-    embeddings = get_embedding_func(fullragchat_embed_model=fullragchat_embed_model, mkey=mkey)
+    embeddings = get_embedding_func(
+        fullragchat_embed_model = fullragchat_embed_model, 
+        mkey = mkey)
     vector = FAISS.from_documents(documents, embeddings)
     ### Could not load library with AVX2 support due to: ModuleNotFoundError("No module named 'faiss.swigfaiss_avx2'")
     vector.save_local(docs_dir + '/' + faiss_index_fn)
@@ -176,7 +173,10 @@ def get_rag_text(fullragchat_rag_source, query, start_page, end_page): # loads f
 def create_summary(to_sum, model, mkey, fullragchat_temp):
     from app.routes import large_lang_model # here to avoid circular load
     prompt = ChatPromptTemplate.from_template(SUMMARY_TEMPLATE)
-    chain = ( prompt | large_lang_model | StrOutputParser() )
+    chain = ( prompt 
+            | large_lang_model 
+            | StrOutputParser() 
+            )
     try:
         summary = chain.invoke(to_sum)
     except Exception as err_mess:
@@ -227,7 +227,10 @@ def create_transcription_corrections(to_sum, map_red_chunk_size, model, mkey, fu
     pieces = text_splitter.split_documents(to_sum)
     num_pieces = len(pieces)
     prompt = ChatPromptTemplate.from_template(VTT_TRANSCRIPTION_CORRECTIONS_TEMPLATE)
-    chain = ( prompt | large_lang_model | StrOutputParser() )
+    chain = ( prompt 
+            | large_lang_model 
+            | StrOutputParser() 
+            )
     for piece in pieces:
         content = piece.page_content
         # content_str = str(piece[0].page_content) # gets "TypeError: 'Document' object is not subscriptable"
@@ -328,6 +331,7 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
                 answer += ingest_document(
                     fullragchat_rag_source = fullragchat_rag_source, 
                     rag_source_clue_value = rag_source_clue_value, 
+                    docs_dir = docs_dir, 
                     model = model, 
                     fullragchat_embed_model = fullragchat_embed_model, 
                     mkey = mkey, 
@@ -392,6 +396,7 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
                                 answer += ingest_document(
                                     fullragchat_rag_source = fullragchat_rag_source, 
                                     rag_source_clue_value = rag_source_clue_value, 
+                                    docs_dir = docs_dir, 
                                     model=model, 
                                     fullragchat_embed_model=fullragchat_embed_model, 
                                     mkey=mkey, 
