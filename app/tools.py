@@ -9,6 +9,8 @@ from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_text_splitters import RecursiveCharacterTextSplitter # tweaked module name
+import re
+import subprocess
 
 ### # already imported and used in routes.py - need to import here too?
 ### from langchain_community.vectorstores import FAISS
@@ -224,13 +226,8 @@ def create_transcription_corrections(to_sum, map_red_chunk_size, model, mkey, fu
     return corrections
 
 
-def chatbot_command(query):
-    rag_source_clue_value = ???
+def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_embed_model, mkey, fullragchat_temp):
     answer = ''
-    if current_user.role != 'administrator':
-        answer += f'Error: Must be an admin user, not an admin. '
-        logging.error(f'=*=*=*> Non admin "{current_user.username}" attempting admin; user ID = "{current_user.id}" ')
-        return answer
     pattern = r'^chatbot_command\.([a-z]+)\(([^)]+)\)$'
     match = re.search(pattern, query)
     if match:
@@ -249,16 +246,12 @@ def chatbot_command(query):
             return answer
         else:
             if meth == 'listusers':
-                ### from app import app, db
-                ### from app.models import User
-                ### import sqlalchemy as sa
-                ### app.app_context().push()
-                # https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database
-                users = db.session.scalars(query)
+                users = db.session.scalars(query) ### will not work yet
                 answer += f'Users in DB: '
                 for u in users:
                     answer += (f'***ID: "{u.id}", role: "{u.role}", username: "{u.username}", full_name: "{u.full_name}", email: "{u.email}", phone_number: "{u.phone_number}" ***')
             # set a user's role:
+                # https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database
                 # from app import app, db
                 # from app.models import User
                 # import sqlalchemy as sa

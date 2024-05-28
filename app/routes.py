@@ -37,8 +37,6 @@ webserver_hostname = socket.gethostname()
 
 ### TODO:
 
-### Implement {bot_specific_examples()}
-### Implement {actual_dir_list()} 
 ### debug tools
 ### debug ingestion
 ### CAPTCHA
@@ -233,6 +231,7 @@ def edit_profile():
 # langchain-mistralai
 # faiss-cpu
 from app.prompts import CHATBOT83_TEMPLATE, VTSBOT_TEMPLATE, GERBOT_TEMPLATE, get_filename_inc_list_template, SIMPLE_CHAT_TEMPLATE
+from app.tools import chatbot_command
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.llms import Ollama
 from langchain_community.vectorstores import FAISS
@@ -311,8 +310,15 @@ def reply():
     answer = ''
     rag_pfn = f'{current_user.chatbot}/nothing.faiss'
     if current_user.role == 'administrator':
-        if query == f'admin stuff':
-            response = 'Did admin stuff.'
+        if query.startswith('chatbot_command.'):
+            response = chatbot_command(
+                query=query, 
+                rag_source_clue_value=f'{current_user.chatbot}/rag_source_clues.txt', 
+                docs_dir=f'{current_user.chatbot}/', 
+                model = current_user.model, 
+                fullragchat_embed_model = current_user.embed_model, 
+                mkey = current_user.llm_api_key, 
+                fullragchat_temp = current_user.llm_temp)
             current_user.chat_history.append({
                 'user':current_user.chatbot, 
                 'message':response})
