@@ -427,6 +427,7 @@ def reply():
     db.session.commit()
     return render_template('chat.html', title='Chat') # loops back in html
 
+
 # prompt for LLM in ==> LLM response out
 def large_lang_model(query):
     if ( (current_user.model == "open-mixtral-8x7b") or 

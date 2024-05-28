@@ -42,20 +42,20 @@
 	{% if current_user.role == "administrator" %}
 		<div>
 			Process is to download to server, then to ingest.<br>
-			&quot;pfn&quot; is path and filename; &quot;None&quot; must be included where indicated.<br>
+			&quot;pfn&quot; is path and filename (relative, absolute, or https:// ending in .html); &quot;None&quot; must be included where indicated.<br>
 			chatbot_command.apikey(None)          # Displays API key<br>
 			chatbot_command.batchingest(pfn)      # Batch ingest local from based on contents of pfn, see pdf_batch_ingest_sample.txt<br>
 			chatbot_command.corrections(pfn)      # Transcription corrections written to .cur file<br>
-			chatbot_command.delete(pfn)           # Not yet implemented (use ssh and winscp)<br>
+			chatbot_command.delete(pfn)           # Delete server local file <i>Not yet implemented (use ssh and winscp)</i><br>
 			chatbot_command.download(pfn)         # Save one file from web to local<br>
 			chatbot_command.ingest(pfn)           # Ingest one file from local<br>
 			chatbot_command.listclues(None)       # Lists available faiss as per clues file<br>
 			chatbot_command.listfiles(None)       # Lists available faiss from local<br>
-			chatbot_command.listusers(None)       # Lists users<br>
+			chatbot_command.listusers(None)       # Lists users <i>Not yet implemented (use ssh and &quot;users = db.session.scalars(query)&quot; in interactive python)</i><br>
 			chatbot_command.mapreducesummary(pfn) # Map Reduce Summarize one file from web or local, output to chat only (larger)<br>
 			chatbot_command.ollamalist(None)      # Displays loaded/running Ollama models<br>
 			chatbot_command.pwd(None)             # Displays working directory<br>
-			chatbot_command.summary(pfn)          # Summarize one file from web or local, output to chat only (smaller <15 pages)<br>
+			chatbot_command.summary(pfn)          # Summarize one file from web or local (maybe not html tho), output to chat only (smaller than 15 pages)<br>
 			chatbot_command.test(None)            # Tests access to rag_source_clue_value<br>
 			Note: &quot;rag_source_clues.txt&quot; controls rag selection<br>
 			Note: Need to search and write FAISS with same embedder, either nomic-embed-text or mistral-embed; can't cross.<br>

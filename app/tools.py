@@ -1,23 +1,31 @@
 #!/usr/bin/env python
 
 
+import logging
+logging.basicConfig(level=logging.INFO, 
+                    filename='./log.log', 
+                    filemode='a', 
+                    format='%(asctime)s -%(levelname)s - %(message)s')
+
+# pipenv installs needed: beautifulsoup4
 from app.prompts import SUMMARY_TEMPLATE, VTT_TRANSCRIPTION_CORRECTIONS_TEMPLATE
 from datetime import datetime
 from langchain_community.document_loaders import JSONLoader
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.document_loaders import TextLoader
 from langchain_community.document_loaders import WebBaseLoader
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_text_splitters import RecursiveCharacterTextSplitter # tweaked module name
+import os
 import re
+import requests
 import subprocess
 
 ### # already imported and used in routes.py - need to import here too?
 ### from langchain_community.vectorstores import FAISS
-### from langchain_core.prompts import ChatPromptTemplate
-### from langchain_core.output_parsers import StrOutputParser
 
-### from routes import large_lang_model
 ### # function is in routes.py - not sure if can will just use that, can import, or should just duplicate
 ### from routes import get_embedding_func
 
@@ -54,6 +62,7 @@ def ingest_document(fullragchat_rag_source, rag_source_clue_value, model, fullra
         return answer
     # Get text
     rag_text = get_rag_text(
+        fullragchat_rag_source=fullragchat_rag_source, 
         query=query, 
         start_page=start_page, 
         end_page=end_page )
@@ -136,15 +145,16 @@ def ingest_document(fullragchat_rag_source, rag_source_clue_value, model, fullra
     return answer
 
 
-def get_rag_text(query, start_page, end_page): # loads from loader fullragchat_rag_source path/file w/ .txt .html .pdf .vtt or .json 
+def get_rag_text(fullragchat_rag_source, query, start_page, end_page): # loads from loader fullragchat_rag_source path/file w/ .txt .html .pdf .vtt or .json 
     # function ignores passed query value
-    fullragchat_rag_source = ???
     pattern = r'\.([a-zA-Z]{3,5})$'
     match = re.search(pattern, fullragchat_rag_source) # global
     rag_ext = match.group(1)
     # https://python.langchain.com/docs/modules/data_connection/document_loaders/json
     if (rag_ext == "txt") or (rag_ext == "vtt"):
-        loader = TextLoader(fullragchat_rag_source, encoding="utf8") # ex: /path/filename # not sure utf8 needed here
+        loader = TextLoader(fullragchat_rag_source, encoding="utf8") 
+        # ex: /path/filename # not sure utf8 needed here
+        # needs beautifulsoup4...
     elif (rag_ext == "html") or (rag_ext == "htm"):
         loader = WebBaseLoader(fullragchat_rag_source) # ex: https://url/file.html
     elif rag_ext == "pdf":
@@ -164,6 +174,7 @@ def get_rag_text(query, start_page, end_page): # loads from loader fullragchat_r
 
 
 def create_summary(to_sum, model, mkey, fullragchat_temp):
+    from app.routes import large_lang_model # here to avoid circular load
     prompt = ChatPromptTemplate.from_template(SUMMARY_TEMPLATE)
     chain = ( prompt | large_lang_model | StrOutputParser() )
     try:
@@ -208,6 +219,7 @@ def create_map_reduce_summary(to_sum, map_red_chunk_size, model, mkey, fullragch
 
 
 def create_transcription_corrections(to_sum, map_red_chunk_size, model, mkey, fullragchat_temp):
+    from app.routes import large_lang_model # here to avoid circular load
     corrections = ''
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size = map_red_chunk_size, 
@@ -261,6 +273,7 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
                 answer += f'Summary of "{path_filename}": ' + '\n'
                 fullragchat_rag_source = path_filename
                 some_text_blob = get_rag_text(
+                    fullragchat_rag_source=fullragchat_rag_source, 
                     query=query, 
                     start_page=None, 
                     end_page=None )
@@ -278,7 +291,11 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
                     curfile_fn = f'{base_fn}.cur'
                     corrected_vtt_fn = f'{base_fn}_corrected.vtt'
                     date_time = datetime.now()
-                    rag_text = get_rag_text(query=query, start_page=None, end_page=None )
+                    rag_text = get_rag_text(
+                        fullragchat_rag_source=fullragchat_rag_source, 
+                        query=query, 
+                        start_page=None, 
+                        end_page=None )
                     corrections_text = create_transcription_corrections(
                         to_sum = rag_text, 
                         map_red_chunk_size = my_correction_chunk_size, 
@@ -297,7 +314,11 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
             elif meth == 'mapreducesummary': # output to chat only
                 answer += f'Map reduce summary of "{path_filename}": ' + '\n'
                 fullragchat_rag_source = path_filename
-                some_text_blob = get_rag_text(query=query, start_page=None, end_page=None )
+                some_text_blob = get_rag_text(
+                    fullragchat_rag_source=fullragchat_rag_source, 
+                    query=query, 
+                    start_page=None, 
+                    end_page=None )
                 answer += create_map_reduce_summary(
                     to_sum = some_text_blob, 
                     map_red_chunk_size = my_map_red_chunk_size, 
