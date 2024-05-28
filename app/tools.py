@@ -31,9 +31,7 @@ my_map_red_chunk_size = 50000 # This is for map reduce summary, the largest text
 my_correction_chunk_size = 6000 # This is for chunking to correction parse; seems to timeout on same size it can summerize... (Going with 1/5.)
 
 
-def ingest_document(model, fullragchat_embed_model, mkey, query, fullragchat_temp, start_page, end_page):
-    fullragchat_rag_source = ???
-    rag_source_clue_value = ???
+def ingest_document(fullragchat_rag_source, rag_source_clue_value, model, fullragchat_embed_model, mkey, query, fullragchat_temp, start_page, end_page):
     logging.info(f'===> Attempting ingestion on "{fullragchat_rag_source}", with page range "{start_page}" to "{end_page}". (All pages if Nones.)')
     answer = ''
     if not os.path.exists(fullragchat_rag_source):
@@ -307,13 +305,15 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
             elif meth == 'ingest': # from web or local - saves X as .faiss (and .txt), w/ .cur file, and adds to rag_source_clue_value
                 fullragchat_rag_source = path_filename
                 answer += ingest_document(
-                    model=model, 
-                    fullragchat_embed_model=fullragchat_embed_model, 
-                    mkey=mkey, 
-                    query=query, 
-                    fullragchat_temp=fullragchat_temp,
-                    start_page=None, 
-                    end_page=None )
+                    fullragchat_rag_source = fullragchat_rag_source, 
+                    rag_source_clue_value = rag_source_clue_value, 
+                    model = model, 
+                    fullragchat_embed_model = fullragchat_embed_model, 
+                    mkey = mkey, 
+                    query = query, 
+                    fullragchat_temp = fullragchat_temp,
+                    start_page = None, 
+                    end_page = None )
             elif meth == 'download': # just save from web to local
                 local_filename = docs_dir + '/' + os.path.basename(path_filename)
                 if os.path.exists(local_filename):
@@ -369,6 +369,8 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
                                 start_page = match.group(2)
                                 end_page = match.group(3)
                                 answer += ingest_document(
+                                    fullragchat_rag_source = fullragchat_rag_source, 
+                                    rag_source_clue_value = rag_source_clue_value, 
                                     model=model, 
                                     fullragchat_embed_model=fullragchat_embed_model, 
                                     mkey=mkey, 
@@ -382,6 +384,8 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
                                 if match: # item is pfn only w/ no page numbers
                                     fullragchat_rag_source = match.group(1)
                                     answer += ingest_document(
+                                        fullragchat_rag_source = fullragchat_rag_source, 
+                                        rag_source_clue_value = rag_source_clue_value, 
                                         model=model, 
                                         fullragchat_embed_model=fullragchat_embed_model,
                                         mkey=mkey, 
