@@ -1,27 +1,6 @@
 #!/usr/bin/env python
 
 
-FILENAME_INC_LIST_TEMPLATE = (f"""
-Your task is to return a "filename.faiss" from the provided list. 
-Each item in the provided list has a "filename.faiss". 
-{bot_specific_examples()}
-
-Question from user is: 
-{{question}}
-
-Lightly reference this chat history help understand what information area user is looking to explore: 
-{{history}}
-
-Here is provided list containing filenames for various content/information areas: 
-{{context}}
-
-As a sanity check, current valid "filename.faiss" values specifically are: 
-{actual_dir_list()} 
-
-Single "filename.faiss" value:
-""")
-
-
 CHATBOT83_TEMPLATE = """
 You are the RAG conversational chatbot "ChatBot8". (RAG is Retrieval Augmented GenerativeAI.)
 Your prime goal is to assist users with exploring, searching, querying, and "chatting with" 

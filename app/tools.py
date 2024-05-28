@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 
+from app.prompts import SUMMARY_TEMPLATE, VTT_TRANSCRIPTION_CORRECTIONS_TEMPLATE
 from datetime import datetime
 from langchain_community.document_loaders import JSONLoader
 from langchain_community.document_loaders import PyPDFLoader
@@ -14,7 +15,6 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter # tweaked mo
 ### from langchain_core.prompts import ChatPromptTemplate
 ### from langchain_core.output_parsers import StrOutputParser
 
-### from app.prompts import SUMMARY_TEMPLATE, VTT_TRANSCRIPTION_CORRECTIONS_TEMPLATE
 ### from routes import large_lang_model
 ### # function is in routes.py - not sure if can will just use that, can import, or should just duplicate
 ### from routes import get_embedding_func
@@ -248,7 +248,25 @@ def chatbot_command(query):
             answer += f'Error: Invalid extension request, "{rag_ext}".'
             return answer
         else:
-            if meth == 'summary': # output to chat only
+            if meth == 'listusers':
+                ### from app import app, db
+                ### from app.models import User
+                ### import sqlalchemy as sa
+                ### app.app_context().push()
+                # https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database
+                users = db.session.scalars(query)
+                answer += f'Users in DB: '
+                for u in users:
+                    answer += (f'***ID: "{u.id}", role: "{u.role}", username: "{u.username}", full_name: "{u.full_name}", email: "{u.email}", phone_number: "{u.phone_number}" ***')
+            # set a user's role:
+                # from app import app, db
+                # from app.models import User
+                # import sqlalchemy as sa
+                # app.app_context().push()
+                # z = db.session.get(User, 1)
+                # z.role = 'admin'
+                # db.session.commit()
+            elif meth == 'summary': # output to chat only
                 answer += f'Summary of "{path_filename}": ' + '\n'
                 fullragchat_rag_source = path_filename
                 some_text_blob = get_rag_text(
