@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1>Edit Profile:</h1>
-Note: May have to enter all fields, even ones not changing.<br>
+    Note: May have to enter all fields, even ones not changing.<br>
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
@@ -33,6 +33,7 @@ Note: May have to enter all fields, even ones not changing.<br>
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
+        <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="dark"></div>
         <p>{{ form.submit() }}</p>
     </form>
 {% endblock %}

@@ -32,7 +32,6 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
-
         <p>
             {{ form.full_name.label }}<br>
             {{ form.full_name(size=120) }}<br>
@@ -41,7 +40,7 @@
             {{ form.phone_number.label }}<br>
             {{ form.phone_number(size=20) }}<br>
         </p>
-
+        <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="dark"></div>
         <p>{{ form.submit() }}</p>
     </form>
 {% endblock %}

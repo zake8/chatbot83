@@ -39,6 +39,8 @@ pop_fullragchat_history_over_num = 10 # should be like 26
 
 webserver_hostname = socket.gethostname()
 
+TURNSTILE_SECRET_KEY = os.getenv('CLOUDFLARE_TURNSTILE_SECRET_KEY')
+
 ### TODO:
 
 ### CAPTCHA
@@ -83,7 +85,7 @@ def ChatBot83():
     current_user.model = 'open-mixtral-8x7b'
     current_user.embed_model = 'mistral-embed'
     current_user.llm_temp = 0.25
-    current_user.llm_api_key = os.getenv('Mistral_API_key')
+    current_user.llm_api_key = os.getenv('MISTRAL_API_KEY')
     current_user.rag_list = ['None', 'Auto'] + gen_rag_list()
     current_user.rag_selected = 'None'
     current_user.chat_history = []
@@ -112,7 +114,7 @@ def GerBot():
     current_user.model = 'open-mixtral-8x7b'
     current_user.embed_model = 'mistral-embed'
     current_user.llm_temp = 0.25
-    current_user.llm_api_key = 'test'
+    current_user.llm_api_key = os.getenv('MISTRAL_API_KEY')
     current_user.rag_list = ['Auto'] + gen_rag_list()
     current_user.rag_selected = 'Auto'
     current_user.chat_history = []
@@ -131,7 +133,7 @@ def VTSBot():
     current_user.model = 'open-mixtral-8x7b'
     current_user.embed_model = 'mistral-embed'
     current_user.llm_temp = 0.25
-    current_user.llm_api_key = 'test'
+    current_user.llm_api_key = os.getenv('MISTRAL_API_KEY')
     current_user.rag_list = ['Auto'] + gen_rag_list()
     current_user.rag_selected = 'Auto'
     current_user.chat_history = []
@@ -159,6 +161,21 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
+        # cf-turnstile part
+        turnstile_token = form.cf-turnstile-response.data
+        if not turnstile_token:
+            flash('No Turnstile token found.')
+            return render_template('register.html', title='Register',
+                                    form=form)
+        response = requests.post(
+            'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+            data={'secret': TURNSTILE_SECRET_KEY, 'response': turnstile_token})
+        result = response.json()
+        if not result.get('success'):
+            flash('Turnstile verification failed')
+            return render_template('register.html', title='Register',
+                                    form=form)
+        # handle form submission
         user = db.session.scalar(
             sa.select(User).where(User.username == form.username.data))
         if user is None or not user.check_password(form.password.data):
@@ -170,7 +187,8 @@ def login():
         if not next_page or urlsplit(next_page).netloc != '':
             next_page = url_for('index')
         return redirect(next_page)
-    return render_template('login.html', title='Sign In', form=form)
+    return render_template('login.html', title='Sign In', 
+                            form=form)
 
 
 @app.route('/logout')
@@ -186,6 +204,21 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
+        # cf-turnstile part
+        turnstile_token = form.cf-turnstile-response.data
+        if not turnstile_token:
+            flash('No Turnstile token found.')
+            return render_template('register.html', title='Register',
+                                    form=form)
+        response = requests.post(
+            'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+            data={'secret': TURNSTILE_SECRET_KEY, 'response': turnstile_token})
+        result = response.json()
+        if not result.get('success'):
+            flash('Turnstile verification failed')
+            return render_template('register.html', title='Register',
+                                    form=form)
+        # handle form submission
         user = User(username=form.username.data, email=form.email.data)
         user.set_password(form.password.data)
         db.session.add(user)
@@ -193,14 +226,16 @@ def register():
         flash('Congratulations, you are now a registered user!')
         logging.info(f'=*=*=*> User "{current_user.username}" registered.')
         return redirect(url_for('login'))
-    return render_template('register.html', title='Register', form=form)
+    return render_template('register.html', title='Register', 
+                            form=form)
 
 
 @app.route('/user/<username>')
 @login_required
 def user(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
-    return render_template('user.html', user=user)
+    return render_template('user.html', 
+                            user=user)
 
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
@@ -208,6 +243,21 @@ def user(username):
 def edit_profile():
     form = EditProfileForm()
     if form.validate_on_submit():
+        # cf-turnstile part
+        turnstile_token = form.cf-turnstile-response.data
+        if not turnstile_token:
+            flash('No Turnstile token found.')
+            return render_template('register.html', title='Register',
+                                    form=form)
+        response = requests.post(
+            'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+            data={'secret': TURNSTILE_SECRET_KEY, 'response': turnstile_token})
+        result = response.json()
+        if not result.get('success'):
+            flash('Turnstile verification failed')
+            return render_template('register.html', title='Register',
+                                    form=form)
+        # handle form submission
         current_user.username     = form.username.data
         current_user.email        = form.email.data
         current_user.full_name    = form.full_name.data
