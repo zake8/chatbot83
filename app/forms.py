@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+
+# pipenv installs:
+# flask-wtf
+# email-validator
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo

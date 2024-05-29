@@ -6,6 +6,9 @@ logging.basicConfig(level=logging.INFO,
                     filemode='a', 
                     format='%(asctime)s -%(levelname)s - %(message)s')
 
+# pipenv installs:
+# flask-sqlalchemy
+# python-dotenv
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm
 from app.models import User
@@ -15,6 +18,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 # Flask session management stores user-specific data; each user gets a unique session object, 
 # and their data is isolated from other users' sessions. Each request is handled by a separate thread, 
 # and data stored in the request context is isolated between requests.
+# https://flask-login.readthedocs.io/en/latest/#
 from urllib.parse import urlsplit
 import os
 import re
@@ -37,8 +41,6 @@ webserver_hostname = socket.gethostname()
 
 ### TODO:
 
-### debug tools
-### debug ingestion
 ### CAPTCHA
 ### email a link to click to confirm email and proceed w/ registration
 ### change pw functionality
@@ -82,7 +84,7 @@ def ChatBot83():
     current_user.embed_model = 'mistral-embed'
     current_user.llm_temp = 0.25
     current_user.llm_api_key = os.getenv('Mistral_API_key')
-    current_user.rag_list = ['None', 'Auto'] + gen_rag_list() ### can you add/merge lists?
+    current_user.rag_list = ['None', 'Auto'] + gen_rag_list()
     current_user.rag_selected = 'None'
     current_user.chat_history = []
     current_user.chat_history.append({
@@ -222,7 +224,7 @@ def edit_profile():
 
 # Chat and LLM functions
 
-# pipenv install:
+# pipenv installs:
 # langchain_community.document_loaders
 # langchain-core
 # langchain-community
@@ -502,6 +504,7 @@ def render_video(query):
     ### search rag index for timecode for vectordb_matches
     ### render clips with captions burned
     ### create montage.mp4
+    # https://ffmpeg.org/download.html
     return RunnableParallel({
         "context": RunnablePassthrough(), 
         "question": RunnablePassthrough(), 

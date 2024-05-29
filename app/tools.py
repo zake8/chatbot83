@@ -28,7 +28,7 @@ import subprocess
 my_chunk_size = 300 # chunk_size= and chunk_overlap, what should they be, how do they relate to file size, word/token/letter count?
 my_chunk_overlap = 100 # what should overlap % be to retain meaning and search-ability? # https://chunkviz.up.railway.app/
 create_summary_on_ingest = True
-create_corrections_on_ingest = False
+create_corrections_on_ingest = False # Current corrections function really only for VTS VTT files.
 my_map_red_chunk_size = 50000 # This is for map reduce summary, the largest text by character length to try to send # Mixtral-8x7b is a max context size of 32k tokens
 my_correction_chunk_size = 6000 # This is for chunking to correction parse; seems to timeout on same size it can summerize... (Going with 1/5.)
 
@@ -122,13 +122,11 @@ def ingest_document(fullragchat_rag_source, rag_source_clue_value, docs_dir, mod
     curfile_content += f'Model/temp LLM = {model} / {fullragchat_temp} \n'
     if create_corrections_on_ingest:
         curfile_content += f'Saved new .vtt file, "{corrected_vtt_fn}" \n'
-    ##### curfile_content += f'\n<summary>\n{summary_text_for_output}\n</summary>\n'
     with open(docs_dir + '/' + curfile_fn, 'a', encoding="utf8") as file: # 'a' = append, create new if none
         file.write(curfile_content)
     logging.info(f'===> saved new .cur file, "{curfile_fn}"')
     answer += f'Wrote "{curfile_fn}". '
     # Add name and summary to rag source clue file for LLM to use!
-    ##### strip = len(f'{docs_dir}/')
     clue_file_text  = '\n'
     clue_file_text += 'filename = "' + faiss_index_fn + '" \n'
     if start_page and end_page:
@@ -259,7 +257,7 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
             return answer
         else:
             if meth == 'listusers':
-                users = db.session.scalars(query) ### will not work yet
+                users = db.session.scalars(query) ### will not work yet as we have no db session or current_user stuff in tools.py
                 answer += f'Users in DB: '
                 for u in users:
                     answer += (f'***ID: "{u.id}", role: "{u.role}", username: "{u.username}", full_name: "{u.full_name}", email: "{u.email}", phone_number: "{u.phone_number}" ***')
