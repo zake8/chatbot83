@@ -19,6 +19,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 # and their data is isolated from other users' sessions. Each request is handled by a separate thread, 
 # and data stored in the request context is isolated between requests.
 # https://flask-login.readthedocs.io/en/latest/#
+from flask_turnstile import Turnstile # https://github.com/Tech1k/flask-turnstile
 from urllib.parse import urlsplit
 import os
 import re
@@ -39,7 +40,9 @@ pop_fullragchat_history_over_num = 10 # should be like 26
 
 webserver_hostname = socket.gethostname()
 
+turnstile = Turnstile(app=app)
 TURNSTILE_SECRET_KEY = os.getenv('CLOUDFLARE_TURNSTILE_SECRET_KEY')
+TURNSTILE_SITE_KEY =   os.getenv('CLOUDFLARE_TURNSTILE_SITE_KEY')
 
 ### TODO:
 
@@ -161,32 +164,22 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        # cf-turnstile part
-        turnstile_token = form.cf-turnstile-response.data
-        if not turnstile_token:
-            flash('No Turnstile token found.')
-            return render_template('register.html', title='Register',
-                                    form=form)
-        response = requests.post(
-            'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-            data={'secret': TURNSTILE_SECRET_KEY, 'response': turnstile_token})
-        result = response.json()
-        if not result.get('success'):
+        if not turnstile.verify():
             flash('Turnstile verification failed')
-            return render_template('register.html', title='Register',
+            return render_template('login.html', title='Sign In',
                                     form=form)
-        # handle form submission
-        user = db.session.scalar(
-            sa.select(User).where(User.username == form.username.data))
-        if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
-            return redirect(url_for('login'))
-        login_user(user, remember=form.remember_me.data)
-        logging.info(f'=*=*=*> User "{current_user.username}" logged in.')
-        next_page = request.args.get('next')
-        if not next_page or urlsplit(next_page).netloc != '':
-            next_page = url_for('index')
-        return redirect(next_page)
+        else:
+            user = db.session.scalar(
+                sa.select(User).where(User.username == form.username.data))
+            if user is None or not user.check_password(form.password.data):
+                flash('Invalid username or password')
+                return redirect(url_for('login'))
+            login_user(user, remember=form.remember_me.data)
+            logging.info(f'=*=*=*> User "{current_user.username}" logged in.')
+            next_page = request.args.get('next')
+            if not next_page or urlsplit(next_page).netloc != '':
+                next_page = url_for('index')
+            return redirect(next_page)
     return render_template('login.html', title='Sign In', 
                             form=form)
 
@@ -204,28 +197,18 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        # cf-turnstile part
-        turnstile_token = form.cf-turnstile-response.data
-        if not turnstile_token:
-            flash('No Turnstile token found.')
-            return render_template('register.html', title='Register',
-                                    form=form)
-        response = requests.post(
-            'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-            data={'secret': TURNSTILE_SECRET_KEY, 'response': turnstile_token})
-        result = response.json()
-        if not result.get('success'):
+        if not turnstile.verify():
             flash('Turnstile verification failed')
             return render_template('register.html', title='Register',
                                     form=form)
-        # handle form submission
-        user = User(username=form.username.data, email=form.email.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash('Congratulations, you are now a registered user!')
-        logging.info(f'=*=*=*> User "{current_user.username}" registered.')
-        return redirect(url_for('login'))
+        else:
+            user = User(username=form.username.data, email=form.email.data)
+            user.set_password(form.password.data)
+            db.session.add(user)
+            db.session.commit()
+            flash('Congratulations, you are now a registered user!')
+            logging.info(f'=*=*=*> User "{current_user.username}" registered.')
+            return redirect(url_for('login'))
     return render_template('register.html', title='Register', 
                             form=form)
 
@@ -243,29 +226,19 @@ def user(username):
 def edit_profile():
     form = EditProfileForm()
     if form.validate_on_submit():
-        # cf-turnstile part
-        turnstile_token = form.cf-turnstile-response.data
-        if not turnstile_token:
-            flash('No Turnstile token found.')
-            return render_template('register.html', title='Register',
-                                    form=form)
-        response = requests.post(
-            'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-            data={'secret': TURNSTILE_SECRET_KEY, 'response': turnstile_token})
-        result = response.json()
-        if not result.get('success'):
+        if not turnstile.verify():
             flash('Turnstile verification failed')
-            return render_template('register.html', title='Register',
+            return render_template('edit_profile.html', title='Edit Profile',
                                     form=form)
-        # handle form submission
-        current_user.username     = form.username.data
-        current_user.email        = form.email.data
-        current_user.full_name    = form.full_name.data
-        current_user.phone_number = form.phone_number.data
-        db.session.commit()
-        flash('Your changes have been saved.')
-        logging.info(f'=*=*=*> User "{current_user.username}" edited profile.')
-        return redirect(url_for('edit_profile'))
+        else:
+            current_user.username     = form.username.data
+            current_user.email        = form.email.data
+            current_user.full_name    = form.full_name.data
+            current_user.phone_number = form.phone_number.data
+            db.session.commit()
+            flash('Your changes have been saved.')
+            logging.info(f'=*=*=*> User "{current_user.username}" edited profile; turnstile.verify() = "{turnstile.verify()}", TURNSTILE_SITE_KEY = "{TURNSTILE_SITE_KEY}"')
+            return redirect(url_for('edit_profile'))
     elif request.method == 'GET':
         form.username.data = current_user.username
     return render_template('edit_profile.html', title='Edit Profile',

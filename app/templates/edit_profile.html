@@ -33,8 +33,9 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
-        <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme="dark"></div>
+        {{ turnstile }}
         <p>{{ form.submit() }}</p>
     </form>
+    </script>
 {% endblock %}
 
