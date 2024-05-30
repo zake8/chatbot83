@@ -47,3 +47,12 @@ class EditProfileForm(FlaskForm):
     full_name = StringField('Full Name')
     phone_number = StringField('Phone Number')
     submit = SubmitField('Submit')
+
+
+class ChangePasswordForm(FlaskForm):
+    password = PasswordField('Current (Old) Password', validators=[DataRequired()])
+    new_password = PasswordField('New Password', validators=[DataRequired()])
+    new_password2 = PasswordField(
+        'Repeat New Password', validators=[DataRequired(), EqualTo('new_password')])
+    submit = SubmitField('Register')
+

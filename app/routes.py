@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO,
 # flask-sqlalchemy
 # python-dotenv
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, ChangePasswordForm
 from app.models import User
 from dotenv import load_dotenv
 from flask import render_template, flash, redirect, url_for, request
@@ -21,6 +21,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 # https://flask-login.readthedocs.io/en/latest/#
 from flask_turnstile import Turnstile # https://github.com/Tech1k/flask-turnstile
 from urllib.parse import urlsplit
+from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import re
 import socket
@@ -46,8 +47,7 @@ TURNSTILE_SITE_KEY =   os.getenv('CLOUDFLARE_TURNSTILE_SITE_KEY')
 
 ### TODO:
 
-### CAPTCHA
-### tweak out nothing.faiss from drop downs
+### CAPTCHA - test to ensure works, ideally change from invisible to lite(?) or managed
 ### email a link to click to confirm email and proceed w/ registration
 ### change pw functionality
 ### How to view all users and their data? How to set admin role?
@@ -243,6 +243,31 @@ def edit_profile():
     elif request.method == 'GET':
         form.username.data = current_user.username
     return render_template('edit_profile.html', title='Edit Profile',
+                           form=form)
+
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if not turnstile.verify():
+            flash('Turnstile verification failed')
+            return render_template('change_password.html', title='Change Password',
+                                    form=form)
+        else:
+            if not check_password_hash(current_user.password_hash, form.password.data):
+                flash('Incorrect password - NO changes saved.')
+                return redirect(url_for('change_password'))
+            else:
+                current_user.password_hash = generate_password_hash(form.new_password.data)
+                db.session.commit()
+                flash('Your changes have been saved.')
+                logging.info(f'=*=*=*> User "{current_user.username}" changed password; turnstile.verify() = "{turnstile.verify()}", TURNSTILE_SITE_KEY = "{TURNSTILE_SITE_KEY}"')
+                return redirect(url_for('change_password'))
+    elif request.method == 'GET':
+        pass # no pre-population from db wanted/needed
+    return render_template('change_password.html', title='Change Password',
                            form=form)
 
 
