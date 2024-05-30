@@ -47,6 +47,7 @@ TURNSTILE_SITE_KEY =   os.getenv('CLOUDFLARE_TURNSTILE_SITE_KEY')
 ### TODO:
 
 ### CAPTCHA
+### tweak out nothing.faiss from drop downs
 ### email a link to click to confirm email and proceed w/ registration
 ### change pw functionality
 ### How to view all users and their data? How to set admin role?
@@ -151,7 +152,7 @@ def gen_rag_list(): # returns list
     fn_list = []
     extensions = (".faiss")
     for file in os.listdir(f'{current_user.chatbot}'):
-        if file.endswith(extensions):
+        if file.endswith(extensions) and file != 'nothing.faiss':
             fn_list.append(file)
     return fn_list
 
