@@ -19,12 +19,33 @@ from flask_login import login_user, logout_user, current_user, login_required
 # and their data is isolated from other users' sessions. Each request is handled by a separate thread, 
 # and data stored in the request context is isolated between requests.
 # https://flask-login.readthedocs.io/en/latest/#
+from flask_simple_captcha import CAPTCHA
 from urllib.parse import urlsplit
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import re
 import socket
 import sqlalchemy as sa
+
+
+# CAPTCHA setup
+
+# https://github.com/cc-d/flask-simple-captcha
+CAPTCHA_CONFIG = {
+    'SECRET_CAPTCHA_KEY': 'LONG_KEY',
+    'CAPTCHA_LENGTH': 5, # try 9 for prod
+    'CAPTCHA_DIGITS': False, # try True for prod
+    'EXPIRE_SECONDS': 600,
+    'CAPTCHA_IMG_FORMAT': 'JPEG',
+    'EXCLUDE_VISUALLY_SIMILAR': True,
+    'BACKGROUND_COLOR': (95, 87, 110), 
+    'TEXT_COLOR': (232, 221, 245), 
+    'ONLY_UPPERCASE': True, 
+}
+
+SIMPLE_CAPTCHA = CAPTCHA(config=CAPTCHA_CONFIG)
+
+app = SIMPLE_CAPTCHA.init_app(app)
 
 
 # Some global variable settings
@@ -158,6 +179,20 @@ def gen_rag_list(): # returns list
 
 # Authentication routes
 
+@app.route('/captcha_test', methods=['GET','POST'])
+def captcha_test():
+    if request.method == 'GET':
+        new_captcha_dict = SIMPLE_CAPTCHA.create()
+        return render_template('captcha_test.html', captcha=new_captcha_dict)
+    if request.method == 'POST':
+        c_hash = request.form.get('captcha-hash')
+        c_text = request.form.get('captcha-text')
+        if SIMPLE_CAPTCHA.verify(c_text, c_hash):
+            return 'Success!'
+        else:
+            return 'Failed CAPTCHA...'
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -226,9 +261,12 @@ def user(username):
 def edit_profile():
     form = EditProfileForm()
     if form.validate_on_submit():
-        if not True:
-            flash('CAPTCHA verification failed')
-            return render_template('edit_profile.html', title='Edit Profile',
+        c_hash = request.form.get('captcha-hash')
+        c_text = request.form.get('captcha-text')
+        if not SIMPLE_CAPTCHA.verify(c_text, c_hash):
+            flash('CAPTCHA verification failed; refresh for new CAPTCHA.')
+            return render_template('edit_profile.html', 
+                                    title='Edit Profile',
                                     form=form)
         else:
             current_user.username     = form.username.data
@@ -241,8 +279,14 @@ def edit_profile():
             return redirect(url_for('edit_profile'))
     elif request.method == 'GET':
         form.username.data = current_user.username
-    return render_template('edit_profile.html', title='Edit Profile',
-                           form=form)
+        new_captcha_dict = SIMPLE_CAPTCHA.create()
+        return render_template('edit_profile.html', 
+                                title='Edit Profile',
+                                form=form, 
+                                captcha=new_captcha_dict)
+    return render_template('edit_profile.html', 
+                            title='Edit Profile',
+                            form=form)
 
 
 @app.route('/change_password', methods=['GET', 'POST'])
