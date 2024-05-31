@@ -1,10 +1,10 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone # is this used?
 from typing import Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import db, login
+from app import db, login # is login used?
 from sqlalchemy.ext.mutable import MutableList
 
 
