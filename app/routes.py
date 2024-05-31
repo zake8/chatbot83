@@ -19,7 +19,6 @@ from flask_login import login_user, logout_user, current_user, login_required
 # and their data is isolated from other users' sessions. Each request is handled by a separate thread, 
 # and data stored in the request context is isolated between requests.
 # https://flask-login.readthedocs.io/en/latest/#
-from flask_turnstile import Turnstile # https://github.com/Tech1k/flask-turnstile
 from urllib.parse import urlsplit
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
@@ -41,15 +40,16 @@ pop_fullragchat_history_over_num = 10 # should be like 26
 
 webserver_hostname = socket.gethostname()
 
-turnstile = Turnstile(app=app)
-TURNSTILE_SECRET_KEY = os.getenv('CLOUDFLARE_TURNSTILE_SECRET_KEY')
-TURNSTILE_SITE_KEY =   os.getenv('CLOUDFLARE_TURNSTILE_SITE_KEY')
-
 ### TODO:
 
-### CAPTCHA - test to ensure works, ideally change from invisible to lite(?) or managed
-### email a link to click to confirm email and proceed w/ registration
-### change pw functionality
+### CAPTCHA
+###     unable to implement Cloudflare Turnstile "natively" as hyphens in return function broke html or flask or something
+###     tried to do Flask-Turnstile, but with this turnstile graphic never appeared and verify was always true
+###     have flask-simple-captcha in place but don't love it - want an easier captcha, but not re-captcha
+###     # from flask_turnstile import Turnstile # https://github.com/Tech1k/flask-turnstile
+### change pw functionality - test, ensure has captcha too
+### place and use favicon favicon8.png (currently pointing to steelrabbit one)
+### email a link to click to confirm email and proceed w/ registration - sample exists in flask mega tutorial
 ### How to view all users and their data? How to set admin role?
 ### functionality to watch videos with corrected subtitles
 ### functionality to view corrected subtitles vtt files (download, edit, return)
@@ -165,8 +165,8 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        if not turnstile.verify():
-            flash('Turnstile verification failed')
+        if not True:
+            flash('CAPTCHA verification failed')
             return render_template('login.html', title='Sign In',
                                     form=form)
         else:
@@ -198,8 +198,8 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        if not turnstile.verify():
-            flash('Turnstile verification failed')
+        if not True:
+            flash('CAPTCHA verification failed')
             return render_template('register.html', title='Register',
                                     form=form)
         else:
@@ -227,8 +227,8 @@ def user(username):
 def edit_profile():
     form = EditProfileForm()
     if form.validate_on_submit():
-        if not turnstile.verify():
-            flash('Turnstile verification failed')
+        if not True:
+            flash('CAPTCHA verification failed')
             return render_template('edit_profile.html', title='Edit Profile',
                                     form=form)
         else:
@@ -238,7 +238,7 @@ def edit_profile():
             current_user.phone_number = form.phone_number.data
             db.session.commit()
             flash('Your changes have been saved.')
-            logging.info(f'=*=*=*> User "{current_user.username}" edited profile; turnstile.verify() = "{turnstile.verify()}", TURNSTILE_SITE_KEY = "{TURNSTILE_SITE_KEY}"')
+            logging.info(f'=*=*=*> User "{current_user.username}" edited profile')
             return redirect(url_for('edit_profile'))
     elif request.method == 'GET':
         form.username.data = current_user.username
@@ -251,8 +251,8 @@ def edit_profile():
 def change_password():
     form = ChangePasswordForm()
     if form.validate_on_submit():
-        if not turnstile.verify():
-            flash('Turnstile verification failed')
+        if not True:
+            flash('CAPTCHA verification failed')
             return render_template('change_password.html', title='Change Password',
                                     form=form)
         else:
@@ -263,7 +263,7 @@ def change_password():
                 current_user.password_hash = generate_password_hash(form.new_password.data)
                 db.session.commit()
                 flash('Your changes have been saved.')
-                logging.info(f'=*=*=*> User "{current_user.username}" changed password; turnstile.verify() = "{turnstile.verify()}", TURNSTILE_SITE_KEY = "{TURNSTILE_SITE_KEY}"')
+                logging.info(f'=*=*=*> User "{current_user.username}" changed password')
                 return redirect(url_for('change_password'))
     elif request.method == 'GET':
         pass # no pre-population from db wanted/needed

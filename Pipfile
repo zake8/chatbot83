@@ -16,7 +16,7 @@ langchain-mistralai = "*"
 faiss-cpu = "*"
 beautifulsoup4 = "*"
 pypdf = "*"
-flask-turnstile = "*"
+flask-simple-captcha = "*"
 
 [dev-packages]
 
