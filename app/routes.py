@@ -48,7 +48,6 @@ webserver_hostname = socket.gethostname()
 ###     have flask-simple-captcha in place but don't love it - want an easier captcha, but not re-captcha
 ###     # from flask_turnstile import Turnstile # https://github.com/Tech1k/flask-turnstile
 ### change pw functionality - test, ensure has captcha too
-### place and use favicon favicon8.png (currently pointing to steelrabbit one)
 ### email a link to click to confirm email and proceed w/ registration - sample exists in flask mega tutorial
 ### How to view all users and their data? How to set admin role?
 ### functionality to watch videos with corrected subtitles
