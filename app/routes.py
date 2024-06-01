@@ -198,11 +198,16 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
+    new_captcha_dict = SIMPLE_CAPTCHA.create()
     if form.validate_on_submit():
-        if not True:
-            flash('CAPTCHA verification failed')
-            return render_template('login.html', title='Sign In',
-                                    form=form)
+        c_hash = request.form.get('captcha-hash')
+        c_text = request.form.get('captcha-text')
+        if not SIMPLE_CAPTCHA.verify(c_text, c_hash):
+            flash('CAPTCHA verification failed; refresh for new CAPTCHA.')
+            return render_template('login.html', 
+                                    title='Sign In',
+                                    form=form, 
+                                    captcha=new_captcha_dict)
         else:
             user = db.session.scalar(
                 sa.select(User).where(User.username == form.username.data))
@@ -215,8 +220,15 @@ def login():
             if not next_page or urlsplit(next_page).netloc != '':
                 next_page = url_for('index')
             return redirect(next_page)
-    return render_template('login.html', title='Sign In', 
-                            form=form)
+    elif request.method == 'GET':
+        return render_template('login.html', 
+                                title='Sign In',
+                                form=form, 
+                                captcha=new_captcha_dict)
+    return render_template('login.html', 
+                            title='Sign In', 
+                            form=form, 
+                            captcha=new_captcha_dict)
 
 
 @app.route('/logout')
@@ -231,21 +243,36 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = RegistrationForm()
+    new_captcha_dict = SIMPLE_CAPTCHA.create()
     if form.validate_on_submit():
-        if not True:
-            flash('CAPTCHA verification failed')
-            return render_template('register.html', title='Register',
-                                    form=form)
+        c_hash = request.form.get('captcha-hash')
+        c_text = request.form.get('captcha-text')
+        if not SIMPLE_CAPTCHA.verify(c_text, c_hash):
+            flash('CAPTCHA verification failed; refresh for new CAPTCHA.')
+            return render_template('register.html', 
+                                    title='Register',
+                                    form=form, 
+                                    captcha=new_captcha_dict)
         else:
-            user = User(username=form.username.data, email=form.email.data)
+            user = User(username=form.username.data, 
+                        email=form.email.data, 
+                        full_name=form.full_name.data, 
+                        phone_number=form.phone_number.data)
             user.set_password(form.password.data)
             db.session.add(user)
             db.session.commit()
             flash('Congratulations, you are now a registered user!')
-            logging.info(f'=*=*=*> User "{current_user.username}" registered.')
+            logging.info(f'=*=*=*> New user registered! full_name="{form.full_name.data}" username="{form.username.data}" email="{form.email.data}" phone #="{form.phone_number.data}"')
             return redirect(url_for('login'))
-    return render_template('register.html', title='Register', 
-                            form=form)
+    elif request.method == 'GET':
+        return render_template('register.html', 
+                                title='Register',
+                                form=form, 
+                                captcha=new_captcha_dict)
+    return render_template('register.html', 
+                            title='Register', 
+                            form=form, 
+                            captcha=new_captcha_dict)
 
 
 @app.route('/user/<username>')
@@ -260,6 +287,7 @@ def user(username):
 @login_required
 def edit_profile():
     form = EditProfileForm()
+    new_captcha_dict = SIMPLE_CAPTCHA.create()
     if form.validate_on_submit():
         c_hash = request.form.get('captcha-hash')
         c_text = request.form.get('captcha-text')
@@ -267,7 +295,8 @@ def edit_profile():
             flash('CAPTCHA verification failed; refresh for new CAPTCHA.')
             return render_template('edit_profile.html', 
                                     title='Edit Profile',
-                                    form=form)
+                                    form=form, 
+                                    captcha=new_captcha_dict)
         else:
             current_user.username     = form.username.data
             current_user.email        = form.email.data
@@ -279,28 +308,33 @@ def edit_profile():
             return redirect(url_for('edit_profile'))
     elif request.method == 'GET':
         form.username.data = current_user.username
-        new_captcha_dict = SIMPLE_CAPTCHA.create()
         return render_template('edit_profile.html', 
                                 title='Edit Profile',
                                 form=form, 
                                 captcha=new_captcha_dict)
     return render_template('edit_profile.html', 
                             title='Edit Profile',
-                            form=form)
+                            form=form, 
+                            captcha=new_captcha_dict)
 
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
     form = ChangePasswordForm()
+    new_captcha_dict = SIMPLE_CAPTCHA.create()
     if form.validate_on_submit():
-        if not True:
-            flash('CAPTCHA verification failed')
-            return render_template('change_password.html', title='Change Password',
-                                    form=form)
+        c_hash = request.form.get('captcha-hash')
+        c_text = request.form.get('captcha-text')
+        if not SIMPLE_CAPTCHA.verify(c_text, c_hash):
+            flash('CAPTCHA verification failed; refresh for new CAPTCHA.')
+            return render_template('change_password.html', 
+                                    title='Change Password',
+                                    form=form, 
+                                    captcha=new_captcha_dict)
         else:
             if not check_password_hash(current_user.password_hash, form.password.data):
-                flash('Incorrect password - NO changes saved.')
+                flash('Incorrect current/old password - NO changes saved.')
                 return redirect(url_for('change_password'))
             else:
                 current_user.password_hash = generate_password_hash(form.new_password.data)
@@ -309,9 +343,14 @@ def change_password():
                 logging.info(f'=*=*=*> User "{current_user.username}" changed password')
                 return redirect(url_for('change_password'))
     elif request.method == 'GET':
-        pass # no pre-population from db wanted/needed
-    return render_template('change_password.html', title='Change Password',
-                           form=form)
+        return render_template('change_password.html', 
+                                title='Change Password',
+                                form=form, 
+                                captcha=new_captcha_dict)
+    return render_template('change_password.html', 
+                            title='Change Password',
+                            form=form, 
+                            captcha=new_captcha_dict)
 
 
 # Chat and LLM functions

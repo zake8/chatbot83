@@ -40,6 +40,7 @@
             {{ form.phone_number.label }}<br>
             {{ form.phone_number(size=20) }}<br>
         </p>
+        {{ captcha_html(captcha)|safe }}
         <p>{{ form.submit() }}</p>
     </form>
 {% endblock %}
