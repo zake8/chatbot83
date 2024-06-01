@@ -1,23 +1,30 @@
 # ChatBot83
-** Conversational Retrieval Augmented GenerativeAI (RAG) chatbot with agent selected RAG content, user authentication, multiple private knowledge corpuses, and (future) video montage output. **
+
+**Conversational Retrieval Augmented GenerativeAI (RAG) chatbot with agent selected RAG content, user authentication, multiple private knowledge corpuses, and (future) video montage output.**
+
 
 ## To run in dev:
+
 - cd folder
 - pipenv shell
 - flask run --debug
   - flask run --debug --host IP == to access from other machines instead of localhost only
 
+
 ## For interactive Python
+
 - cd where_Pipfile_is
 - pipenv shell
 - cd where_app_is
 - flask shell (only works if .flaskenv setup as needed and app.py has @app.shell_context_processor)
 - python3 (just use this if can't do flask shell)
---  note will still not be running as www-data
+  - note will still not be running as www-data
 - exit()
 - exit
 
+
 ## In dev, any changes / additions to class User do a:
+
 - cd folder
 - pipenv shell
 - flask db migrate -m "note on changes/additions to class"
@@ -25,20 +32,29 @@
   - flask db downgrade == downgrades one revision
   - flask db downgrade base == database at its initial state)
 
+
 ## To set up prod:
-[ ]  Ubuntu v22
-[ ]  sudo apt-get update
-[ ]  sudo apt-get upgrade -y
-[ ]  sudo apt install apache2 -y
-[ ]  sudo apt install libapache2-mod-wsgi-py3 -y
-[ ]  sudo apt install ffmpeg -y == only needed on GUI-less server OS where not installed already
-[ ]  sudo apt install pipenv -y == may throw errors on Ubuntu and reqr workaround
+
+[ ] Ubuntu v22
+
+[ ] sudo apt-get update
+
+[ ] sudo apt-get upgrade -y
+
+[ ] sudo apt install apache2 -y
+
+[ ] sudo apt install libapache2-mod-wsgi-py3 -y
+
+[ ] sudo apt install ffmpeg -y == only needed on GUI-less server OS where not installed already
+
+[ ] sudo apt install pipenv -y == may throw errors on Ubuntu and reqr workaround
   - workaround:
   - sudo apt remove pipenv
   - pip3 install pipenv
   - python3 -m pipenv shell
   - pipenv install # this command run inside venv prompt; then "exit" to exit venv
   - need to add to your path in /bashrc and refresh it!
+
 [ ]  export PYTHONIOENCODING=utf-8
 
 - commands to copy (and remove as needed) directories and their contents; "-r" is recursive: 
@@ -50,8 +66,11 @@
   - sudo a2ensite flask-app.conf == Apache2 enable site
     - sudo a2dissite flask-app.conf == disable a site
   - sudo systemctl reload apache2
+
 [ ] tune or setup /var/www/chatbot83/middleapp.wsgi
+
 [ ] tune or setup /home/leet/webframe/Pipfile == this is where "activate_this" in middleapp.wsgi points
+
 [ ] run pipenv install (no other parameters, with Pipfile only, no lock yet, should install everything)
   - run pipenv update, as needed to make lock file etc, as may have to pipenv uninstall, install, sync, for some libraries
   - pipenv --venv == returns path for use in /etc/apache2/sites-available/middleapp.wsgi
@@ -59,8 +78,10 @@
     - pipenv --rm
     - rm Pipfile.lock
   - pipenv run pip list == see whats installed in venv
+
 [ ] copy files into /var/www/chatbot83
   - chatbot83.py, .flaskenv, .env (prod should have own unique FLASK_SECRET_KEY, LLM API keys)
+
 [ ] copy folders into /var/www/chatbot83
   - sample, migrations, ChatBot83, app (but not subfolder __pycache__), instance (just make folder, _don't_ copy dev .db)
 
@@ -84,4 +105,3 @@
   - pipenv shell
   - cd /var/www/chatbot83
   - flask db upgrade (Because this application uses SQLite, the upgrade command will detect that a database does not exist and will create it)
-
