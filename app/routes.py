@@ -28,6 +28,38 @@ import socket
 import sqlalchemy as sa
 
 
+### TODO:
+### --> functionality to watch videos with corrected subtitles
+### --> functionality to view corrected subtitles vtt files (download, edit, return)
+### --> write whole render_video()
+### --> need more bot_specific_examples
+### --> CSS beautification
+### --> dark mode option
+### - email a link to click to confirm email and proceed w/ registration - sample exists in flask mega tutorial
+### - feature to email yourself chat thread or current Q&A
+### - add content to each bot's nothing.faiss to detail what the bot is about and some overview of the corpus
+### - in "role" add disabled or some such thing and block these from loggon
+### - setup some pre-approval, and post registration approval processes
+### - feedback form to report pleasure of use, bugs, or suggestions
+### - interesting backgrounds for each bot, or even based on RAG doc
+### How to view all users and their data? How to set admin role? (Can do in shell w/ context via DB CLI.)
+### test fake_llm re-implemented as a runnable to pass to chains
+### auto save website URL to pdf? Then can ingest nice record of website in pdf.
+### agent to check actual website, maybe crawl a few branches?
+### how to tune (know, increase, decrease, number of vector returns from faiss match? (some note on this in comments)
+### tweak so some chattyness of choose rag llm pass gets into answer, not just filename...
+### Ability to load a (small) text file as a rag doc and hit LLM w/ whole thing, no vector query 
+### async stream from llm to screen...
+### keywords search - to use as option instead of vector, or in parallel w/ vector search
+
+### Maybe to try to do again:
+### CAPTCHA
+###     unable to implement Cloudflare Turnstile "natively" as hyphens in return function broke html or flask or something
+###     tried to do Flask-Turnstile, but with this turnstile graphic never appeared and verify was always true
+###     have flask-simple-captcha in place but don't love it - want an easier captcha, but not re-captcha
+###     # from flask_turnstile import Turnstile # https://github.com/Tech1k/flask-turnstile
+
+
 # CAPTCHA setup
 
 # https://github.com/cc-d/flask-simple-captcha
@@ -42,9 +74,7 @@ CAPTCHA_CONFIG = {
     'TEXT_COLOR': (232, 221, 245), 
     'ONLY_UPPERCASE': True, 
 }
-
 SIMPLE_CAPTCHA = CAPTCHA(config=CAPTCHA_CONFIG)
-
 app = SIMPLE_CAPTCHA.init_app(app)
 
 
@@ -61,28 +91,6 @@ pop_fullragchat_history_over_num = 10 # should be like 26
 
 webserver_hostname = socket.gethostname()
 
-### TODO:
-
-### CAPTCHA
-###     unable to implement Cloudflare Turnstile "natively" as hyphens in return function broke html or flask or something
-###     tried to do Flask-Turnstile, but with this turnstile graphic never appeared and verify was always true
-###     have flask-simple-captcha in place but don't love it - want an easier captcha, but not re-captcha
-###     # from flask_turnstile import Turnstile # https://github.com/Tech1k/flask-turnstile
-### change pw functionality - test, ensure has captcha too
-### email a link to click to confirm email and proceed w/ registration - sample exists in flask mega tutorial
-### How to view all users and their data? How to set admin role?
-### functionality to watch videos with corrected subtitles
-### functionality to view corrected subtitles vtt files (download, edit, return)
-### write whole render_video()
-### test fake_llm re-implemented as a runnable to pass to chains
-### need more bot_specific_examples
-### auto save website URL to pdf? Then can ingest nice record of website in pdf.
-### agent to check actual website, maybe crawl a few branches?
-### how to tune (know, increase, decrease, number of vector returns from faiss match?
-### tweak so some chattyness of choose rag llm pass gets into answer, not just filename...
-### Ability to load a (small) text file as a rag doc and hit LLM w/ whole thing, no vector query 
-### CSS beautification
-### async stream from llm to screen...
 
 
 # General high level public routes
@@ -216,6 +224,11 @@ def login():
                 return redirect(url_for('login'))
             login_user(user, remember=form.remember_me.data)
             logging.info(f'=*=*=*> User "{current_user.username}" logged in.')
+            if current_user.role == 'blocked':
+                logging.info(f'=*=*=*> Blocked user "{current_user.username}" as their role is "{current_user.role}".')
+                logout_user()
+                flash('Unable to login.')
+                return redirect(url_for('login'))
             next_page = request.args.get('next')
             if not next_page or urlsplit(next_page).netloc != '':
                 next_page = url_for('index')

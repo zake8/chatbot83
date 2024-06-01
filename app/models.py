@@ -24,6 +24,7 @@ class User(UserMixin, db.Model):
     llm_api_key:   so.Mapped[Optional[str]] = so.mapped_column(sa.String(46), nullable=True)
     rag_list:      so.Mapped[Optional[list]] = so.mapped_column(MutableList.as_mutable(sa.PickleType), default=[])
     chat_history:  so.Mapped[Optional[list]] = so.mapped_column(MutableList.as_mutable(sa.PickleType), default=[])
+    # role defaults to "regular"; "administrator" gets and can use chatbot_commands; "blocked" is denied login
 
 # pipenv shell
 # flask db migrate -m "some change"
