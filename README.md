@@ -1,16 +1,16 @@
 # ChatBot83
-**bold** Conversational Retrieval Augmented GenerativeAI (RAG) chatbot with agent selected RAG content, user authentication, multiple private knowledge corpuses, and (future) video montage output.
+** Conversational Retrieval Augmented GenerativeAI (RAG) chatbot with agent selected RAG content, user authentication, multiple private knowledge corpuses, and (future) video montage output. **
 
 ## To run in dev:
-- cd <folder>
+- cd folder
 - pipenv shell
 - flask run --debug
-  - flask run --debug --host <IP> == to access from other machines instead of localhost only
+  - flask run --debug --host IP == to access from other machines instead of localhost only
 
 ## For interactive Python
-- cd <where Pipfile is>
+- cd where_Pipfile_is
 - pipenv shell
-- cd <where app is>
+- cd where_app_is
 - flask shell (only works if .flaskenv setup as needed and app.py has @app.shell_context_processor)
 - python3 (just use this if can't do flask shell)
 --  note will still not be running as www-data
@@ -18,7 +18,7 @@
 - exit
 
 ## In dev, any changes / additions to class User do a:
-- cd <folder>
+- cd folder
 - pipenv shell
 - flask db migrate -m "note on changes/additions to class"
 - flask db upgrade
