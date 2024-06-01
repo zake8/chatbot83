@@ -38,7 +38,6 @@ import sqlalchemy as sa
 ### - email a link to click to confirm email and proceed w/ registration - sample exists in flask mega tutorial
 ### - feature to email yourself chat thread or current Q&A
 ### - add content to each bot's nothing.faiss to detail what the bot is about and some overview of the corpus
-### - in "role" add disabled or some such thing and block these from loggon
 ### - setup some pre-approval, and post registration approval processes
 ### - feedback form to report pleasure of use, bugs, or suggestions
 ### - interesting backgrounds for each bot, or even based on RAG doc

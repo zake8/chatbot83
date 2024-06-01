@@ -4,19 +4,19 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask-sqlalchemy = "*"
-python-dotenv = "*"
-flask-migrate = "*"
-flask-login = "*"
-flask-wtf = "*"
-email-validator = "*"
-langchain-core = "*"
-langchain-community = "*"
-langchain-mistralai = "*"
-faiss-cpu = "*"
 beautifulsoup4 = "*"
-pypdf = "*"
+email-validator = "*"
+faiss-cpu = "*"
+flask-login = "*"
+flask-migrate = "*"
 flask-simple-captcha = "*"
+flask-sqlalchemy = "*"
+flask-wtf = "*"
+langchain-community = "*"
+langchain-core = "*"
+langchain-mistralai = "*"
+pypdf = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
