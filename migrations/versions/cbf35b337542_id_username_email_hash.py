@@ -1,4 +1,4 @@
-"""empty message
+"""id_username_email_hash
 
 Revision ID: cbf35b337542
 Revises: 

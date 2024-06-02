@@ -270,6 +270,12 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
                 # z = db.session.get(User, 1)
                 # z.role = 'admin'
                 # db.session.commit()
+            # view the actual columns in the table in the db:
+                # sqlite
+                # .open <filename>
+                # .tables
+                # .schema <table>
+                # .exit
             elif meth == 'summary': # output to chat only
                 answer += f'Summary of "{path_filename}": ' + '\n'
                 fullragchat_rag_source = path_filename

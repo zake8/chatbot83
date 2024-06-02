@@ -3,16 +3,18 @@
 # pipenv installs:
 # flask-migrate
 # flask-login
+from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate # https://pypi.org/project/Flask-Migrate/
 from flask_login import LoginManager
 import os
 
+load_dotenv()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///chatbot83.db'
-app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY')
+app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'fallback_secret_key01')
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)

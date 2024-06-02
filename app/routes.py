@@ -2,7 +2,7 @@
 
 import logging
 logging.basicConfig(level=logging.INFO, 
-                    filename='./log.log', 
+                    filename='./log.log', # in prod needs to be '/var/www/chatbot83/log.log'
                     filemode='a', 
                     format='%(asctime)s -%(levelname)s - %(message)s')
 
@@ -91,7 +91,6 @@ pop_fullragchat_history_over_num = 10 # should be like 26
 webserver_hostname = socket.gethostname()
 
 
-
 # General high level public routes
 
 @app.route('/')
@@ -178,7 +177,7 @@ def VTSBot():
 def gen_rag_list(): # returns list
     fn_list = []
     extensions = (".faiss")
-    for file in os.listdir(f'{current_user.chatbot}'):
+    for file in os.listdir(f'{base_dir}/{current_user.chatbot}'):
         if file.endswith(extensions) and file != 'nothing.faiss':
             fn_list.append(file)
     return fn_list
@@ -210,7 +209,7 @@ def login():
         c_hash = request.form.get('captcha-hash')
         c_text = request.form.get('captcha-text')
         if not SIMPLE_CAPTCHA.verify(c_text, c_hash):
-            flash('CAPTCHA verification failed; refresh for new CAPTCHA.')
+            flash('CAPTCHA verification failed.')
             return render_template('login.html', 
                                     title='Sign In',
                                     form=form, 
@@ -260,9 +259,9 @@ def register():
         c_hash = request.form.get('captcha-hash')
         c_text = request.form.get('captcha-text')
         if not SIMPLE_CAPTCHA.verify(c_text, c_hash):
-            flash('CAPTCHA verification failed; refresh for new CAPTCHA.')
+            flash('CAPTCHA verification failed.')
             return render_template('register.html', 
-                                    title='Register',
+                                    title='Register (captcha failed)',
                                     form=form, 
                                     captcha=new_captcha_dict)
         else:
@@ -278,11 +277,11 @@ def register():
             return redirect(url_for('login'))
     elif request.method == 'GET':
         return render_template('register.html', 
-                                title='Register',
+                                title='Register (from get)',
                                 form=form, 
                                 captcha=new_captcha_dict)
     return render_template('register.html', 
-                            title='Register', 
+                            title='Register (fell through)', 
                             form=form, 
                             captcha=new_captcha_dict)
 
@@ -304,7 +303,7 @@ def edit_profile():
         c_hash = request.form.get('captcha-hash')
         c_text = request.form.get('captcha-text')
         if not SIMPLE_CAPTCHA.verify(c_text, c_hash):
-            flash('CAPTCHA verification failed; refresh for new CAPTCHA.')
+            flash('CAPTCHA verification failed.')
             return render_template('edit_profile.html', 
                                     title='Edit Profile',
                                     form=form, 
@@ -339,7 +338,7 @@ def change_password():
         c_hash = request.form.get('captcha-hash')
         c_text = request.form.get('captcha-text')
         if not SIMPLE_CAPTCHA.verify(c_text, c_hash):
-            flash('CAPTCHA verification failed; refresh for new CAPTCHA.')
+            flash('CAPTCHA verification failed.')
             return render_template('change_password.html', 
                                     title='Change Password',
                                     form=form, 
@@ -439,7 +438,7 @@ def reply():
         "history":  history_runnable})
     
     # triple-parallel (context, question, history) in ==> prompt for llm out
-    prompt_choose_rag = ChatPromptTemplate.from_template(get_filename_inc_list_template(dir_name=current_user.chatbot))
+    prompt_choose_rag = ChatPromptTemplate.from_template(get_filename_inc_list_template(dir_name=f'{base_dir}/{current_user.chatbot}'))
     
     # triple-parallel (context, question, history) in ==> prompt for llm out
     if  current_user.chatbot  == 'GerBot':
@@ -454,13 +453,13 @@ def reply():
     prompt_response = prompt
 
     answer = ''
-    rag_pfn = f'{current_user.chatbot}/nothing.faiss'
+    rag_pfn = f'{base_dir}/{current_user.chatbot}/nothing.faiss'
     if current_user.role == 'administrator':
         if query.startswith('chatbot_command.'):
             response = chatbot_command(
                 query=query, 
-                rag_source_clue_value=f'{current_user.chatbot}/rag_source_clues.txt', 
-                docs_dir=f'{current_user.chatbot}/', 
+                rag_source_clue_value=f'{base_dir}/{current_user.chatbot}/rag_source_clues.txt', 
+                docs_dir=f'{base_dir}/{current_user.chatbot}/', 
                 model = current_user.model, 
                 fullragchat_embed_model = current_user.embed_model, 
                 mkey = current_user.llm_api_key, 
@@ -511,26 +510,26 @@ def reply():
         if filenames:
             clean_selected_rag = filenames[( len(filenames) - 1 )] # pulls last filename from multiple hits as LLM might ramble and then present final answer.
             answer += f'Selected document "{clean_selected_rag}"! '
-            rag_pfn = f'{current_user.chatbot}/{clean_selected_rag}'
+            rag_pfn = f'{base_dir}/{current_user.chatbot}/{clean_selected_rag}'
             if not os.path.exists(rag_pfn):
                 answer += f'Error; the file does not exist... '
-                rag_pfn = f'{current_user.chatbot}/nothing.faiss'
+                rag_pfn = f'{base_dir}/{current_user.chatbot}/nothing.faiss'
             pattern = r'\.([a-zA-Z]{3,5})$'
             match = re.search(pattern, clean_selected_rag)
             if match:
                 rag_ext = match.group(1)
                 if rag_ext != 'faiss':
                     answer += f'Error; .FAISS file is required at this point... '
-                    rag_pfn = f'{current_user.chatbot}/nothing.faiss'
+                    rag_pfn = f'{base_dir}/{current_user.chatbot}/nothing.faiss'
             else:
                 answer += f'Error; no extension found. '
-                rag_pfn = f'{current_user.chatbot}/nothing.faiss'
+                rag_pfn = f'{base_dir}/{current_user.chatbot}/nothing.faiss'
         else:
             answer += f'Error; unable to parse out a filename from "{selected_rag}". '
-            rag_pfn = f'{current_user.chatbot}/nothing.faiss'
+            rag_pfn = f'{base_dir}/{current_user.chatbot}/nothing.faiss'
         
     else: # assumes specific rag doc selected by user from dropdown
-        rag_pfn = f'{current_user.chatbot}/{current_user.rag_selected}'
+        rag_pfn = f'{base_dir}/{current_user.chatbot}/{current_user.rag_selected}'
     
     logging.info(f'===> rag_pfn: "{rag_pfn}"')
     
@@ -621,7 +620,7 @@ def get_embedding_func(fullragchat_embed_model, mkey):
 
 def rag_text_function(query):
     context = ''
-    rag_source_clues = f'{current_user.chatbot}/rag_source_clues.txt'
+    rag_source_clues = f'{base_dir}/{current_user.chatbot}/rag_source_clues.txt'
     loader = TextLoader(rag_source_clues, encoding="utf8")
     ##### logging.info(f'rag_text_function query = "{query}"')
     context_list = loader.load()
