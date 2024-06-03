@@ -171,9 +171,9 @@ def get_rag_text(fullragchat_rag_source, query, start_page, end_page): # loads f
 def create_summary(to_sum, model, mkey, fullragchat_temp):
     from app.routes import large_lang_model # here to avoid circular load
     prompt = ChatPromptTemplate.from_template(SUMMARY_TEMPLATE)
-    chain = ( prompt 
-            | large_lang_model 
-            | StrOutputParser() 
+    chain = ( prompt
+            | large_lang_model
+            | StrOutputParser()
             )
     try:
         summary = chain.invoke(to_sum)

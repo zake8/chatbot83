@@ -10,11 +10,11 @@ from flask_migrate import Migrate # https://pypi.org/project/Flask-Migrate/
 from flask_login import LoginManager
 import os
 
-load_dotenv()
+load_dotenv('.env') # change to absolute path for prod
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///chatbot83.db'
-app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'fallback_secret_key01')
+app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY') # If doesn't get key throws error in prod (Apache w/ WSGI) but _not_ on flask --debug
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)

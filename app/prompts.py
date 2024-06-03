@@ -74,6 +74,7 @@ Answer:
 # FILENAME_INC_LIST_TEMPLATE
 
 def bot_specific_examples(dir_name):
+    dir_name = dir_name.rsplit('/', 1)[-1] # text after the last "/" in the string
     if dir_name == 'GerBot':
         examples = """
         Mentioning a book or title should be enough to return its filename.

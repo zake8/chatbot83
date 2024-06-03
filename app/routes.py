@@ -1,9 +1,15 @@
 #!/usr/bin/env python
 
+mode = 'dev' # set this to dev or prod
+
 import logging
-logging.basicConfig(level=logging.INFO, 
-                    filename='./log.log', # in prod needs to be '/var/www/chatbot83/log.log'
-                    filemode='a', 
+if mode == 'prod':
+    log_file = '/var/www/chatbot83/log.log'
+else:
+    log_file = './log.log'
+logging.basicConfig(level=logging.INFO,
+                    filename=log_file,
+                    filemode='a',
                     format='%(asctime)s -%(levelname)s - %(message)s')
 
 # pipenv installs:
@@ -33,14 +39,15 @@ import sqlalchemy as sa
 ### --> functionality to view corrected subtitles vtt files (download, edit, return)
 ### --> write whole render_video()
 ### --> need more bot_specific_examples
-### --> CSS beautification
-### --> dark mode option
+### - CSS beautification
+### - dark mode option
 ### - email a link to click to confirm email and proceed w/ registration - sample exists in flask mega tutorial
 ### - feature to email yourself chat thread or current Q&A
 ### - add content to each bot's nothing.faiss to detail what the bot is about and some overview of the corpus
 ### - setup some pre-approval, and post registration approval processes
 ### - feedback form to report pleasure of use, bugs, or suggestions
 ### - interesting backgrounds for each bot, or even based on RAG doc
+### - enforce password min length and complexity (check what existing validation does)
 ### How to view all users and their data? How to set admin role? (Can do in shell w/ context via DB CLI.)
 ### test fake_llm re-implemented as a runnable to pass to chains
 ### auto save website URL to pdf? Then can ingest nice record of website in pdf.
@@ -62,31 +69,57 @@ import sqlalchemy as sa
 # CAPTCHA setup
 
 # https://github.com/cc-d/flask-simple-captcha
-CAPTCHA_CONFIG = {
-    'SECRET_CAPTCHA_KEY': 'LONG_KEY',
-    'CAPTCHA_LENGTH': 5, # try 9 for prod
-    'CAPTCHA_DIGITS': False, # try True for prod
-    'EXPIRE_SECONDS': 600,
-    'CAPTCHA_IMG_FORMAT': 'JPEG',
-    'EXCLUDE_VISUALLY_SIMILAR': True,
-    'BACKGROUND_COLOR': (95, 87, 110), 
-    'TEXT_COLOR': (232, 221, 245), 
-    'ONLY_UPPERCASE': True, 
-}
+if mode == 'prod':
+    CAPTCHA_CONFIG = {
+        'SECRET_CAPTCHA_KEY': 'LONG_KEY',
+        'CAPTCHA_LENGTH': 9,
+        'CAPTCHA_DIGITS': True,
+        'EXPIRE_SECONDS': 600,
+        'CAPTCHA_IMG_FORMAT': 'JPEG',
+        'EXCLUDE_VISUALLY_SIMILAR': True,
+        'BACKGROUND_COLOR': (95, 87, 110), 
+        'TEXT_COLOR': (232, 221, 245), 
+        'ONLY_UPPERCASE': True, 
+    }
+else:
+    CAPTCHA_CONFIG = {
+        'SECRET_CAPTCHA_KEY': 'LONG_KEY',
+        'CAPTCHA_LENGTH': 5,
+        'CAPTCHA_DIGITS': False,
+        'EXPIRE_SECONDS': 600,
+        'CAPTCHA_IMG_FORMAT': 'JPEG',
+        'EXCLUDE_VISUALLY_SIMILAR': True,
+        'BACKGROUND_COLOR': (95, 87, 110), 
+        'TEXT_COLOR': (232, 221, 245), 
+        'ONLY_UPPERCASE': True, 
+    }
 SIMPLE_CAPTCHA = CAPTCHA(config=CAPTCHA_CONFIG)
 app = SIMPLE_CAPTCHA.init_app(app)
 
 
 # Some global variable settings
 
-load_dotenv('.env')
+if mode == 'prod':
+    base_dir = '/var/www/chatbot83'
+else:
+    base_dir = '.'
 
 # Posts ntfy for some chat Q&A
-ntfypost = False 
+if mode == 'prod':
+    ntfypost = True
+elif mode == 'dev':
+    ntfypost = False
+else:
+    ntfypost = False
 
 # Each query and answer is appended seperately,
 # when len history > this #, pops off first (oldest) _two_ items
-pop_fullragchat_history_over_num = 10 # should be like 26
+if mode == 'prod':
+    pop_fullragchat_history_over_num = 26
+elif mode == 'dev':
+    pop_fullragchat_history_over_num = 10
+else:
+    pop_fullragchat_history_over_num = 14
 
 webserver_hostname = socket.gethostname()
 
@@ -211,8 +244,8 @@ def login():
         if not SIMPLE_CAPTCHA.verify(c_text, c_hash):
             flash('CAPTCHA verification failed.')
             return render_template('login.html', 
-                                    title='Sign In',
-                                    form=form, 
+                                    title='Sign In (c_fail)',
+                                    form=form,
                                     captcha=new_captcha_dict)
         else:
             user = db.session.scalar(
@@ -233,12 +266,12 @@ def login():
             return redirect(next_page)
     elif request.method == 'GET':
         return render_template('login.html', 
-                                title='Sign In',
-                                form=form, 
+                                title='Sign In (get)',
+                                form=form,
                                 captcha=new_captcha_dict)
     return render_template('login.html', 
-                            title='Sign In', 
-                            form=form, 
+                            title='Sign In (return)', 
+                            form=form,
                             captcha=new_captcha_dict)
 
 
@@ -261,8 +294,8 @@ def register():
         if not SIMPLE_CAPTCHA.verify(c_text, c_hash):
             flash('CAPTCHA verification failed.')
             return render_template('register.html', 
-                                    title='Register (captcha failed)',
-                                    form=form, 
+                                    title='Register (c_fail)',
+                                    form=form,
                                     captcha=new_captcha_dict)
         else:
             user = User(username=form.username.data, 
@@ -277,12 +310,12 @@ def register():
             return redirect(url_for('login'))
     elif request.method == 'GET':
         return render_template('register.html', 
-                                title='Register (from get)',
+                                title='Register (get)',
                                 form=form, 
                                 captcha=new_captcha_dict)
     return render_template('register.html', 
-                            title='Register (fell through)', 
-                            form=form, 
+                            title='Register (return)',
+                            form=form,
                             captcha=new_captcha_dict)
 
 
@@ -291,6 +324,7 @@ def register():
 def user(username):
     user = db.first_or_404(sa.select(User).where(User.username == username))
     return render_template('user.html', 
+                            title=f'{username}',
                             user=user)
 
 
@@ -305,7 +339,7 @@ def edit_profile():
         if not SIMPLE_CAPTCHA.verify(c_text, c_hash):
             flash('CAPTCHA verification failed.')
             return render_template('edit_profile.html', 
-                                    title='Edit Profile',
+                                    title='Edit Profile (c_fail)',
                                     form=form, 
                                     captcha=new_captcha_dict)
         else:
@@ -320,11 +354,11 @@ def edit_profile():
     elif request.method == 'GET':
         form.username.data = current_user.username
         return render_template('edit_profile.html', 
-                                title='Edit Profile',
+                                title='Edit Profile (get)',
                                 form=form, 
                                 captcha=new_captcha_dict)
     return render_template('edit_profile.html', 
-                            title='Edit Profile',
+                            title='Edit Profile (return)',
                             form=form, 
                             captcha=new_captcha_dict)
 
@@ -340,7 +374,7 @@ def change_password():
         if not SIMPLE_CAPTCHA.verify(c_text, c_hash):
             flash('CAPTCHA verification failed.')
             return render_template('change_password.html', 
-                                    title='Change Password',
+                                    title='Change Password (c_fail)',
                                     form=form, 
                                     captcha=new_captcha_dict)
         else:
@@ -355,11 +389,11 @@ def change_password():
                 return redirect(url_for('change_password'))
     elif request.method == 'GET':
         return render_template('change_password.html', 
-                                title='Change Password',
+                                title='Change Password (get)',
                                 form=form, 
                                 captcha=new_captcha_dict)
     return render_template('change_password.html', 
-                            title='Change Password',
+                            title='Change Password (return)',
                             form=form, 
                             captcha=new_captcha_dict)
 
@@ -387,6 +421,7 @@ from langchain_core.runnables import RunnableParallel
 from langchain_core.runnables import RunnablePassthrough
 from langchain_mistralai.chat_models import ChatMistralAI
 from langchain_mistralai.embeddings import MistralAIEmbeddings
+import requests
 
 
 @app.route('/chat')
@@ -475,9 +510,9 @@ def reply():
         # double-parallel (question, history) in ==> prompt for llm out
         prompt_simple_chat = ChatPromptTemplate.from_template(SIMPLE_CHAT_TEMPLATE)
         chain = ( retrieval_simple_chat
-                | prompt_simple_chat 
-                | large_lang_model 
-                | StrOutputParser() 
+                | prompt_simple_chat
+                | large_lang_model
+                | StrOutputParser()
                 )
         response = chain.invoke(query)
         current_user.chat_history.append({
@@ -492,9 +527,9 @@ def reply():
 
     elif current_user.rag_selected == 'Auto':
         get_rag_chain = ( setup_and_retrieval_choose_rag
-                        | prompt_choose_rag 
+                        | prompt_choose_rag
                         | large_lang_model
-                        | StrOutputParser() 
+                        | StrOutputParser()
                         )
         selected_rag = get_rag_chain.invoke(query)
         # string manipulations to go from selected_rag to rag_pfn
@@ -530,13 +565,13 @@ def reply():
         
     else: # assumes specific rag doc selected by user from dropdown
         rag_pfn = f'{base_dir}/{current_user.chatbot}/{current_user.rag_selected}'
-    
+
     logging.info(f'===> rag_pfn: "{rag_pfn}"')
-    
+
     # string in ==> triple-parallel (context, question, history) out
     # load existing faiss, and use as retriever
     embeddings = get_embedding_func(
-        fullragchat_embed_model=current_user.embed_model, 
+        fullragchat_embed_model=current_user.embed_model,
         mkey=current_user.llm_api_key)
     loaded_vector_db = FAISS.load_local(rag_pfn, embeddings, allow_dangerous_deserialization=True)
     setup_and_retrieval_response = RunnableParallel({
@@ -544,18 +579,18 @@ def reply():
         "question": RunnablePassthrough(),
         "history" : RunnableLambda(convo_mem_function)})
     # Default 'k' (amount of documents to return) is 4 per https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html
-    
-    chain = ( setup_and_retrieval_response 
-            | render_video 
-            | prompt_response 
-            | large_lang_model 
-            | StrOutputParser() 
-            ) 
-    
+
+    chain = ( setup_and_retrieval_response
+            | render_video
+            | prompt_response
+            | large_lang_model
+            | StrOutputParser()
+            )
+
     response = answer + chain.invoke(query)
     # httpx.LocalProtocolError: Illegal header value b'Bearer ' means missing API key
     current_user.chat_history.append({
-        'user':current_user.chatbot, 
+        'user':current_user.chatbot,
         'message':response})
     logging.info(f'===> Response "{response}" from "{current_user.chatbot}" for "{current_user.username}"')
     if ntfypost:
@@ -642,7 +677,7 @@ def convo_mem_function(query):
 
 
 def render_video(query):
-    ### triple parallel too? This step in chain needs to feed off of rag FAISS DB embeded lookup k returns!
+    ### triple parallel too; this step in chain needs to feed off of rag FAISS DB embeded lookup k returns!
     ### search rag index for timecode for vectordb_matches
     ### render clips with captions burned
     ### create montage.mp4
@@ -651,16 +686,3 @@ def render_video(query):
         "context": RunnablePassthrough(), 
         "question": RunnablePassthrough(), 
         "history": RunnablePassthrough()})
-
-
-# RAG document management / administration functions
-
-@app.route('/ingestion')
-@login_required
-def ingestion(pfn):
-    pass
-    return """
-        <h1>chat_video_recall</h1><br>
-        <br>
-        ingested {pfn}<br>
-        """

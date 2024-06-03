@@ -86,6 +86,8 @@
 [ ] copy folders into /var/www/chatbot83
 - sample, migrations, ChatBot83, app (but not subfolder __pycache__), instance (just make folder, _don't_ copy dev .db)
 
+[ ] copy in any bot folders and set permissions on them
+
 [ ] give permissions to www-data
 - assuming a group www-rwx established with root and www-data as members
   - sudo groupadd www-rwx
@@ -113,11 +115,5 @@
 
 [ ] prod tweaks
 - clean up to just desired in /var/www/chatbot83/app/templates/index.html
-- .env should have own unique FLASK_SECRET_KEY
-- tweak CAPTCHA_LENGTH
-- tweak CAPTCHA_DIGITS
-- tweak pop_fullragchat_history_over_num
-- copy in any bot folders and set permissions on them
-- set ntfypost = True
-- change routes.py's logging.basicConfig's filename= from './log.log' to '/var/www/chatbot83/log.log'
-
+- set routes.py's mode var to 'prod'
+- set path for .env in app/__init__.py
