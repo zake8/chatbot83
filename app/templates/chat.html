@@ -19,15 +19,14 @@
 <a id="spot"></a>
 
 <form action="/pending" method="post">
-	<div>
-		<lable for="query"></lable>
+	<div><lable for="query"></lable>
 		<textarea rows="8" cols="120" name="query"></textarea>
 		<br>
 		<input value="query" type="submit"><br>
 		<br>
 	</div>
-	<div>
-		Controls:<br>
+	<div><lable for="controls"></lable>
+		<font color="purple">Controls:</font><br>
 		<lable for="rag">RAG selection:</lable>
 		<select name="rag" id="rag">
 			{% for option in current_user.rag_list %} 
@@ -37,10 +36,29 @@
 					<option value="{{ option }}">{{ option }}</option>
 				{% endif %}
 			{% endfor %}
-		</select>
+		</select><br>
+		<br>
+	</div>
+	<div><lable for="help"></lable>
+		<a href="/help">Help</a><br>
+		<br>
+	</div>
+	<div><lable for="links"></lable>
+		<font color="purple">Links:</font><br>
+		{% if (current_user.rag_used != 'None') and (current_user.rag_used != 'Auto') and (current_user.rag_used != 'nothing.faiss') %}
+			View RAG source document 
+			<a href="/rag_text" target="_blank">text</a>, 
+			<a href="/rag_file" target="_blank">source</a>, or 
+			<a href="/cur_file" target="_blank">curration</a> 
+			(open in a new tab)<br>
+		{% else %}
+			No links<br>
+		{% endif %}
 	</div>
 	{% if current_user.role == "administrator" %}
+		<br>
 		<div>
+			<font color="purple">Admin controls:</font><br>
 			Process is to download to server, then to ingest.<br>
 			&quot;pfn&quot; is path and filename (relative, absolute, or https:// ending in .html); &quot;None&quot; must be included where indicated.<br>
 			chatbot_command.apikey(None)          # Displays API key<br>

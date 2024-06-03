@@ -78,9 +78,9 @@ def ingest_document(fullragchat_rag_source, rag_source_clue_value, docs_dir, mod
             model=model, mkey=mkey, fullragchat_temp=fullragchat_temp )
         with open(docs_dir + '/' + corrected_vtt_fn, 'w', encoding="utf8") as file:
             file.write(corrections_text_for_output)
-    # Write _loadered.txt to disk
-    if rag_ext != 'txt': #don't write out a '_loadered.txt' if input was '.txt'
-        txtfile_fn = f'{base_fn}_loadered.txt'
+    # Write .txt to disk
+    if rag_ext != 'txt': #don't write out a '.txt' if input was '.txt'
+        txtfile_fn = f'{base_fn}.txt'
         text_string = ''
         for page_number in range(0, len(rag_text) ):
             text_string += rag_text[page_number].page_content + '\n'

@@ -19,19 +19,35 @@
 <a id="spot"></a>
 
 <form action="/reply" method="post">
-	<div>
-		<lable for="query"></lable>
+	<div><lable for="query"></lable>
 		<textarea rows="8" cols="120"></textarea><br>
 		<br>
 		<!-- query text box with no click to submit while inferencing -->
 		<br>
 	</div>
-	<div>
-		Controls:<br>
+	<div><lable for="controls"></lable>
+		<font color="purple">Controls:</font><br>
 		<lable for="rag">RAG selection:</lable>
 		<select name="rag" id="rag">
 					<option value="{{ current_user.rag_selected }}" selected>{{ current_user.rag_selected }}</option>
-		</select>
+		</select><br>
+		<br>
+	</div>
+	<div><lable for="help"></lable>
+		<a href="">Help</a><br>
+		<br>
+	</div>
+	<div><lable for="links"></lable>
+		<font color="purple">Links:</font><br>
+		{% if (current_user.rag_used != 'None') and (current_user.rag_used != 'Auto') and (current_user.rag_used != 'nothing.faiss') %}
+			View RAG source document 
+			<a href="/rag_text" target="_blank">text</a>, 
+			<a href="/rag_file" target="_blank">source</a>, or 
+			<a href="/cur_file" target="_blank">curration</a> 
+			(open in a new tab)<br>
+		{% else %}
+			No links<br>
+		{% endif %}
 	</div>
 </form>
 

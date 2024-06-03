@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	{% if title %}
+		<title>{{ title }}</title>
+	{% else %}
+		<title>ChatBot83</title>
+	{% endif %}
+	<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon8.png') }}">
+    <style>
+        pre {
+            white-space: pre-wrap;       /* Since CSS 2.1 */
+            white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+            white-space: -pre-wrap;      /* Opera 4-6 */
+            white-space: -o-pre-wrap;    /* Opera 7 */
+            word-wrap: break-word;       /* Internet Explorer 5.5+ */
+        }
+    </style>
+</head>
+<body>
+    <h1>Text content for {{current_user.rag_selected}} from {{current_user.chatbot}}</h1>
+    <pre>{{ content }}</pre>
+    <br>
+</body>
+</html>

@@ -4,6 +4,8 @@
 import os
 
 
+# bot templates
+
 CHATBOT83_TEMPLATE = """
 You are the RAG conversational chatbot "ChatBot8". (RAG is Retrieval Augmented GenerativeAI.)
 Your prime goal is to assist users with exploring, searching, querying, and "chatting with" 
@@ -71,6 +73,46 @@ Answer:
 """
 
 
+SIMPLE_CHAT_TEMPLATE = """
+You are conversational chatbot. 
+If you do not know the answer or know how to respond just say, 
+I don't know, or I don't know how to respond to that, or 
+you can ask user to rephrase the question. 
+Answer tersely, even slightly sarcastically, but always as factually as possible; 
+draw on the more positive areas of your model, not mediocrity of the scrapped internet.
+Try not to be too verbose, flowery, or chatty.
+
+Reference chat history for conversationality 
+(to see if there is something to circle back to, 
+but not to reply on by repeating your own possibly mistaken statements): 
+{history}
+
+Query: 
+{question}
+
+Response:
+"""
+
+
+def get_human_instructions(chatbot):
+    template = """
+Type a question or statement in natual language style in the text box below; 
+then hit the "query" button. 
+From the "RAG selection" dropdown choose "Auto" to allow 
+"""
+    template += chatbot
+    template += """
+ to select a RAG document based on your query, 
+or explicity choose a RAG document from the list to focus on. 
+(If available, selecting "None" eliminates the RAG process altogether; 
+just chatting with the LLM.) 
+RAG is Retrieval Augmented Generation, 
+'grounding' the conversation on the selected document. 
+(Note that .faiss is vector database where query meaning is searched against.)
+"""
+    return template
+    
+
 # FILENAME_INC_LIST_TEMPLATE
 
 def bot_specific_examples(dir_name):
@@ -136,26 +178,7 @@ Single "filename.faiss" value response:
     return template
 
 
-SIMPLE_CHAT_TEMPLATE = """
-You are conversational chatbot. 
-If you do not know the answer or know how to respond just say, 
-I don't know, or I don't know how to respond to that, or 
-you can ask user to rephrase the question. 
-Answer tersely, even slightly sarcastically, but always as factually as possible; 
-draw on the more positive areas of your model, not mediocrity of the scrapped internet.
-Try not to be too verbose, flowery, or chatty.
-
-Reference chat history for conversationality 
-(to see if there is something to circle back to, 
-but not to reply on by repeating your own possibly mistaken statements): 
-{history}
-
-Query: 
-{question}
-
-Response:
-"""
-
+# tools templates
 
 SUMMARY_TEMPLATE = """
 In clear and concise language, summarize the text 

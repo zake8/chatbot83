@@ -151,13 +151,14 @@ def ChatBot83():
     current_user.llm_api_key = os.getenv('MISTRAL_API_KEY')
     current_user.rag_list = ['None', 'Auto'] + gen_rag_list()
     current_user.rag_selected = 'None'
+    current_user.rag_used = 'None'
     current_user.chat_history = []
     current_user.chat_history.append({
         'user':current_user.chatbot, 
         'message':f'Salutations! I am ChatBot83. Basically just chat with "{current_user.model}" LLM...'})
     current_user.chat_history.append({
         'user':current_user.chatbot, 
-        'message':'Enter question/statment and hit query button below.'})
+        'message':'Enter question/statement and hit query button below.'})
     db.session.commit()
     return redirect(url_for('chat'))
 
@@ -180,6 +181,7 @@ def GerBot():
     current_user.llm_api_key = os.getenv('MISTRAL_API_KEY')
     current_user.rag_list = ['Auto'] + gen_rag_list()
     current_user.rag_selected = 'Auto'
+    current_user.rag_used = 'Auto'
     current_user.chat_history = []
     current_user.chat_history.append({
         'user':current_user.chatbot, 
@@ -199,6 +201,7 @@ def VTSBot():
     current_user.llm_api_key = os.getenv('MISTRAL_API_KEY')
     current_user.rag_list = ['Auto'] + gen_rag_list()
     current_user.rag_selected = 'Auto'
+    current_user.rag_used = 'Auto'
     current_user.chat_history = []
     current_user.chat_history.append({
         'user':current_user.chatbot, 
@@ -408,7 +411,8 @@ def change_password():
 # langchain_mistralai.chat_models
 # langchain-mistralai
 # faiss-cpu
-from app.prompts import CHATBOT83_TEMPLATE, VTSBOT_TEMPLATE, GERBOT_TEMPLATE, get_filename_inc_list_template, SIMPLE_CHAT_TEMPLATE
+from app.prompts import CHATBOT83_TEMPLATE, VTSBOT_TEMPLATE, GERBOT_TEMPLATE, get_filename_inc_list_template
+from app.prompts import SIMPLE_CHAT_TEMPLATE, get_human_instructions
 from app.tools import chatbot_command
 from langchain_community.document_loaders import TextLoader
 from langchain_community.embeddings import OllamaEmbeddings
@@ -435,8 +439,9 @@ def chat():
 @app.route('/pending', methods=['POST'])
 @login_required
 def pending():
-    # chat.html posts here
+    # clicking "query" in chat.html posts here
     current_user.rag_selected = request.form['rag']
+    current_user.rag_used = current_user.rag_selected
     query = request.form['query']
     current_user.chat_history.append({
         'user':current_user.username, 
@@ -455,8 +460,17 @@ def pending():
 def reply():
     # pending.html refreshes here
     if current_user.chat_history:
-        current_user.chat_history.pop() # clear "system: pending" message
-    query = current_user.chat_history[-1]["message"] # pull just the message string from the last dictionary in a list 
+        if current_user.chat_history[-1]["message"].startswith('Pending - '):
+            current_user.chat_history.pop() # clear "system: pending" message if last dictionary item in a list 
+
+    query = current_user.chat_history[-1]["message"] # pull just the message string from the last dictionary item in a list 
+
+    if query == '': # allow user to hit "query" w/ blank text box just to change rag selection
+        if current_user.chat_history:
+            if current_user.chat_history[-1]["message"] == '':
+                current_user.chat_history.pop() # clear blank user query message entry
+        db.session.commit()
+        return render_template('chat.html', title='Chat')
 
     rag_text_runnable = RunnableLambda(rag_text_function)
     history_runnable =  RunnableLambda(convo_mem_function)
@@ -484,13 +498,13 @@ def reply():
         prompt = ChatPromptTemplate.from_template(CHATBOT83_TEMPLATE)
     else:
         logging.error(f'ERROR =*=*=> No prompt template for "{current_user.chatbot}" (has retrieved context)')
-        prompt = ChatPromptTemplate.from_template(CHATBOT83_TEMPLATE)
+        prompt = ChatPromptTemplate.from_template(CHATBOT83_TEMPLATE) ### change this to a weak default template
     prompt_response = prompt
 
     answer = ''
     rag_pfn = f'{base_dir}/{current_user.chatbot}/nothing.faiss'
     if current_user.role == 'administrator':
-        if query.startswith('chatbot_command.'):
+        if query.startswith('chatbot_command.'): # perform admin commands
             response = chatbot_command(
                 query=query, 
                 rag_source_clue_value=f'{base_dir}/{current_user.chatbot}/rag_source_clues.txt', 
@@ -506,7 +520,7 @@ def reply():
             db.session.commit()
             return render_template('chat.html', title='Admin Mode')
     
-    if (current_user.rag_selected == 'None') or (current_user.rag_selected == '') or (current_user.rag_selected == None):
+    if (current_user.rag_selected == 'None') or (current_user.rag_selected == '') or (current_user.rag_selected == None): # simple chat
         # double-parallel (question, history) in ==> prompt for llm out
         prompt_simple_chat = ChatPromptTemplate.from_template(SIMPLE_CHAT_TEMPLATE)
         chain = ( retrieval_simple_chat
@@ -525,7 +539,7 @@ def reply():
         db.session.commit()
         return render_template('chat.html', title='Simple Chat')
 
-    elif current_user.rag_selected == 'Auto':
+    elif current_user.rag_selected == 'Auto': # use LLM to figure out what rag doc to use
         get_rag_chain = ( setup_and_retrieval_choose_rag
                         | prompt_choose_rag
                         | large_lang_model
@@ -563,10 +577,12 @@ def reply():
             answer += f'Error; unable to parse out a filename from "{selected_rag}". '
             rag_pfn = f'{base_dir}/{current_user.chatbot}/nothing.faiss'
         
-    else: # assumes specific rag doc selected by user from dropdown
+    else: # assumes specific rag doc selected by user from dropdown, use that
         rag_pfn = f'{base_dir}/{current_user.chatbot}/{current_user.rag_selected}'
 
     logging.info(f'===> rag_pfn: "{rag_pfn}"')
+    # here rag_selected may equal 'Auto' while rag_used differs and equals LLM selected rag
+    current_user.rag_used = rag_pfn.rsplit('/', 1)[-1] # lop off {base_dir}/{current_user.chatbot}/
 
     # string in ==> triple-parallel (context, question, history) out
     # load existing faiss, and use as retriever
@@ -598,8 +614,10 @@ def reply():
         mess = f'Query: {query}\nResponse: {response}'
         if current_user.chatbot == f'GerBot':
             requests.post('https://ntfy.sh/GerBotAction', headers={'Title' : title}, data=(mess))
-        if current_user.chatbot == f'VTSBot':
+        elif current_user.chatbot == f'VTSBot':
             requests.post('https://ntfy.sh/VTSBotAction', headers={'Title' : title}, data=(mess))
+        elif current_user.chatbot == f'ChatBot83':
+            pass
     # cleanup chat history memory if getting too long
     if len(current_user.chat_history) > pop_fullragchat_history_over_num:
         current_user.chat_history.pop(0) # pops off oldest message:answer
@@ -674,6 +692,53 @@ def convo_mem_function(query):
     ##### logging.info(f'convo_mem_function query = "{query}"')
     ##### logging.info(f'convo_mem_function returning: "{history}"')
     return history
+
+
+@app.route('/help')
+@login_required
+def help():
+    current_user.chat_history.append({
+        'user':current_user.chatbot, 
+        'message':get_human_instructions(current_user.chatbot)})
+    db.session.commit()
+    return render_template('chat.html', title='Chat')
+
+
+@app.route('/rag_text')
+@login_required
+def rag_text():
+    if (current_user.rag_used == 'None') or (current_user.rag_used == '') or (current_user.rag_used == None) or (current_user.rag_used == 'Auto') or (current_user.rag_used == 'nothing.faiss'):
+        title=f'None'
+        content=f'No text to display.'
+    else:
+        rag_faiss = current_user.rag_used
+        rag_name = rag_faiss.rsplit('.', 1)[0]
+        txt_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.txt'
+        if os.path.exists(txt_file):
+            title=f'{rag_name}.txt'
+            with open(txt_file, 'r', encoding="utf8") as file:
+                content = file.read()
+        else:
+            txt_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.vtt'
+            if os.path.exists(txt_file):
+                title=f'{rag_name}.vtt'
+                with open(txt_file, 'r', encoding="utf8") as file:
+                    content = file.read()
+            else:
+                title=f'None'
+                content=f'No {rag_name}.txt or {rag_name}.vtt exist.'
+    return render_template('rag_text_display.html', 
+                            title=title, 
+                            content=content)
+
+
+@app.route('/rag_file')
+@login_required
+def rag_file():
+    # based on current_user.rag_selected, figure out pdf or mp4 file
+    # display pdf file, or play .mp4 with .vtt captions
+    pass
+    return '<h1>rag_file</h1>'
 
 
 def render_video(query):
