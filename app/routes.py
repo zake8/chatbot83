@@ -707,7 +707,8 @@ def help():
 @app.route('/rag_text')
 @login_required
 def rag_text():
-    if (current_user.rag_used == 'None') or (current_user.rag_used == '') or (current_user.rag_used == None) or (current_user.rag_used == 'Auto') or (current_user.rag_used == 'nothing.faiss'):
+    name = 'Text'
+    if (current_user.rag_used == 'None') or (current_user.rag_used == '') or (current_user.rag_used == None) or (current_user.rag_used == 'Auto'):
         title=f'None'
         content=f'No text to display.'
     else:
@@ -715,21 +716,50 @@ def rag_text():
         rag_name = rag_faiss.rsplit('.', 1)[0]
         txt_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.txt'
         if os.path.exists(txt_file):
+            name = 'Text (original or loaded)'
             title=f'{rag_name}.txt'
             with open(txt_file, 'r', encoding="utf8") as file:
                 content = file.read()
         else:
             txt_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.vtt'
             if os.path.exists(txt_file):
+                name = 'VTT caption'
                 title=f'{rag_name}.vtt'
                 with open(txt_file, 'r', encoding="utf8") as file:
                     content = file.read()
             else:
                 title=f'None'
                 content=f'No {rag_name}.txt or {rag_name}.vtt exist.'
-    return render_template('rag_text_display.html', 
-                            title=title, 
-                            content=content)
+                logging.error(f'Requested non-existant text file, {rag_name}.txt or {rag_name}.vtt!')
+    return render_template('rag_text_display.html',
+                            title=title,
+                            content=content,
+                            name=name)
+
+
+@app.route('/cur_file')
+@login_required
+def cur_file():
+    name = 'Curration'
+    if (current_user.rag_used == 'None') or (current_user.rag_used == '') or (current_user.rag_used == None) or (current_user.rag_used == 'Auto'):
+        title=f'None'
+        content=f'No text to display.'
+    else:
+        rag_faiss = current_user.rag_used
+        rag_name = rag_faiss.rsplit('.', 1)[0]
+        txt_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.cur'
+        if os.path.exists(txt_file):
+            title=f'{rag_name}.cur'
+            with open(txt_file, 'r', encoding="utf8") as file:
+                content = file.read()
+        else:
+            title=f'None'
+            content=f'No {rag_name}.cur exists.'
+            logging.error(f'Requested non-existant curration file, {rag_name}.cur!')
+    return render_template('rag_text_display.html',
+                            title=title,
+                            content=content,
+                            name=name)
 
 
 @app.route('/rag_file')

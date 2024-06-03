@@ -45,7 +45,7 @@
 	</div>
 	<div><lable for="links"></lable>
 		<font color="purple">Links:</font><br>
-		{% if (current_user.rag_used != 'None') and (current_user.rag_used != 'Auto') and (current_user.rag_used != 'nothing.faiss') %}
+		{% if (current_user.rag_used != 'None') and (current_user.rag_used != 'Auto') %}
 			View RAG source document 
 			<a href="/rag_text" target="_blank">text</a>, 
 			<a href="/rag_file" target="_blank">source</a>, or 
