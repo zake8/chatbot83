@@ -26,12 +26,22 @@
 
 ## In dev, for any changes / additions to class User:
 
-- cd folder
+- cd where_Pipfile_is
 - pipenv shell
 - flask db migrate -m "note on changes/additions to class"
 - flask db upgrade
   - flask db downgrade == downgrades one revision
   - flask db downgrade base == database at its initial state)
+
+
+## Then later in prod, for any changes / additions to class User:
+
+- copy in new files / github pull (especially .../migrations/versions/...)
+- may have to reset permissions again
+- cd where_Pipfile_is
+- pipenv shell
+- cd where_app_is
+- flask db upgrade
 
 
 ## To set up prod:

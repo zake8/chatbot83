@@ -35,8 +35,6 @@ import sqlalchemy as sa
 
 
 ### TODO:
-### --> functionality to watch videos with corrected subtitles
-### --> functionality to view corrected subtitles vtt files (download, edit, return)
 ### --> write whole render_video()
 ### --> need more bot_specific_examples
 ### - CSS beautification
@@ -793,7 +791,7 @@ def rag_source():
                                         title = f'{rag_name}.mp4 w/ {rag_name}.vtt',
                                         src_file = rag_name) # just the name, path figured in video func
             else:
-                content=f'No {rag_name}.pdf or {rag_name}.mp4 exist.'
+                content=f'Neither {rag_name}.pdf or {rag_name}.mp4 exist.'
                 logging.error(f'Requested non-existant text file, {rag_name}.pdf or {rag_name}.mp4!')
     return render_template('rag_text_display.html',
                             title = 'None',
