@@ -101,6 +101,8 @@ app = SIMPLE_CAPTCHA.init_app(app)
 
 if mode == 'prod':
     base_dir = '/var/www/chatbot83'
+elif mode == 'dev':
+    base_dir = '/home/leet/chatbot83'
 else:
     base_dir = '.'
 
@@ -414,6 +416,7 @@ def change_password():
 from app.prompts import CHATBOT83_TEMPLATE, VTSBOT_TEMPLATE, GERBOT_TEMPLATE, get_filename_inc_list_template
 from app.prompts import SIMPLE_CHAT_TEMPLATE, get_human_instructions
 from app.tools import chatbot_command
+from flask import send_file, send_from_directory
 from langchain_community.document_loaders import TextLoader
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.llms import Ollama
@@ -762,13 +765,40 @@ def cur_file():
                             name=name)
 
 
-@app.route('/rag_file')
+@app.route('/video/<filename>')
 @login_required
-def rag_file():
-    # based on current_user.rag_selected, figure out pdf or mp4 file
-    # display pdf file, or play .mp4 with .vtt captions
-    pass
-    return '<h1>rag_file</h1>'
+def video(filename):
+    video_dir = f'{base_dir}/{current_user.chatbot}/'
+    ##### logging.info(f'+++++ video_dir = {video_dir}')
+    ##### logging.info(f'+++++ filename = {filename}')
+    return send_from_directory(video_dir, filename)
+
+
+@app.route('/rag_source')
+@login_required
+def rag_source():
+    if (current_user.rag_used == 'None') or (current_user.rag_used == '') or (current_user.rag_used == None) or (current_user.rag_used == 'Auto'):
+        content=f'No text to display.'
+    else:
+        rag_faiss = current_user.rag_used
+        rag_name = rag_faiss.rsplit('.', 1)[0]
+        src_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.pdf'
+        if os.path.exists(src_file):
+            return send_file(src_file, as_attachment=False) # display pdf file
+        else:
+            src_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.mp4'
+            if os.path.exists(src_file):
+                ##### logging.info(f'+++++ rag_name = {rag_name}')
+                return render_template('play_mp4_vtt.html', 
+                                        title = f'{rag_name}.mp4 w/ {rag_name}.vtt',
+                                        src_file = rag_name) # just the name, path figured in video func
+            else:
+                content=f'No {rag_name}.pdf or {rag_name}.mp4 exist.'
+                logging.error(f'Requested non-existant text file, {rag_name}.pdf or {rag_name}.mp4!')
+    return render_template('rag_text_display.html',
+                            title = 'None',
+                            content = content,
+                            name = 'Source')
 
 
 def render_video(query):
