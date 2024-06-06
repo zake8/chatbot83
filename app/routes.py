@@ -723,6 +723,7 @@ def rag_text():
             title=f'{rag_name}.txt'
             with open(txt_file, 'r', encoding="utf8") as file:
                 content = file.read()
+            logging.info('===> display "local" txt in new tab')
         else:
             txt_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.vtt'
             if os.path.exists(txt_file):
@@ -730,6 +731,7 @@ def rag_text():
                 title=f'{rag_name}.vtt'
                 with open(txt_file, 'r', encoding="utf8") as file:
                     content = file.read()
+                logging.info('===> display "local" vtt in new tab')
             else:
                 title=f'None'
                 content=f'No {rag_name}.txt or {rag_name}.vtt exist.'
@@ -755,6 +757,7 @@ def cur_file():
             title=f'{rag_name}.cur'
             with open(txt_file, 'r', encoding="utf8") as file:
                 content = file.read()
+            logging.info('===> display "local" cur file in new tab')
         else:
             title=f'None'
             content=f'No {rag_name}.cur exists.'
@@ -771,10 +774,8 @@ def video(filename):
     video_dir = f'{base_dir}/{current_user.chatbot}/'
     ##### logging.info(f'+++++ video_dir = {video_dir}')
     ##### logging.info(f'+++++ filename = {filename}')
-    if serve_source_local:
-        return send_from_directory(video_dir, filename)
-    else:
-        return send_from_directory(video_dir, filename) ### need to code this
+    return send_from_directory(video_dir, filename)
+
 
 @app.route('/rag_source')
 @login_required
@@ -784,14 +785,16 @@ def rag_source():
     else:
         rag_faiss = current_user.rag_used
         rag_name = rag_faiss.rsplit('.', 1)[0]
-        if serve_source_local:
+        if serve_source_local or (current_user.chatbot == 'ChatBot83'):
             src_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.pdf'
             if os.path.exists(src_file):
+                logging.info('===> display "local" pdf in new tab')
                 return send_file(src_file, as_attachment=False) # display pdf file
             else:
                 src_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.mp4'
                 if os.path.exists(src_file):
                     ##### logging.info(f'+++++ rag_name = {rag_name}')
+                    logging.info('===> display "local" mp4 and vtt in new tab')
                     return render_template('play_mp4_vtt.html', 
                                             title = f'{rag_name}.mp4 w/ {rag_name}.vtt',
                                             src_file = rag_name) # just the name, path figured in video func
@@ -799,12 +802,14 @@ def rag_source():
                     content=f'Neither {rag_name}.pdf or {rag_name}.mp4 exist.'
                     logging.error(f'Requested non-existant text file, {rag_name}.pdf or {rag_name}.mp4!')
         else: # non-local source
-            if current_user.chatbot = 'GerBot': ### test this
+            if current_user.chatbot == 'GerBot': ### test this
                 src_url = f'http://gerrystahl.net/elibrary/{rag_name}/{rag_name}.pdf'
+                logging.info('===> display "remote" pdf in new tab')
                 return render_template('url_open.html', 
                                         src_url = src_url)
-            elif current_user.chatbot = 'VTSBot': ### test w/ "chakras", then make dups for other 20 vids
+            elif current_user.chatbot == 'VTSBot': ### test w/ "chakras", then make dups for other 20 vids
                 src_url = f'http://www.steelrabbit.com/VTSBot_videos/{rag_name}.html'
+                logging.info('===> display "remote" mp4 and vtt in new tab')
                 return render_template('url_open.html', 
                                         src_url = src_url)
             else:
