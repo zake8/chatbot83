@@ -799,7 +799,7 @@ def rag_source():
                     content=f'Neither {rag_name}.pdf or {rag_name}.mp4 exist.'
                     logging.error(f'Requested non-existant text file, {rag_name}.pdf or {rag_name}.mp4!')
         else: # non-local source
-            if current_user.chatbot = 'GerBot':
+            if current_user.chatbot = 'GerBot': ### test this
                 src_url = f'http://gerrystahl.net/elibrary/{rag_name}/{rag_name}.pdf'
                 return render_template('url_open.html', 
                                         src_url = src_url)
