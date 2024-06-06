@@ -97,6 +97,8 @@ app = SIMPLE_CAPTCHA.init_app(app)
 
 # Some global variable settings
 
+serve_source_local = True
+
 if mode == 'prod':
     base_dir = '/var/www/chatbot83'
 elif mode == 'dev':
@@ -653,7 +655,7 @@ def large_lang_model(query):
                 verbose = True )
             # https://api.python.langchain.com/en/latest/llms/langchain_community.llms.ollama.Ollama.html
     elif current_user.model == "fake_llm":
-        large_lang_model = RunnableLambda(fake_llm)
+        large_lang_model = RunnableLambda(fake_llm) ### doubt this works, need to code, test
         logging.info(f'===> Using fake_llm...')
     else:
         large_lang_model = None
@@ -769,8 +771,10 @@ def video(filename):
     video_dir = f'{base_dir}/{current_user.chatbot}/'
     ##### logging.info(f'+++++ video_dir = {video_dir}')
     ##### logging.info(f'+++++ filename = {filename}')
-    return send_from_directory(video_dir, filename)
-
+    if serve_source_local:
+        return send_from_directory(video_dir, filename)
+    else:
+        return send_from_directory(video_dir, filename) ### need to code this
 
 @app.route('/rag_source')
 @login_required
@@ -780,19 +784,31 @@ def rag_source():
     else:
         rag_faiss = current_user.rag_used
         rag_name = rag_faiss.rsplit('.', 1)[0]
-        src_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.pdf'
-        if os.path.exists(src_file):
-            return send_file(src_file, as_attachment=False) # display pdf file
-        else:
-            src_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.mp4'
+        if serve_source_local:
+            src_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.pdf'
             if os.path.exists(src_file):
-                ##### logging.info(f'+++++ rag_name = {rag_name}')
-                return render_template('play_mp4_vtt.html', 
-                                        title = f'{rag_name}.mp4 w/ {rag_name}.vtt',
-                                        src_file = rag_name) # just the name, path figured in video func
+                return send_file(src_file, as_attachment=False) # display pdf file
             else:
-                content=f'Neither {rag_name}.pdf or {rag_name}.mp4 exist.'
-                logging.error(f'Requested non-existant text file, {rag_name}.pdf or {rag_name}.mp4!')
+                src_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.mp4'
+                if os.path.exists(src_file):
+                    ##### logging.info(f'+++++ rag_name = {rag_name}')
+                    return render_template('play_mp4_vtt.html', 
+                                            title = f'{rag_name}.mp4 w/ {rag_name}.vtt',
+                                            src_file = rag_name) # just the name, path figured in video func
+                else:
+                    content=f'Neither {rag_name}.pdf or {rag_name}.mp4 exist.'
+                    logging.error(f'Requested non-existant text file, {rag_name}.pdf or {rag_name}.mp4!')
+        else: # non-local source
+            if current_user.chatbot = 'GerBot':
+                src_url = f'http://gerrystahl.net/elibrary/{rag_name}/{rag_name}.pdf'
+                return render_template('url_open.html', 
+                                        src_url = src_url)
+            elif current_user.chatbot = 'VTSBot': ### test w/ "chakras", then make dups for other 20 vids
+                src_url = f'http://www.steelrabbit.com/VTSBot_videos/{rag_name}.html'
+                return render_template('url_open.html', 
+                                        src_url = src_url)
+            else:
+                content = f'External source not known or coded yet.'
     return render_template('rag_text_display.html',
                             title = 'None',
                             content = content,
