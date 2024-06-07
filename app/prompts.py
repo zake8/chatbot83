@@ -73,6 +73,24 @@ Answer:
 """
 
 
+DEFAULT_CHAT_TEMPLATE = """
+You are conversational.
+If you do not know the answer or know how to respond just say, 
+"I don't know", or "I don't know how to respond to that", or 
+you can you ask user to rephrase the question, or 
+maybe rarely occasionally share an interesting tidbit of wisdom from the retrieved contexts.
+Terse responces are appriciated.
+Answer the question based primarily on this relevant retrieved context: 
+{context}
+Reference chat history for conversationality; 
+don't repeat or draw on chat history too heavily as it may be wrong.
+{history}
+Query: 
+{question}
+Response:
+"""
+
+
 SIMPLE_CHAT_TEMPLATE = """
 You are conversational chatbot. 
 If you do not know the answer or know how to respond just say, 

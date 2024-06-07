@@ -12,6 +12,36 @@ logging.basicConfig(level=logging.INFO,
                     filemode='a',
                     format='%(asctime)s -%(levelname)s - %(message)s')
 
+
+# Some global variable settings
+
+serve_source_local = True
+
+if mode == 'prod':
+    base_dir = '/var/www/chatbot83'
+elif mode == 'dev':
+    base_dir = '/home/leet/chatbot83'
+else:
+    base_dir = '.'
+
+# Posts ntfy for some chat Q&A
+if mode == 'prod':
+    ntfypost = True
+elif mode == 'dev':
+    ntfypost = False
+else:
+    ntfypost = False
+
+# Each query and answer is appended seperately,
+# when len history > this #, pops off first (oldest) _two_ items
+if mode == 'prod':
+    pop_fullragchat_history_over_num = 26
+elif mode == 'dev':
+    pop_fullragchat_history_over_num = 10
+else:
+    pop_fullragchat_history_over_num = 14
+
+
 # pipenv installs:
 # flask-sqlalchemy
 # python-dotenv
@@ -95,38 +125,9 @@ SIMPLE_CAPTCHA = CAPTCHA(config=CAPTCHA_CONFIG)
 app = SIMPLE_CAPTCHA.init_app(app)
 
 
-# Some global variable settings
-
-serve_source_local = True
-
-if mode == 'prod':
-    base_dir = '/var/www/chatbot83'
-elif mode == 'dev':
-    base_dir = '/home/leet/chatbot83'
-else:
-    base_dir = '.'
-
-# Posts ntfy for some chat Q&A
-if mode == 'prod':
-    ntfypost = True
-elif mode == 'dev':
-    ntfypost = False
-else:
-    ntfypost = False
-
-# Each query and answer is appended seperately,
-# when len history > this #, pops off first (oldest) _two_ items
-if mode == 'prod':
-    pop_fullragchat_history_over_num = 26
-elif mode == 'dev':
-    pop_fullragchat_history_over_num = 10
-else:
-    pop_fullragchat_history_over_num = 14
+# General high level public routes
 
 webserver_hostname = socket.gethostname()
-
-
-# General high level public routes
 
 @app.route('/')
 @app.route('/index')
@@ -413,7 +414,7 @@ def change_password():
 # langchain_mistralai.chat_models
 # langchain-mistralai
 # faiss-cpu
-from app.prompts import CHATBOT83_TEMPLATE, VTSBOT_TEMPLATE, GERBOT_TEMPLATE, get_filename_inc_list_template
+from app.prompts import CHATBOT83_TEMPLATE, VTSBOT_TEMPLATE, GERBOT_TEMPLATE, get_filename_inc_list_template, DEFAULT_CHAT_TEMPLATE
 from app.prompts import SIMPLE_CHAT_TEMPLATE, get_human_instructions
 from app.tools import chatbot_command
 from flask import send_file, send_from_directory
@@ -501,7 +502,7 @@ def reply():
         prompt = ChatPromptTemplate.from_template(CHATBOT83_TEMPLATE)
     else:
         logging.error(f'ERROR =*=*=> No prompt template for "{current_user.chatbot}" (has retrieved context)')
-        prompt = ChatPromptTemplate.from_template(CHATBOT83_TEMPLATE) ### change this to a weak default template
+        prompt = ChatPromptTemplate.from_template(DEFAULT_CHAT_TEMPLATE)
     prompt_response = prompt
 
     answer = ''
@@ -802,12 +803,12 @@ def rag_source():
                     content=f'Neither {rag_name}.pdf or {rag_name}.mp4 exist.'
                     logging.error(f'Requested non-existant text file, {rag_name}.pdf or {rag_name}.mp4!')
         else: # non-local source
-            if current_user.chatbot == 'GerBot': ### test this
+            if current_user.chatbot == 'GerBot':
                 src_url = f'http://gerrystahl.net/elibrary/{rag_name}/{rag_name}.pdf'
                 logging.info('===> display "remote" pdf in new tab')
                 return render_template('url_open.html', 
                                         src_url = src_url)
-            elif current_user.chatbot == 'VTSBot': ### test w/ "chakras", then make dups for other 20 vids
+            elif current_user.chatbot == 'VTSBot': # running this option would requite making pages for other 20 vids!
                 src_url = f'http://www.steelrabbit.com/VTSBot_videos/{rag_name}.html'
                 logging.info('===> display "remote" mp4 and vtt in new tab')
                 return render_template('url_open.html', 
