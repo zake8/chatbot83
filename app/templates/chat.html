@@ -45,15 +45,14 @@
 	</div>
 	<div><lable for="links"></lable>
 		<font color="purple">Links:</font><br>
+		View RAG source document 
+		<a href="/rag_corpus" target="_blank">corpus summaries</a>, 
 		{% if (current_user.rag_used != 'None') and (current_user.rag_used != 'Auto') %}
-			View RAG source document 
 			<a href="/rag_text" target="_blank">text</a>, 
 			<a href="/rag_source" target="_blank">source</a>, or 
 			<a href="/cur_file" target="_blank">curration</a> 
-			(open in a new tab)<br>
-		{% else %}
-			No links<br>
 		{% endif %}
+		(open in a new tab)<br>
 	</div>
 	{% if current_user.role == "administrator" %}
 		<br>

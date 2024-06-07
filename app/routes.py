@@ -67,6 +67,7 @@ import sqlalchemy as sa
 ### TODO:
 ### --> write whole render_video()
 ### --> need more bot_specific_examples
+### - view corpus overview/summary
 ### - CSS beautification
 ### - dark mode option
 ### - email a link to click to confirm email and proceed w/ registration - sample exists in flask mega tutorial
@@ -705,6 +706,7 @@ def help():
         'user':current_user.chatbot, 
         'message':get_human_instructions(current_user.chatbot)})
     db.session.commit()
+    logging.info('===> requested help text')
     return render_template('chat.html', title='Chat')
 
 
@@ -724,7 +726,7 @@ def rag_text():
             title=f'{rag_name}.txt'
             with open(txt_file, 'r', encoding="utf8") as file:
                 content = file.read()
-            logging.info('===> display "local" txt in new tab')
+            logging.info('===> display "local" {txt_file} in new tab')
         else:
             txt_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.vtt'
             if os.path.exists(txt_file):
@@ -732,21 +734,39 @@ def rag_text():
                 title=f'{rag_name}.vtt'
                 with open(txt_file, 'r', encoding="utf8") as file:
                     content = file.read()
-                logging.info('===> display "local" vtt in new tab')
+                logging.info('===> display "local" {txt_file} in new tab')
             else:
                 title=f'None'
                 content=f'No {rag_name}.txt or {rag_name}.vtt exist.'
                 logging.error(f'Requested non-existant text file, {rag_name}.txt or {rag_name}.vtt!')
     return render_template('rag_text_display.html',
-                            title=title,
-                            content=content,
-                            name=name)
+                            title = title,
+                            content = content,
+                            name = name)
+
+
+@app.route('/rag_corpus')
+@login_required
+def corpus():
+    txt_file = f'{base_dir}/{current_user.chatbot}/rag_source_clues.txt'
+    if os.path.exists(txt_file):
+        title=f'rag_source_clues.txt'
+        with open(txt_file, 'r', encoding="utf8") as file:
+            content = file.read()
+        logging.info('===> display {txt_file} file in new tab')
+    else:
+        title=f'None'
+        content=f'No file exists.'
+        logging.error(f'Requested non-existant corpus file, {txt_file}')
+    return render_template('rag_text_display.html',
+                            title = title,
+                            content = content,
+                            name = 'Corpus')
 
 
 @app.route('/cur_file')
 @login_required
 def cur_file():
-    name = 'Curration'
     if (current_user.rag_used == 'None') or (current_user.rag_used == '') or (current_user.rag_used == None) or (current_user.rag_used == 'Auto'):
         title=f'None'
         content=f'No text to display.'
@@ -758,15 +778,15 @@ def cur_file():
             title=f'{rag_name}.cur'
             with open(txt_file, 'r', encoding="utf8") as file:
                 content = file.read()
-            logging.info('===> display "local" cur file in new tab')
+            logging.info('===> display "local" {txt_file} in new tab')
         else:
             title=f'None'
             content=f'No {rag_name}.cur exists.'
             logging.error(f'Requested non-existant curration file, {rag_name}.cur!')
     return render_template('rag_text_display.html',
-                            title=title,
-                            content=content,
-                            name=name)
+                            title = title,
+                            content = content,
+                            name = 'Curration')
 
 
 @app.route('/video/<filename>')
