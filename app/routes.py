@@ -67,7 +67,6 @@ import sqlalchemy as sa
 ### TODO:
 ### --> write whole render_video()
 ### --> need more bot_specific_examples
-### - view corpus overview/summary
 ### - CSS beautification
 ### - dark mode option
 ### - email a link to click to confirm email and proceed w/ registration - sample exists in flask mega tutorial
@@ -713,7 +712,6 @@ def help():
 @app.route('/rag_text')
 @login_required
 def rag_text():
-    name = 'Text'
     if (current_user.rag_used == 'None') or (current_user.rag_used == '') or (current_user.rag_used == None) or (current_user.rag_used == 'Auto'):
         title=f'None'
         content=f'No text to display.'
@@ -736,9 +734,11 @@ def rag_text():
                     content = file.read()
                 logging.info('===> display "local" {txt_file} in new tab')
             else:
+                name = 'Text'
                 title=f'None'
                 content=f'No {rag_name}.txt or {rag_name}.vtt exist.'
                 logging.error(f'Requested non-existant text file, {rag_name}.txt or {rag_name}.vtt!')
+    name += f' content for {rag_name} '
     return render_template('rag_text_display.html',
                             title = title,
                             content = content,
@@ -758,10 +758,11 @@ def corpus():
         title=f'None'
         content=f'No file exists.'
         logging.error(f'Requested non-existant corpus file, {txt_file}')
+    name = f'Corpus content for {current_user.chatbot} '
     return render_template('rag_text_display.html',
                             title = title,
                             content = content,
-                            name = 'Corpus')
+                            name = name)
 
 
 @app.route('/cur_file')
@@ -783,10 +784,11 @@ def cur_file():
             title=f'None'
             content=f'No {rag_name}.cur exists.'
             logging.error(f'Requested non-existant curration file, {rag_name}.cur!')
+    name = f'Curration content for {rag_name} '
     return render_template('rag_text_display.html',
                             title = title,
                             content = content,
-                            name = 'Curration')
+                            name = name)
 
 
 @app.route('/video/<filename>')
@@ -835,10 +837,11 @@ def rag_source():
                                         src_url = src_url)
             else:
                 content = f'External source not known or coded yet.'
+    name = f'Source content for {rag_name} '
     return render_template('rag_text_display.html',
                             title = 'None',
                             content = content,
-                            name = 'Source')
+                            name = name)
 
 
 def render_video(query):
