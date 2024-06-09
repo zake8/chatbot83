@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+mode = 'dev' # set to 'dev' or 'prod'
+# set in in __init__.py, routes.py, and tools.py
+
 # pipenv installs:
 # flask-migrate
 # flask-login
@@ -10,7 +13,10 @@ from flask_migrate import Migrate # https://pypi.org/project/Flask-Migrate/
 from flask_login import LoginManager
 import os
 
-load_dotenv('.env') # change to absolute path for prod
+if mode == 'prod':
+    load_dotenv('/var/www/chatbot83/.env') # absolute path for prod w/ Flask under Apache
+else:
+    load_dotenv('.env')
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///chatbot83.db'

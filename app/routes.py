@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-mode = 'dev' # set this to dev or prod
+mode = 'dev' # set to 'dev' or 'prod'
+# set in in __init__.py, routes.py, and tools.py
 
 import logging
 if mode == 'prod':
@@ -69,7 +70,8 @@ import sqlalchemy as sa
 ### --> need more bot_specific_examples
 ### - CSS beautification
 ### - dark mode option
-### - email a link to click to confirm email and proceed w/ registration - sample exists in flask mega tutorial
+### - email a link to click to confirm email and proceed w/ registration - sample exists in flask mega tutorial ch 10
+### - approve/disaprove new accounts - @vingtsunsito.com, Ving Tsun Federation (?), human approver
 ### - feature to email yourself chat thread or current Q&A
 ### - add content to each bot's nothing.faiss to detail what the bot is about and some overview of the corpus
 ### - setup some pre-approval, and post registration approval processes
@@ -133,7 +135,8 @@ webserver_hostname = socket.gethostname()
 @app.route('/index')
 def index():
     return render_template('index.html', title='ChatBot83', 
-        webserver_hostname=webserver_hostname)
+        webserver_hostname=webserver_hostname,
+        mode = mode)
 
 
 @app.route("/gerbotsamples")
@@ -738,7 +741,7 @@ def rag_text():
                 title=f'None'
                 content=f'No {rag_name}.txt or {rag_name}.vtt exist.'
                 logging.error(f'Requested non-existant text file, {rag_name}.txt or {rag_name}.vtt!')
-    name += f' content for {rag_name} '
+    name += f' content for "{rag_name}" '
     return render_template('rag_text_display.html',
                             title = title,
                             content = content,
@@ -838,6 +841,32 @@ def rag_source():
             else:
                 content = f'External source not known or coded yet.'
     name = f'Source content for {rag_name} '
+    return render_template('rag_text_display.html',
+                            title = 'None',
+                            content = content,
+                            name = name)
+
+
+@app.route('/rag_uncorrected_source')
+@login_required
+def rag_uncorrected_source():
+    if (current_user.rag_used == 'None') or (current_user.rag_used == '') or (current_user.rag_used == None) or (current_user.rag_used == 'Auto'):
+        content=f'No text to display.'
+    else:
+        rag_faiss = current_user.rag_used
+        rag_name = rag_faiss.rsplit('.', 1)[0]
+        if serve_source_local or (current_user.chatbot == 'ChatBot83'):
+            src_file = f'{base_dir}/{current_user.chatbot}/{rag_name}.mp4'
+            uncorvtt = f'{base_dir}/{current_user.chatbot}/{rag_name}_original.vtt'
+            if os.path.exists(src_file) and os.path.exists(uncorvtt):
+                logging.info('===> display "local" mp4 and original.vtt in new tab')
+                return render_template('play_mp4_orig_vtt.html', 
+                                        title = f'{rag_name}.mp4 w/ {rag_name}_original.vtt',
+                                        src_file = rag_name) # just the name, path figured in video func
+            else:
+                content=f'No {rag_name}.mp4 and {rag_name}_original.vtt to play.'
+                logging.error(f'Requested non-existant {rag_name}.mp4 and/or {rag_name}_original.vtt.')
+    name = f'Original source content for {rag_name} '
     return render_template('rag_text_display.html',
                             title = 'None',
                             content = content,

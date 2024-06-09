@@ -123,7 +123,4 @@
 - if/when db changes/expands in dev, a new 'flask db migrate -m "note"' will be run, the migration file copied to prod, and 'flask db upgrade' run again
 - ensure after creating/migrating DB, that the .db file is read-only for www-data
 
-[ ] prod tweaks
-- clean up to just desired in /var/www/chatbot83/app/templates/index.html
-- set routes.py's mode var to 'prod'
-- set path for .env in app/__init__.py
+[ ] **set app/routes.py's and app/__init__.py'mode' var from 'dev' to 'prod'**

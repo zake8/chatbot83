@@ -1,9 +1,16 @@
 #!/usr/bin/env python
 
+mode = 'dev' # set to 'dev' or 'prod'
+# set in in __init__.py, routes.py, and tools.py
+
 import logging
-logging.basicConfig(level=logging.INFO, 
-                    filename='./log.log', 
-                    filemode='a', 
+if mode == 'prod':
+    log_file = '/var/www/chatbot83/log.log'
+else:
+    log_file = './log.log'
+logging.basicConfig(level=logging.INFO,
+                    filename=log_file,
+                    filemode='a',
                     format='%(asctime)s -%(levelname)s - %(message)s')
 
 # pipenv installs needed: beautifulsoup4, pypdf
@@ -293,31 +300,36 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
                     return answer
                 else:
                     fullragchat_rag_source = path_filename
-                    base_fn = os.path.basename(fullragchat_rag_source) # strip path
-                    base_fn = base_fn[:-(len(rag_ext)+1)] # strip extension
-                    curfile_fn = f'{base_fn}.cur'
-                    corrected_vtt_fn = f'{base_fn}_corrected.vtt'
-                    date_time = datetime.now()
-                    rag_text = get_rag_text(
-                        fullragchat_rag_source=fullragchat_rag_source, 
-                        query=query, 
-                        start_page=None, 
-                        end_page=None )
-                    corrections_text = create_transcription_corrections(
-                        to_sum = rag_text, 
-                        map_red_chunk_size = my_correction_chunk_size, 
-                        model=model, mkey=mkey, fullragchat_temp=fullragchat_temp )
-                    with open(docs_dir + '/' + corrected_vtt_fn, 'w', encoding="utf8") as file: # 'w' = overwrite the existing content if any
-                        file.write(corrections_text)
-                    curfile_content  = f'\n\nCuration  content for HITL use. \n\n'
-                    curfile_content += f'Date and time      = {date_time.strftime("%Y-%m-%d %H:%M:%S")} \n'
-                    curfile_content += f'Target document    = {fullragchat_rag_source} \n'
-                    curfile_content += f'Model/temp LLM = {model} / {fullragchat_temp} \n'
-                    curfile_content += f'Wrote corrected .vtt file, "{corrected_vtt_fn}" \n'
-                    with open(docs_dir + '/' + curfile_fn, 'a', encoding="utf8") as file: # 'a' = append, create new if none
-                        file.write(curfile_content)
-                    logging.info(f'===> Saved new .vtt file, "{corrected_vtt_fn}", and new/updated .cur file, "{curfile_fn}"')
-                    answer += f'Wrote "{corrected_vtt_fn}; wrote/updated "{curfile_fn}". '
+                    if os.path.exists(fullragchat_rag_source):
+                        base_fn = os.path.basename(fullragchat_rag_source) # strip path
+                        base_fn = base_fn[:-(len(rag_ext)+1)] # strip extension
+                        curfile_fn = f'{base_fn}.cur'
+                        corrected_vtt_fn = base_fn # was f'{base_fn}_corrected.vtt', changed to rename old and same new w/ same name
+                        date_time = datetime.now()
+                        rag_text = get_rag_text(
+                            fullragchat_rag_source=fullragchat_rag_source, 
+                            query=query, 
+                            start_page=None, 
+                            end_page=None )
+                        corrections_text = create_transcription_corrections(
+                            to_sum = rag_text, 
+                            map_red_chunk_size = my_correction_chunk_size, 
+                            model=model, mkey=mkey, fullragchat_temp=fullragchat_temp )
+                        ### prob need full absolute path for prod 
+                        os.rename(f'{base_fn}.vtt', f'{base_fn}_original.vtt')
+                        with open(docs_dir + '/' + corrected_vtt_fn, 'w', encoding="utf8") as file: # 'w' = overwrite the existing content if any
+                            file.write(corrections_text)
+                        curfile_content  = f'\n\nCuration  content for HITL use. \n\n'
+                        curfile_content += f'Date and time      = {date_time.strftime("%Y-%m-%d %H:%M:%S")} \n'
+                        curfile_content += f'Target document    = {fullragchat_rag_source} \n'
+                        curfile_content += f'Model/temp LLM = {model} / {fullragchat_temp} \n'
+                        curfile_content += f'Wrote corrected .vtt file, "{corrected_vtt_fn}" \n'
+                        with open(docs_dir + '/' + curfile_fn, 'a', encoding="utf8") as file: # 'a' = append, create new if none
+                            file.write(curfile_content)
+                        logging.info(f'===> Saved new .vtt file, "{corrected_vtt_fn}", and new/updated .cur file, "{curfile_fn}"')
+                        answer += f'Wrote "{corrected_vtt_fn}; wrote/updated "{curfile_fn}". '
+                    else:
+                        answer += f'{fullragchat_rag_source} does not exist to correct.'
             elif meth == 'mapreducesummary': # output to chat only
                 answer += f'Map reduce summary of "{path_filename}": ' + '\n'
                 fullragchat_rag_source = path_filename

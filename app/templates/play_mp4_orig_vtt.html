@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	{% if title %}
+		<title>{{ title }}</title>
+	{% else %}
+		<title>ChatBot83</title>
+	{% endif %}
+	<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon8.png') }}">
+	<style>
+		.video-container {
+		display: flex;
+		}
+		video {
+		width: 75%;
+		margin: 10px;
+		}
+	</style>
+</head>
+<body>
+	<h1>Source video, with transcribed and original un-corrected captions, for &quot;{{src_file}}&quot; from {{current_user.chatbot}}:</h1>
+	<div class="video-container">
+		<video id="video" controls autoplay>
+			<source src="{{ url_for('video', filename = src_file + '.mp4') }}" type="video/mp4">
+			<track  src="{{ url_for('video', filename = src_file + '_original.vtt') }}" kind="captions" srclang="en" label="{{src_file}}_original.vtt" default>
+		</video>
+	</div>
+</body>
+</html>

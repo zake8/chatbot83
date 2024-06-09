@@ -38,6 +38,18 @@
             <br>
           </td>
         </tr>
+        {% if mode != 'prod' %}
+        <!-- stuff in this if still ideas / dev and does not show up in prod, move items above here to make live -->
+        <tr>
+          <td style="width: 473.933px;">
+            <h1 style="text-align: center;"><a href="/"></a></h1>
+            <p>Intro beginner level VTSBot chat (per Phillip), RAG off wikipedia VT page and custom doc.</p>
+          </td>
+          <td style="width: 201.583px;">
+            <p></p>
+            <br>
+          </td>
+        </tr>
         <tr>
           <td style="width: 473.933px;">
             <h1 style="text-align: center;"><a href="/func"></a></h1>
@@ -172,6 +184,7 @@
             <br>
           </td>
         </tr>
+        {% endif %}
         <tr>
           <td style="width: 473.933px;">
             <h1 style="text-align: center;"><a href="/func"></a></h1>
