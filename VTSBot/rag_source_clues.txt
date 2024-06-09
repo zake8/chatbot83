@@ -1,0 +1,143 @@
+filename = "nothing.faiss" 
+about = """ 
+Select this filename is nothing matches at all.
+"""
+
+
+filename = "chakras.faiss" 
+about = """ 
+Emphasizing proper form and technique for foundational movements and stances. The "first four" movements are crucial, involving specific knee, toe, and stance positions for stability and balance. The instructor highlights the importance of basics and encourages questions, discussing chi/ki's role in martial arts. The lesson focuses on form, balance, and mindset. 
+2020-07-12-004343_00h_53m_23s.mp4
+"""
+
+
+filename = "animal.faiss" 
+about = """ 
+Thanksgiving traditions, food, and martial arts, with an emphasis on the bachang stance, weapons, yin and yang, humility, and the Tyson vs. Jones fight. The lesson focuses on the proper use of the "dough" in Wing Chun Kung Fu, emphasizing correct form, fundamental understanding, and consistent practice. Both the conversation and the lesson highlight the importance of discipline, technique, and personal development in martial arts. 
+2020-11-30-005606_01h-41m-50s.mp4
+"""
+
+
+filename = "bridge.faiss" 
+about = """ 
+Focused on Wing Chun. Key points include the importance of understanding principles, not just memorizing movements; the significance of techniques such as "chum cue," "trapping hands," and "jam seo"; and the value of experience and self-discovery in mastering martial arts. The texts use specific Wing Chun terminology, such as "Chi Sao," "Bok-Seo," and "Cheom Kyu." The intended audience is likely Wing Chun practitioners or those interested in the martial art. The speakers emphasize the importance of understanding the philosophy and principles behind the movements, rather than just memorizing them. They also stress the value of experience and self-discovery in mastering martial arts. 
+2020-08-29-235823_01h-59m-11s.mp4
+"""
+
+
+filename = "buddha.faiss" 
+about = """ 
+Focusing on Ba Cham Do and Southern Chinese Kung Fu. Key points in Ba Cham Do include techniques like "gaido," "gan do," and "huen do," the significance of "yin yang," and the 108 formula. Martial artists are encouraged to understand principles, not just mimic forms. The Kung Fu discussion highlights animal-inspired movements, the role of five elements, and techniques like "hun do." Both summaries target martial artists, emphasizing specific terminology and techniques. 
+2020-12-07-010112_01h-40m-24s.mp4
+"""
+
+
+filename = "center.faiss" 
+about = """ 
+The text consists of transcripts from conversations about Wing Chun Kung Fu, highlighting the importance of personal experience and physical training for true skill acquisition. Key points include:
+1. Kung Fu is shaped by personal experiences, not just book learning.
+2. Physical training is crucial for mastering Wing Chun techniques.
+3. Examples of high-level Wing Chun demonstrations, like John Moy Fork in California.
+4. Learning strengths from weak positions and understanding inherent advantages.
+The intended audience is martial arts enthusiasts, particularly those interested in Wing Chun. Jargon includes "Kung Fu," "Wing Chun," "Chokyu," and "sticking and connecting." The speakers emphasize the importance of experience and practical application in mastering Wing Chun principles. 
+2020-09-19-235939_01h-37m-19s.mp4
+"""
+
+
+filename = "chi.faiss" 
+about = """ 
+Various techniques and concepts. They emphasize relaxation, joint alignment, and small movements for power. A key concept is "Mou Ying Ge" or "imageless kick," focusing on placement and distraction. Conditioning and partner practice are important for technique development. The discussions assume knowledge of Wing Chun forms and techniques, such as "zhong," "guan zhong," "qi guan," and "chum kiu." The intended audience is Wing Chun practitioners, and the purpose is to share insights and experiences. The conversations explore proper kick placement in qi sao practice, the importance of understanding "mo ying derp" to conserve energy, and the structured nature of Wing Chun kicks. They recommend practicing drills with a partner who follows rules of engagement and contrast Wing Chun's information-based approach to visual-based kicking styles. Interesting terms include qi sao, mo ying derp, and the idea of "wasting" energy. 
+2020-09-12-235717_01h-42m-15s.mp4
+"""
+
+
+filename = "dragon.faiss" 
+about = """ 
+Lessons about Wing Chun, a martial art, with a focus on the Buji level and its techniques. The speaker emphasizes the importance of practice, repetition, and developing a strong punch and kick. They discuss various Wing Chun concepts such as the Lanza marker, emergency hands, Orthodox unification, and the vine metaphor. The audience is likely to be students or practitioners of Wing Chun. The main theme is the advanced techniques and concepts of Wing Chun's Buji level, and the idea of kung fu as a dynamic, adaptable, and living art that requires a deep understanding of its underlying principles. 
+2020-10-25-235800_02h-33m-51s.mp4
+"""
+
+
+filename = "eight.faiss" 
+about = """ 
+Various aspects of Kung Fu, including its history, culture, techniques, and personal experiences. Key themes include the importance of hard work, discipline, perseverance, and training in detail. The speakers emphasize the significance of certain movements, such as the "dragon pole" and the "six and a half point pojong," and the role of imagination and thinking in Kung Fu training. The intended audience is likely students or practitioners of Kung Fu, and the purpose is to provide a detailed and thoughtful explanation of Kung Fu concepts and techniques. The text uses specific jargon and terminology related to Kung Fu. 
+2020-12-28-005757_02h-11m-38s.mp4
+"""
+
+
+filename = "forward.faiss" 
+about = """ 
+Touching on its concepts, techniques, history, and philosophy. Key points include the importance of physical contact, relationship-building, and unique skills. The speakers discuss "mo Chu Yan Kiu Sai Bit Tin" (touch, feel, and awareness), "Chum Q" and its four levels, and the use of the thumb and "bridging" in combat. They also mention terms like "Bujie," "Chum Kew," "Sunim Pell," and "Luoyangzhong," and reference the use of a "wooden dummy" in training. The audience seems to be Wing Chun students or practitioners. The purpose of the text may be to provide a record of discussions for reference or further study. 
+2020-11-02-005339_01h_52m_06s.mp4
+"""
+
+
+filename = "middle.faiss" 
+about = """ 
+The wooden dummy (zhong) in martial arts training. A key point in both summaries is the significance of understanding yin and yang energies in relation to the zhong. Historical and cultural importance of the 108 concept, as well as proper setup and usage. Customization and measurement required for effective zhong training, and the concept of the zhong as a partner and tool for teaching subliminal lessons about fighting. Both summaries suggest that the intended audience is martial artists or those interested in martial arts training. 
+2020-11-09-005433_01h-51m-06s.mp4
+"""
+
+
+filename = "mouse.faiss" 
+about = """ 
+Wing Chun Kung Fu's Guan (six and a half point pole). The speakers delve into the Guan's history, significance, and the importance of imagination, yin-yang energy, grip, and stance in its use. The audience is likely Kung Fu practitioners, and the tone is conversational, with humor and anecdotes used. The text emphasizes the importance of precision, attention to detail, and cooperation in martial arts practice, using specific jargon related to the discipline. 
+2020-12-21-005952_01h-46m-03s.mp4
+"""
+
+
+filename = "power.faiss" 
+about = """ 
+Chinese martial art, with a focus on the wooden dummy method and the concept of Yin and Yang. The speakers discuss the importance of efficiency, understanding the philosophy behind movements, and breaking down techniques for students. Key terms include "Mok Yan Jong," "Bong Sau," "Tan Sau," "Gan Sau," "Jing," "Wang," "Dar Hong Jong," and the significance of the eight directions of movement. The lesson emphasizes the importance of understanding the theory and concepts behind Wing Chun movements to effectively practice it. The intended audience is Wing Chun practitioners seeking to deepen their understanding of the wooden dummy method and Yin and Yang concept. 
+2020-11-16-004723_02h-06m-29s.mp4
+"""
+
+
+filename = "refacing.faiss" 
+about = """ 
+Conversation around different martial arts practices, such as "Chum Q," "Bujji," and "Qigong," as well as Chinese characters and terminology. Wing Chun concept of "Sao Poh Lei," which entails learning, breaking down, and eventually abandoning teachings for personal mastery. Emphasis is placed on the balance of defense and attack, with references to techniques like "Chi Sao," "Tan Sao," "Fok Sao," and "Bong." The intended audience is martial arts students seeking guidance on techniques and philosophies. 
+2020-09-05-235620_01h-43m-36s.mp4
+"""
+
+
+filename = "shadow.faiss" 
+about = """ 
+"Lost hand thrust forward" technique in Wing Chun. The instructor highlights the need to move one's body, fill the space between oneself and the opponent, and be adaptable like water. A practical, streetwise application of techniques is emphasized, cautioning against over-reliance on Kung Fu sayings. The intended audience is martial arts students, and the purpose is to provide instruction and understanding of this Wing Chun technique. 
+2020-08-02-002014_01h-24m-17s.mp4
+"""
+
+
+filename = "stillness.faiss" 
+about = """ 
+"Momentous chi," the significance of a strong Sifu (teacher), and the idea of "soulfully, mechanically, cleverly change." Key themes include center line control, retreating as an option, the impact of time on power, and the importance of enjoying the training process. The jargon used suggests the discussions are aimed at individuals interested in martial arts. While both summaries touch on similar topics, the second one delves deeper into the concept of "momentous chi" and its role in selecting a Sifu, as well as introducing the idea of efficient multitasking. 
+2020-08-16-000024_01h-44m-03s.mp4
+"""
+
+
+filename = "stroke.faiss" 
+about = """ 
+Wing Chun's Chum Kiu and Buji concepts. The speaker emphasizes mobility, force usage, and the "forceful bridge" philosophy, avoiding collisions and instantly dodging. They highlight the importance of elbow techniques, the number nine in leg movements, and Chinese cultural influences on Wing Chun. The audience, likely martial artists, are advised on rules such as not chasing, entangling, or forcing hands. Interesting terms include "82 bridge hands," "forceful bridge," and "first responder's hands." The purpose is to provide Wing Chun insights, techniques, and philosophical concepts. 
+2020-08-16-000024_01h-44m-03s.mp4
+"""
+
+
+filename = "synch.faiss" 
+about = """ 
+Martial art of Wing Chun, aimed at practitioners seeking instruction and insight. The speaker discusses various techniques, concepts, and terminology, such as "Chi South," "Siu Nian Tao Chum Kiu," and "Tan Fu Peng." The text emphasizes Wing Chun as a holistic practice, encompassing health, fitness, and a way of life, rather than just a fighting technique. It highlights the idea of "kung fu" as a distinct intelligence and strategic understanding, and encourages a broad understanding of Wing Chun's potential for personal growth. 
+2020-08-22-235759_01h-54m-27s.mp4
+"""
+
+
+filename = "upward.faiss" 
+about = """ 
+Emphasizing techniques and concepts. The conversation covers topics such as various techniques (fuk dua, bong dua, yachi do, yetido), hand positions, grips, and the importance of basics, first move, and understanding techniques. The lesson teaches the "double lan dou" technique for escaping multiple attackers, emphasizing the reason behind each move, creating openings, and being aware of surroundings. The texts are part of a larger curriculum, touching on history and philosophy. The intended audience is martial arts practitioners, focusing on practical application, technique understanding, and practice. Notable terms include Sifu, kwan sao, ya chi do, grip change, leverage, distance, repetition, contact, intention, position, and clarity. 
+2020-12-14-005830_01h-46m-57s.mp4
+"""
+
+
+filename = "venom.faiss" 
+about = """ 
+Kung Fu and Wing Chun. The speaker emphasizes the importance of details, alignment, and controlling the center line in Kung Fu practice, and discusses the "three venoms" or "three poisons" of Wing Chun (Tan, Bong, and Fook) and their offensive and defensive uses. The role of a senior (Si Hing) in teaching a junior (Si Dai) and the importance of ego control and humility in martial arts training are also highlighted. The intended audience is likely martial artists, particularly those practicing Kung Fu or Wing Chun. The text serves as a learning resource for advanced techniques and mindset in martial arts training. Notable terms include Chi Sau, center line, and venom as a metaphor for the destructive power of Wing Chun techniques. 
+2020-09-26-235811_01h-39m-44s.1mp4
+"""
+
