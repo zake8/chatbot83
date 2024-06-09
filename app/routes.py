@@ -267,8 +267,8 @@ def login():
                 return redirect(url_for('login'))
             login_user(user, remember=form.remember_me.data)
             logging.info(f'=*=*=*> User "{current_user.username}" logged in.')
-            if current_user.role == 'blocked':
-                logging.info(f'=*=*=*> Blocked user "{current_user.username}" as their role is "{current_user.role}".')
+            if current_user.role == 'disabled':
+                logging.info(f'=*=*=*> Disabled user "{current_user.username}" as their role is "{current_user.role}".')
                 logout_user()
                 flash('Unable to login.')
                 return redirect(url_for('login'))

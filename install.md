@@ -123,4 +123,27 @@
 - if/when db changes/expands in dev, a new 'flask db migrate -m "note"' will be run, the migration file copied to prod, and 'flask db upgrade' run again
 - ensure after creating/migrating DB, that the .db file is read-only for www-data
 
-[ ] **set app/routes.py's and app/__init__.py'mode' var from 'dev' to 'prod'**
+[ ] **set app/routes.py's and app/__init__.py and app/tools.py 'mode' var from 'dev' to 'prod'**
+
+[ ] create 'Guest' account and set its role to 'guest'
+
+## Administrative management of user accounts
+
+- Note roles are:
+  - 'regular' (default assigned on registration)
+  - 'administrator' (gets tools menu)
+  - 'guest' (regected from some areas)
+  - 'disabled' (blocked from logon)
+- Follow steps for interactive Python above
+- query = sa.select(User)
+- (view all users)
+- users = db.session.scalars(query).all()
+- users
+- (list all user by ID, name, and role)
+- users = db.session.scalars(query)
+- for u in users:
+- ...     print(u.id, u.username, u.role)
+- (change a user property)
+- z = db.session.get(User, 2)
+- z.role = 'disabled'
+- db.session.commit()
