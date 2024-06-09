@@ -200,6 +200,9 @@ def GerBot():
 @login_required
 def VTSBot():
     logging.info(f'===> Starting VTSBot!')
+    if current_user.role == 'guest':
+        flash('No guest access to VTSBot.')
+        return redirect(url_for('index'))
     current_user.chatbot = 'VTSBot'
     current_user.model = 'open-mixtral-8x7b'
     current_user.embed_model = 'mistral-embed'
