@@ -351,6 +351,12 @@ def edit_profile():
                                     title='Edit Profile (c_fail)',
                                     form=form, 
                                     captcha=new_captcha_dict)
+        elif current_user.role == 'guest':
+            flash('Unable to modify guest account.')
+            return render_template('edit_profile.html', 
+                                    title='Edit Profile (g_fail)',
+                                    form=form, 
+                                    captcha=new_captcha_dict)
         else:
             current_user.username     = form.username.data
             current_user.email        = form.email.data
@@ -389,6 +395,9 @@ def change_password():
         else:
             if not check_password_hash(current_user.password_hash, form.password.data):
                 flash('Incorrect current/old password - NO changes saved.')
+                return redirect(url_for('change_password'))
+            elif current_user.role == 'guest':
+                flash('Unable to modify guest account - NO changes saved.')
                 return redirect(url_for('change_password'))
             else:
                 current_user.password_hash = generate_password_hash(form.new_password.data)
