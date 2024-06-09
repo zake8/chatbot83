@@ -315,8 +315,8 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
                             to_sum = rag_text, 
                             map_red_chunk_size = my_correction_chunk_size, 
                             model=model, mkey=mkey, fullragchat_temp=fullragchat_temp )
-                        ### prob need full absolute path for prod 
-                        os.rename(f'{base_fn}.vtt', f'{base_fn}_original.vtt')
+                        renamed = fullragchat_rag_source[:-4] + '_original' + fullragchat_rag_source[-4:]  
+                        os.rename(fullragchat_rag_source, renamed)
                         with open(docs_dir + '/' + corrected_vtt_fn, 'w', encoding="utf8") as file: # 'w' = overwrite the existing content if any
                             file.write(corrections_text)
                         curfile_content  = f'\n\nCuration  content for HITL use. \n\n'
