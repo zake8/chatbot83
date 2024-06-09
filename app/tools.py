@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-mode = 'dev' # set to 'dev' or 'prod'
+mode = 'prod' # set to 'dev' or 'prod'
 # set in in __init__.py, routes.py, and tools.py
 
 import logging
@@ -304,7 +304,7 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
                         base_fn = os.path.basename(fullragchat_rag_source) # strip path
                         base_fn = base_fn[:-(len(rag_ext)+1)] # strip extension
                         curfile_fn = f'{base_fn}.cur'
-                        corrected_vtt_fn = base_fn # was f'{base_fn}_corrected.vtt', changed to rename old and same new w/ same name
+                        corrected_vtt_fn = f'{base_fn}.vtt' # was f'{base_fn}_corrected.vtt', changed to rename old and same new w/ same name
                         date_time = datetime.now()
                         rag_text = get_rag_text(
                             fullragchat_rag_source=fullragchat_rag_source, 
@@ -326,8 +326,8 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
                         curfile_content += f'Wrote corrected .vtt file, "{corrected_vtt_fn}" \n'
                         with open(docs_dir + '/' + curfile_fn, 'a', encoding="utf8") as file: # 'a' = append, create new if none
                             file.write(curfile_content)
-                        logging.info(f'===> Saved new .vtt file, "{corrected_vtt_fn}", and new/updated .cur file, "{curfile_fn}"')
-                        answer += f'Wrote "{corrected_vtt_fn}; wrote/updated "{curfile_fn}". '
+                        logging.info(f'===> Saved new .vtt file, "{corrected_vtt_fn}", and new/updated .cur file, "{curfile_fn}", backed up original as, "{renamed}"')
+                        answer += f'Wrote "{corrected_vtt_fn}"; wrote/updated "{curfile_fn}"; backed up original as "{renamed}"'
                     else:
                         answer += f'{fullragchat_rag_source} does not exist to correct.'
             elif meth == 'mapreducesummary': # output to chat only
