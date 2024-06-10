@@ -37,7 +37,7 @@ my_chunk_overlap = 100 # what should overlap % be to retain meaning and search-a
 create_summary_on_ingest = True
 create_corrections_on_ingest = False # Current corrections function really only for VTS VTT files.
 my_map_red_chunk_size = 50000 # This is for map reduce summary, the largest text by character length to try to send # Mixtral-8x7b is a max context size of 32k tokens
-my_correction_chunk_size = 6000 # This is for chunking to correction parse; seems to timeout on same size it can summerize... (Going with 1/5.)
+my_correction_chunk_size = 5000 # This is for chunking to correction parse; seems to timeout on same size it can summerize... (Going with 1/5.) Reduced to 1/10 as it was just dropping 1 in 8 sections...
 
 
 def ingest_document(fullragchat_rag_source, rag_source_clue_value, docs_dir, model, fullragchat_embed_model, mkey, query, fullragchat_temp, start_page, end_page):
