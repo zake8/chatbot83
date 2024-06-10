@@ -310,6 +310,30 @@ def login():
                             captcha=new_captcha_dict)
 
 
+@app.route('/guest_sign_in')
+def guest_sign_in():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+        form = LoginForm()
+    new_captcha_dict = SIMPLE_CAPTCHA.create()
+    user = db.session.scalar(
+        sa.select(User).where(User.username == 'Guest'))
+    if user is None:
+        flash('Invalid username')
+        return redirect(url_for('login'))
+    login_user(user, remember=False)
+    logging.info(f'=*=*=*> User "{current_user.username}" logged in.')
+    if current_user.role == 'disabled':
+        logging.info(f'=*=*=*> Disabled user "{current_user.username}" as their role is "{current_user.role}".')
+        logout_user()
+        flash('Unable to login.')
+        return redirect(url_for('login'))
+    next_page = request.args.get('next')
+    if not next_page or urlsplit(next_page).netloc != '':
+        next_page = url_for('index')
+    return redirect(next_page)
+
+
 @app.route('/logout')
 def logout():
     logging.info(f'=*=*=*> User "{current_user.username}" logging out.')
@@ -339,7 +363,7 @@ def register():
                         phone_number=form.phone_number.data)
             user.set_password(form.password.data)
             db.session.add(user)
-            if current_user.email.endswith("@vingtsunsito.com"):
+            if form.email.data.endswith("@vingtsunsito.com"): ### temp test, re-code once email verification is in place
                 current_user.role = 'vts'
             db.session.commit()
             flash('Congratulations, you are now a registered user!')
