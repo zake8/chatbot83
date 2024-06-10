@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
-mode = 'dev' # set to 'dev' or 'prod'
-# set in in __init__.py, routes.py, and tools.py
+import os
+script_directory = os.path.dirname(os.path.abspath(__file__))
+if script_directory.startswith('/var/www/'):
+    mode = 'prod'
+else:
+    mode = 'dev'
 
 # pipenv installs:
 # flask-migrate
@@ -11,7 +15,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate # https://pypi.org/project/Flask-Migrate/
 from flask_login import LoginManager
-import os
 
 if mode == 'prod':
     load_dotenv('/var/www/chatbot83/.env') # absolute path for prod w/ Flask under Apache

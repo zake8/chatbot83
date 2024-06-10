@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
-mode = 'prod' # set to 'dev' or 'prod'
-# set in in __init__.py, routes.py, and tools.py
+import os
+script_directory = os.path.dirname(os.path.abspath(__file__))
+if script_directory.startswith('/var/www/'):
+    mode = 'prod'
+else:
+    mode = 'dev'
 
 import logging
 if mode == 'prod':
@@ -25,7 +29,6 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_text_splitters import RecursiveCharacterTextSplitter # tweaked module name
-import os
 import re
 import requests
 import subprocess

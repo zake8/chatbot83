@@ -123,8 +123,6 @@
 - if/when db changes/expands in dev, a new 'flask db migrate -m "note"' will be run, the migration file copied to prod, and 'flask db upgrade' run again
 - ensure after creating/migrating DB, that the .db file is read-only for www-data
 
-[ ] **set app/routes.py's and app/__init__.py and app/tools.py 'mode' var from 'dev' to 'prod'**
-
 [ ] create 'Guest' account and set its role to 'guest'
 
 ## Administrative management of user accounts

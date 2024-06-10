@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
-mode = 'dev' # set to 'dev' or 'prod'
-# set in in __init__.py, routes.py, and tools.py
+import os
+script_directory = os.path.dirname(os.path.abspath(__file__))
+if script_directory.startswith('/var/www/'):
+    mode = 'prod'
+else:
+    mode = 'dev'
 
 import logging
 if mode == 'prod':
@@ -59,7 +63,6 @@ from flask_login import login_user, logout_user, current_user, login_required
 from flask_simple_captcha import CAPTCHA
 from urllib.parse import urlsplit
 from werkzeug.security import generate_password_hash, check_password_hash
-import os
 import re
 import socket
 import sqlalchemy as sa
