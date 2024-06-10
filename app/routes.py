@@ -200,8 +200,8 @@ def GerBot():
 @login_required
 def VTSBot():
     logging.info(f'===> Starting VTSBot!')
-    if current_user.role == 'guest':
-        flash('No guest access to VTSBot.')
+    if current_user.role != 'vts':
+        flash('Must be approved for access to VTSBot.')
         return redirect(url_for('index'))
     current_user.chatbot = 'VTSBot'
     current_user.model = 'open-mixtral-8x7b'
@@ -316,6 +316,8 @@ def register():
                         phone_number=form.phone_number.data)
             user.set_password(form.password.data)
             db.session.add(user)
+            if current_user.email.endswith("@vingtsunsito.com"):
+                current_user.role = 'vts'
             db.session.commit()
             flash('Congratulations, you are now a registered user!')
             logging.info(f'=*=*=*> New user registered! full_name="{form.full_name.data}" username="{form.username.data}" email="{form.email.data}" phone #="{form.phone_number.data}"')
