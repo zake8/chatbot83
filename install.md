@@ -132,6 +132,7 @@
   - 'administrator' (gets tools menu)
   - 'guest' (regected from some areas)
   - 'disabled' (blocked from logon)
+  - 'vts' (allowed to use VTSBot)
 - Follow steps for interactive Python above
 - query = sa.select(User)
 - (view all users)
