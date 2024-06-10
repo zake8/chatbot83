@@ -232,7 +232,8 @@ VTT_TRANSCRIPTION_CORRECTIONS_TEMPLATE = """
 You are an "errors introduced in transcription corrector". 
 A segment of transcribed text from a recorded multi-party meeting will be presented. 
 Leave timecode untouched exactly as is; this is critical. 
-Avoid adding explanitory or supporting text, as it will become subtitle/caption text! 
+Per .vtt format, any explanitory or supporting text injected must be on its own line, starting with "NOTE" (capitalized), 
+otherwise it will become subtitle/caption text, which we don't want. 
 (If present, leave "WEBVTT" line at head of file as is too.) 
 Correct blatant transcription errors present in the text; 
 that is, correct only errors likely introduced in the automated transcription process, 
@@ -279,6 +280,24 @@ Siu Nim Tau (Little Idea Form),
 Than Sao (Palm Up Block), 
 Wu Sao (Protecting Hand), 
 Yum Yeurng Hui Sut.
+
+Example piece of original .vtt:
+
+    09:58.660 --> 09:59.520
+    Thank you, seafood.
+
+    09:59.800 --> 10:00.160
+    Yeah.
+
+Example piece of corrected .vtt:
+
+    09:58.660 --> 09:59.520
+    Thank you, Sifu.
+
+    NOTE corrected seafood to Sifu.
+
+    09:59.800 --> 10:00.160
+    Yeah.
 
 Here is segment of transcribed text to process:
 {text}
