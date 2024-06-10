@@ -222,6 +222,26 @@ def VTSBot():
     return redirect(url_for('chat'))
 
 
+@app.route('/VingTsunBot')
+@login_required
+def VingTsunBot():
+    logging.info(f'===> Starting VingTsunBot!')
+    current_user.chatbot = 'VingTsunBot'
+    current_user.model = 'open-mixtral-8x7b'
+    current_user.embed_model = 'mistral-embed'
+    current_user.llm_temp = 0.25
+    current_user.llm_api_key = os.getenv('MISTRAL_API_KEY')
+    current_user.rag_list = ['Auto'] + gen_rag_list()
+    current_user.rag_selected = 'Auto'
+    current_user.rag_used = 'Auto'
+    current_user.chat_history = []
+    current_user.chat_history.append({
+        'user':current_user.chatbot, 
+        'message':"VingTsunBot at your service; referencing information from a Wikipedia and select websites."})
+    db.session.commit()
+    return redirect(url_for('chat'))
+
+
 def gen_rag_list(): # returns list
     fn_list = []
     extensions = (".faiss")
