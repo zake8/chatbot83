@@ -1,0 +1,12 @@
+
+filename = "wikipedia.faiss" 
+about = """ 
+Wing Chun, a Southern Chinese martial art, focuses on close-quarters combat and efficiency in movement, originating from uncertain roots with various lineages, such as Ip Man and Yuen Kay-shan. Brought to global prominence by Ip Man and popularized by films and games, it features forms like Siu Nim Tau and weapon forms, emphasizing tactile sensitivity and using opponents' force against them. In Europe, Wing Chun has multiple associations, schools, and interpretations, with Siu Nim Tau remaining a foundational practice. 
+"""
+
+
+filename = "vingtsunsito.faiss" 
+about = """ 
+Ving Tsun Sito, a nonprofit martial arts school in San Francisco, teaches the Ving Tsun system, a traditional Chinese martial art, under the guidance of Sifu Victor Chung. The school focuses on balance, inner strength, and practical self-defense, offering programs in calligraphy and community outreach. Training is based on the "master-disciple" tradition, fostering dedicated practitioners to preserve the art. The school's mission is to promote cultural awareness, character building, and life skills, incorporating fundamental elements of forms, stances, hands, feet, and Sum Faat, a system reflecting Chinese ethics and real-life application. Classes are available for children, adults, and seniors, with scholarships for income-based students. 
+"""
+

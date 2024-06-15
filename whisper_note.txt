@@ -1,0 +1,1 @@
+whisper file.mp4 --model large --lang en --hallucination_silence_threshold 60

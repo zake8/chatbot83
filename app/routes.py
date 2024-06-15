@@ -81,6 +81,11 @@ import sqlalchemy as sa
 ### - feedback form to report pleasure of use, bugs, or suggestions
 ### - interesting backgrounds for each bot, or even based on RAG doc
 ### - enforce password min length and complexity (check what existing validation does)
+### pre-populate existing values on edit_profile.html page via passing html form "data="
+###     class MyForm(FlaskForm):
+###         full_name = StringField('Full Name', validators=[DataRequired()])
+###     user_data = {'full_name': 'John Doe'}
+###     form = MyForm(data=user_data)
 ### How to view all users and their data? How to set admin role? (Can do in shell w/ context via DB CLI.)
 ### test fake_llm re-implemented as a runnable to pass to chains
 ### auto save website URL to pdf? Then can ingest nice record of website in pdf.
@@ -203,7 +208,7 @@ def GerBot():
 @login_required
 def VTSBot():
     logging.info(f'===> Starting VTSBot!')
-    if current_user.role != 'vts':
+    if (current_user.role != 'vts') and (current_user.role != 'administrator'):
         flash('Must be approved for access to VTSBot.')
         return redirect(url_for('index'))
     current_user.chatbot = 'VTSBot'
@@ -357,14 +362,17 @@ def register():
                                     form=form,
                                     captcha=new_captcha_dict)
         else:
+            set_role = 'regular'
+            email_value = form.email.data
+            if email_value.endswith("@vingtsunsito.com"): ### temp test, re-code once email verification is in place
+                set_role = 'vts'
             user = User(username=form.username.data, 
                         email=form.email.data, 
                         full_name=form.full_name.data, 
-                        phone_number=form.phone_number.data)
+                        phone_number=form.phone_number.data,
+                        role=set_role)
             user.set_password(form.password.data)
             db.session.add(user)
-            if form.email.data.endswith("@vingtsunsito.com"): ### temp test, re-code once email verification is in place
-                current_user.role = 'vts'
             db.session.commit()
             flash('Congratulations, you are now a registered user!')
             logging.info(f'=*=*=*> New user registered! full_name="{form.full_name.data}" username="{form.username.data}" email="{form.email.data}" phone #="{form.phone_number.data}"')
@@ -414,7 +422,28 @@ def edit_profile():
             current_user.email        = form.email.data
             current_user.full_name    = form.full_name.data
             current_user.phone_number = form.phone_number.data
-            db.session.commit()
+            try:
+                db.session.commit()
+            except exc.IntegrityError as e:
+                session.rollback()
+                flash(f'Unable to modify due to IntegrityError ({e}); username or email may have been used already.')
+                return render_template('edit_profile.html', 
+                                        title='Edit Profile (i_fail)',
+                                        form=form, 
+                                        captcha=new_captcha_dict)
+            except exc.SQLAlchemyError as e:  # Generic SQLAlchemy error
+                session.rollback()
+                flash(f'Unable to modify due to SQLAlchemyError ({e}); username or email may have been used already.')
+                return render_template('edit_profile.html', 
+                                        title='Edit Profile (i_fail)',
+                                        form=form, 
+                                        captcha=new_captcha_dict)
+            except Exception as e:
+                flash(f'Unable to modify due to error ({e}).')
+                return render_template('edit_profile.html', 
+                                        title='Edit Profile (i_fail)',
+                                        form=form, 
+                                        captcha=new_captcha_dict)
             flash('Your changes have been saved.')
             logging.info(f'=*=*=*> User "{current_user.username}" edited profile')
             return redirect(url_for('edit_profile'))
@@ -683,6 +712,8 @@ def reply():
         if current_user.chatbot == f'GerBot':
             requests.post('https://ntfy.sh/GerBotAction', headers={'Title' : title}, data=(mess))
         elif current_user.chatbot == f'VTSBot':
+            requests.post('https://ntfy.sh/VTSBotAction', headers={'Title' : title}, data=(mess))
+        elif current_user.chatbot == f'VingTsunBot':
             requests.post('https://ntfy.sh/VTSBotAction', headers={'Title' : title}, data=(mess))
         elif current_user.chatbot == f'ChatBot83':
             pass
