@@ -793,6 +793,46 @@ def convo_mem_function(query):
     return history
 
 
+def render_video(query):
+    ### triple parallel too; this step in chain feeds off of rag FAISS DB embeded lookup k returns!
+    ### basically skip this whole code section unless dealing with a rag based off vtt where FAISS has companion subtitles file
+    ### ideally spawn seperate (background) process to figure out clips and make montage, so as not to slow UX
+    ### Need to write ingestion (not in this func) for .vtt files such that
+        ### use the 'webvtt' library to convert vtt to subtitles list, each list element is start, end, and, text (ignores notes)
+            ### for caption in webvtt.read(vtt_file_path):
+            ###     subtitles.append({
+            ###         'start': caption.start,
+            ###         'end': caption.end,
+            ###         'text': caption.text
+            ###     })
+        ### pull out just the text, and then embed this into FAISS DB (can use existing txt ingest)
+            ### texts = [subtitle['text'] for subtitle in subtitles]
+        ### save subtitles list as companion file next to FAISS
+    ### open appropriate subtitles file, load as subtitles list; for each item in context (indices), search subtitles and obtain timestamps
+        ### for idx in indices:
+        ###     timestamps.append((subtitles[idx]['start'], subtitles[idx]['end']))
+    ### render clips with captions burned and create montage.mp4
+        ### # pip install moviepy
+        ### from moviepy.editor import VideoFileClip, concatenate_videoclips
+        ### video_path = "test.mp4"
+        ### segments = [(80, 100), (310, 330), (1070, 1100)]  # Times are in seconds
+        ### clips = []
+        ### with VideoFileClip(video_path) as video:
+        ###     for start, end in segments:
+        ###         clip = video.subclip(start, end)
+        ###         clips.append(clip)
+        ### montage = concatenate_videoclips(clips)
+        ### montage_path = "montage.mp4"
+        ### montage.write_videofile(montage_path, codec="libx264")
+    ### https://ffmpeg.org/download.html ### may not be needed, think this was something found before moviepy found
+    return RunnableParallel({
+        "context": RunnablePassthrough(), 
+        "question": RunnablePassthrough(), 
+        "history": RunnablePassthrough()})
+
+
+# Interactive and source data displays
+
 @app.route('/help')
 @login_required
 def help():
@@ -963,15 +1003,3 @@ def rag_uncorrected_source():
                             title = 'None',
                             content = content,
                             name = name)
-
-
-def render_video(query):
-    ### triple parallel too; this step in chain needs to feed off of rag FAISS DB embeded lookup k returns!
-    ### search rag index for timecode for vectordb_matches
-    ### render clips with captions burned
-    ### create montage.mp4
-    # https://ffmpeg.org/download.html
-    return RunnableParallel({
-        "context": RunnablePassthrough(), 
-        "question": RunnablePassthrough(), 
-        "history": RunnablePassthrough()})
