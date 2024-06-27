@@ -341,7 +341,12 @@ def guest_sign_in():
 
 @app.route('/logout')
 def logout():
-    logging.info(f'=*=*=*> User "{current_user.username}" logging out.')
+    if current_user.is_anonymous:
+        logging.info(f'=*=*=*> Non logged in user (unknown) logging out.')
+        flash('Must be logged in to logout...')
+    else:
+        logging.info(f'=*=*=*> User "{current_user.username}" logging out.')
+        # was getting AttributeError: 'AnonymousUserMixin' object has no attribute 'username', so added is_anonymous logic...
     logout_user()
     return redirect(url_for('index'))
 
