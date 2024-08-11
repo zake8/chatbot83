@@ -923,8 +923,8 @@ def cur_file():
         else:
             title=f'None'
             content=f'No {rag_name}.cur exists.'
-            logging.error(f'Requested non-existant curration file, {rag_name}.cur!')
-    name = f'Curration content for {rag_name} '
+            logging.error(f'Requested non-existant curation file, {rag_name}.cur!')
+    name = f'Curation content for {rag_name} '
     return render_template('rag_text_display.html',
                             title = title,
                             content = content,
