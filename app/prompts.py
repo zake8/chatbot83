@@ -79,7 +79,7 @@ If you do not know the answer or know how to respond just say,
 "I don't know", or "I don't know how to respond to that", or 
 you can you ask user to rephrase the question, or 
 maybe rarely occasionally share an interesting tidbit of wisdom from the retrieved contexts.
-Terse responces are appriciated.
+Terse responses are appreciated.
 Answer the question based primarily on this relevant retrieved context: 
 {context}
 Reference chat history for conversationality; 
@@ -114,14 +114,15 @@ Response:
 
 def get_human_instructions(chatbot):
     template = """
-Type a question or statement in natual language style in the text box below; 
+Type a question or statement in natural language style in the text box below; 
 then hit the "query" button. 
-From the "RAG selection" dropdown choose "Auto" to allow 
+From the "RAG selection" drop-down choose "Auto" to allow 
 """
     template += chatbot
     template += """
  to select a RAG document based on your query, 
-or explicity choose a RAG document from the list to focus on. 
+or explicitly choose a RAG document from the list to focus on. 
+If available hit the "corpus summaries" link to see detail on the available RAG docs. 
 (If available, selecting "None" eliminates the RAG process altogether; 
 just chatting with the LLM.) 
 RAG is Retrieval Augmented Generation, 
@@ -231,8 +232,8 @@ Summary:
 VTT_TRANSCRIPTION_CORRECTIONS_TEMPLATE = """
 You are an "errors introduced in transcription corrector". 
 A segment of transcribed text from a recorded multi-party meeting will be presented. 
-Leave timecode untouched exactly as is; this is critical. 
-Per .vtt format, any explanitory or supporting text injected must be on its own line, starting with "NOTE" (capitalized), 
+Leave time-code untouched exactly as is; this is critical. 
+Per .vtt format, any explanatory or supporting text injected must be on its own line, starting with "NOTE" (capitalized), 
 otherwise it will become subtitle/caption text, which we don't want. 
 (If present, leave "WEBVTT" line at head of file as is too.) 
 Correct blatant transcription errors present in the text; 
@@ -251,14 +252,14 @@ Biu Jee (Thrusting Fingers),
 Bong Sao (Wing Arm Block, Nim Tau is Flowing, Deflecting), 
 Chi Sao (Sticking Hands), 
 Chi Gerk (Sticking feet), 
-Chum Kiu (Seeking the Bridge) (may be mistranscribed as cheong kyi), 
+Chum Kiu (Seeking the Bridge) (may be mis-transcribed as cheong kyi), 
 Dan Chi Sao (Single Sticky Hands), 
 Fei Jahng (elbow in space, both Bong Sau and Lan Sau), 
 Fook Sao (Subduing Hand), 
 Gan Sao (Splitting Hand), 
 Gum Sao (Pinching Hand), 
 Huen Sao (Circling Hand), 
-Jong (Wooden Dummy) (may be mistranscribed as zhong), 
+Jong (Wooden Dummy) (may be mis-transcribed as zhong), 
 Jum Sao (Sinking Hand), 
 Jut Sao (Jerking Hand), 
 Kwan sao, 
@@ -280,7 +281,7 @@ Si Gung (grand teacher),
 Si Hing (older brother), 
 Si Je (older sister), 
 Si Mui (younger sister), 
-Sifu (teacher) (may be mistranscribed as seafood), 
+Sifu (teacher) (may be mis-transcribed as seafood), 
 Siu Nim Tau (Little Idea Form), 
 Than Sao (Palm Up Block), 
 Wu Sao (Protecting Hand), 
