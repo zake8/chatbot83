@@ -267,10 +267,11 @@ def chatbot_command(query, rag_source_clue_value, docs_dir, model, fullragchat_e
             return answer
         else:
             if meth == 'listusers':
-                users = db.session.scalars(query) ### will not work yet as we have no db session or current_user stuff in tools.py
-                answer += f'Users in DB: '
-                for u in users:
-                    answer += (f'***ID: "{u.id}", role: "{u.role}", username: "{u.username}", full_name: "{u.full_name}", email: "{u.email}", phone_number: "{u.phone_number}" ***')
+                answer += f'Not yet implemented (use ssh and "users = db.session.scalars(query)" in interactive python). '
+                # users = db.session.scalars(query) ### will not work yet as we have no db session or current_user stuff in tools.py
+                # answer += f'Users in DB: '
+                # for u in users:
+                #     answer += (f'***ID: "{u.id}", role: "{u.role}", username: "{u.username}", full_name: "{u.full_name}", email: "{u.email}", phone_number: "{u.phone_number}" ***')
             # set a user's role:
                 # https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database
                 # from app import app, db
