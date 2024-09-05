@@ -25,8 +25,15 @@ class User(UserMixin, db.Model):
     llm_api_key:   so.Mapped[Optional[str]] = so.mapped_column(sa.String(46), nullable=True)
     rag_list:      so.Mapped[Optional[list]] = so.mapped_column(MutableList.as_mutable(sa.PickleType), default=[])
     chat_history:  so.Mapped[Optional[list]] = so.mapped_column(MutableList.as_mutable(sa.PickleType), default=[])
-    # role defaults to "regular"; "administrator" gets and can use chatbot_commands; "blocked" is denied login
 
+# role detail:
+# "regular" - default value for new account creations (can access GerBot, VingTsunBot, etc.)
+# "administrator" - gets and can use chatbot_commands in UI
+# "vts" - needed for access to VTSBot (auto assigned for email @vingtsunsito.com)
+# "guest" - auto logged on as if no account specified; limited rights, can change
+# "disabled" - denied any login
+
+# Steps to update database with changes made in this file:
 # pipenv shell
 # flask db migrate -m "some change"
 # flask db upgrade
