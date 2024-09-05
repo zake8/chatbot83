@@ -130,7 +130,7 @@
 - Note roles are:
   - 'regular' (default assigned on registration)
   - 'administrator' (gets tools menu)
-  - 'guest' (regected from some areas)
+  - 'guest' (rejected from some areas)
   - 'disabled' (blocked from logon)
   - 'vts' (allowed to use VTSBot)
 - Follow steps for interactive Python above
@@ -143,6 +143,6 @@
 - for u in users:
 - ...     print(u.id, u.username, u.role)
 - (change a user property)
-- z = db.session.get(User, 2)
+- z = db.session.get(User, 2) # 2 is example, use listed index values
 - z.role = 'disabled'
 - db.session.commit()
