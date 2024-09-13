@@ -712,7 +712,7 @@ def reply():
         'message':response})
     logging.info(f'===> Response "{response}" from "{current_user.chatbot}" for "{current_user.username}"')
     if ntfypost:
-        title = f'{current_user.chatbot} on {webserver_hostname}:'
+        title = f'{current_user.username} on {current_user.chatbot} on {webserver_hostname}:'
         mess = f'Query: {query}\nResponse: {response}'
         if current_user.chatbot == f'GerBot':
             requests.post('https://ntfy.sh/GerBotAction', headers={'Title' : title}, data=(mess))
