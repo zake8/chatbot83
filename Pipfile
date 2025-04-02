@@ -17,8 +17,8 @@ langchain-core = "*"
 langchain-mistralai = "*"
 pypdf = "*"
 python-dotenv = "*"
+sqlalchemy = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.10"
